@@ -1,0 +1,63 @@
+package com.minecave.pickaxes.builder;
+
+import com.tadahtech.pub.pitem.PItem;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.entity.Player;
+
+/**
+ * @author Timothy Andis
+ */
+public class MessageBuilder {
+
+    private String base;
+
+    public MessageBuilder(String base) {
+        this.base = base;
+        this.base = ChatColor.translateAlternateColorCodes('&', base);
+    }
+
+    public MessageBuilder replace(Player player) {
+        this.base = base.replace("$player$", player.getName());
+        return this;
+    }
+
+    public MessageBuilder replace(PItem PItem) {
+        this.base = base.replace("$skill$", PItem.getName());
+        return this;
+    }
+
+    public MessageBuilder replace(int level, IntegerType type) {
+        this.base = type.replace(base, level);
+        return this;
+    }
+
+    public String build() {
+        return base;
+    }
+
+    public enum IntegerType {
+
+        PLAYER_LEVEL("$newLevel$", "$currentLevel", "$level$"),
+        XP("$currentXp$", "$xp$"),
+        NEXT_XP("$nextXp$"),
+        NEXT_LEVEL("$nextLevel$");
+
+        private String[] all;
+
+        IntegerType(String... all) {
+            this.all = all;
+        }
+
+        public String replace(String s, int i) {
+            String string = s;
+            for(String a : all) {
+                if(s.contains(a)) {
+                    string = string.replace(a, String.valueOf(i));
+                }
+            }
+            return string;
+        }
+
+    }
+
+}

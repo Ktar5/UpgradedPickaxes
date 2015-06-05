@@ -1,0 +1,18 @@
+earthquake:
+  name: Earthquake
+  radius: 10
+  cooldown: 20
+  levelUnlocked: 5
+tnt:
+  name: Bomber
+  cooldown: 20
+  levelUnlocked: 3
+  fuse: 2
+  toSeconds: true
+  maxBlocks: 10
+lightning:
+  name: Lightning
+  cooldown: 20
+  levelUnlocked: 3
+  depth: 10
+  distance: 8

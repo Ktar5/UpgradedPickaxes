@@ -1,0 +1,46 @@
+##########################################################
+#                        Variables                       #
+#                                                        #
+#   $player$ - The players name                          #
+#   $nextLevel$ - Next Level                             #
+#   $newLevel (currentLevel)$ - The players level        #
+#   $nextXP$ - The XP required for the next level        #
+#   $currentXp$ - The players current XP                 #
+#                                                        #
+##########################################################
+max-level: 10
+levels:
+  '1':
+    xp: 100
+    commands:
+    - 'give $player$ diamond 1'
+    message: '&e&lMessage here'
+    cosmetics:
+      firework:
+        enabled: true
+        #The maximim amount of Fireworks that can be launched
+        #Set to RANDOM-MIN:3&MAX:7 to randomize between 3 and 7 (you can, of course, use any number)
+        amount: 1
+        #Display to only the player?
+        playerOnly: true
+        #If 'playerOnly` is false, this is the effective range to display the firework in
+        #IE If a player is within the range from the player, they too will see the firework.
+        range: 10
+        #The colors of the firework itself
+        #No more than 5
+        colors:
+        - BLUE
+        - YELLOW
+        - RANDOM
+        #When the firework is fading out, what colors are shown?
+        #No more than 5
+        fade-colors:
+        - RED
+        - GREEN
+        #Leave a trail of sparkles?
+        trail: false
+        #Fade into the darkness
+        flicker: false
+        #The Effect of the Firework (or Shape)
+        #Allowed: BALL, BALL_LARGE, STAR, CREEPER, BURST
+        type: BALL

@@ -1,0 +1,6 @@
+name: PickaxesRevamped
+version: 1.0-SNAPSHOT
+main: com.tadahtech.pub.PickaxesRevamped
+commands:
+  pick:
+  givePick:

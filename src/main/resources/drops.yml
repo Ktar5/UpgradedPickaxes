@@ -1,0 +1,32 @@
+#When the 'Lucky' Enchant is added to a pick, and a block is mined, this list is checked.
+blocks:
+  #The block mined
+  IRON_ORE:
+    #Levels:
+    #The number given is the max
+    #EG 10 is specified, so levels <= 10 are considered
+    levels:
+      1:
+      #Format: 'ITEMNAME WEIGHT=AMOUNT'
+      #ItemName - The Type of Material to givve
+      #Weight / amount - How likely they are to get this item
+      #Weight is autmatically set to '1' if none is specified.
+        drops:
+          - 'give $player$ apple%10'
+          - 'give $player$ stick%90'
+      2:
+        drops:
+          - 'give $player$ iron_ingot%20'
+
+#When the 'Lucky' Enchant is added to a Sword, and a mob is killed, this list is checked.
+#All values are the same as the 'blocks' section, while changing the block to the mob
+mobs:
+  ZOMBIE:
+    levels:
+      1:
+        drops:
+          - 'give $player$ apple%10'
+          - 'give $player$ stick%90'
+      2:
+        drops:
+          - 'give $player$ iron_ingot%20'
