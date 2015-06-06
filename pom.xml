@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <plugin.name>PickAxes</plugin.name>
-        <plugin.mainClass>com.minecave.pickaxes.PickAxes</plugin.mainClass>
+        <plugin.name>PickAxesRevamped</plugin.name>
+        <plugin.mainClass>com.minecave.pickaxes.PickAxesRevamped</plugin.mainClass>
     </properties>
 
     <build>
