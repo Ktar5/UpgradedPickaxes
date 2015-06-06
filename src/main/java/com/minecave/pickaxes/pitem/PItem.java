@@ -1,9 +1,9 @@
 package com.minecave.pickaxes.pitem;
 
-import com.tadahtech.pub.enchant.PEnchant;
-import com.tadahtech.pub.level.Level;
-import com.tadahtech.pub.skill.Skill;
-import com.tadahtech.pub.utils.Message;
+import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.level.Level;
+import com.minecave.pickaxes.skill.Skill;
+import com.minecave.pickaxes.utils.Message;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

@@ -1,7 +1,7 @@
 package com.minecave.pickaxes.menu.buttons;
 
-import com.tadahtech.pub.menu.Button;
-import com.tadahtech.pub.menu.Menu;
+import com.minecave.pickaxes.menu.Button;
+import com.minecave.pickaxes.menu.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;

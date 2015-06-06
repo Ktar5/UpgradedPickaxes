@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.utils;
 
-import com.tadahtech.pub.pitem.PItem;
+import com.minecave.pickaxes.pitem.PItem;
 
 /**
  * @author Timothy Andis

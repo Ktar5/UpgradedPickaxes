@@ -1,7 +1,7 @@
 package com.minecave.pickaxes.enchant;
 
-import com.tadahtech.pub.pitem.PItem;
-import com.tadahtech.pub.utils.Utils;
+import com.minecave.pickaxes.pitem.PItem;
+import com.minecave.pickaxes.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;

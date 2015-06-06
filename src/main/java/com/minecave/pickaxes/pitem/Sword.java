@@ -1,8 +1,8 @@
 package com.minecave.pickaxes.pitem;
 
-import com.tadahtech.pub.enchant.PEnchant;
-import com.tadahtech.pub.level.Level;
-import com.tadahtech.pub.skill.Skill;
+import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.skill.Skill;
+import com.sun.glass.ui.Window;
 import org.bukkit.Material;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +22,7 @@ public class Sword extends PItem {
         super(itemStack, name);
     }
 
-    public Sword(ItemStack itemStack, Level level, int xp, List<PEnchant> enchants, String name, Skill skill) {
+    public Sword(ItemStack itemStack, Window.Level level, int xp, List<PEnchant> enchants, String name, Skill skill) {
         super(itemStack, level, xp, enchants, name, skill);
     }
 

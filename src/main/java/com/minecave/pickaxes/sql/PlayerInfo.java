@@ -1,8 +1,8 @@
 package com.minecave.pickaxes.sql;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.pitem.Pickaxe;
-import com.tadahtech.pub.pitem.Sword;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.pitem.Sword;
 import org.bukkit.entity.Player;
 
 import java.util.*;

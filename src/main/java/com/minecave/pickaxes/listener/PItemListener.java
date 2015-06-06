@@ -1,9 +1,9 @@
 package com.minecave.pickaxes.listener;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.pitem.Pickaxe;
-import com.tadahtech.pub.pitem.Sword;
-import com.tadahtech.pub.skill.Skill;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.pitem.Sword;
+import com.minecave.pickaxes.skill.Skill;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

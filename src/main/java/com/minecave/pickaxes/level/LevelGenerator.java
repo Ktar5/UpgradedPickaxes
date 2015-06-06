@@ -1,7 +1,6 @@
 package com.minecave.pickaxes.level;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.builder.FireworkBuilder;
+import com.minecave.pickaxes.PickaxesRevamped;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 

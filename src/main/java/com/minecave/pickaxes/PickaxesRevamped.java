@@ -28,7 +28,7 @@ public class PickaxesRevamped extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.instance = this;
+        instance = this;
         saveDefaultConfig();
         this.configValues = new ConfigValues(getConfig());
         new PItemListener();
@@ -53,7 +53,7 @@ public class PickaxesRevamped extends JavaPlugin {
 
     @Override
     public void onDisable(){
-        this.instance = null;
+        instance = null;
     }
 
     public SQLManager getSqlManager() {

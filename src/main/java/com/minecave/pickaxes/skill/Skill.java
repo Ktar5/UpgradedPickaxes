@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.skill;
 
-import com.tadahtech.pub.pitem.PItem;
+import com.minecave.pickaxes.pitem.PItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 

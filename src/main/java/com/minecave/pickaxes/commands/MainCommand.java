@@ -1,9 +1,9 @@
 package com.minecave.pickaxes.commands;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.menu.menus.MainMenu;
-import com.tadahtech.pub.pitem.Pickaxe;
-import com.tadahtech.pub.utils.Message;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.menu.menus.MainMenu;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.utils.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

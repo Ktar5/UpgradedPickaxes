@@ -1,9 +1,10 @@
 package com.minecave.pickaxes.utils;
 
-import com.tadahtech.pub.items.ItemBuilder;
-import com.tadahtech.pub.menu.Menu.FillerButton;
-import com.tadahtech.pub.pitem.Pickaxe;
-import com.tadahtech.pub.pitem.Sword;
+import com.minecave.pickaxes.items.ItemBuilder;
+import com.minecave.pickaxes.menu.Menu;
+import com.minecave.pickaxes.menu.Menu.FillerButton;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.pitem.Sword;
 import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 public class Utils {
 
-    public static FillerButton BLACK;
+    public static Menu.FillerButton BLACK;
     public static FillerButton RED;
     public static FillerButton GREEN;
     public static FillerButton BLUE;

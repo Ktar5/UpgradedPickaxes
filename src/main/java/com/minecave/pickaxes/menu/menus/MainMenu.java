@@ -1,11 +1,11 @@
 package com.minecave.pickaxes.menu.menus;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.items.ItemBuilder;
-import com.tadahtech.pub.menu.Button;
-import com.tadahtech.pub.menu.Menu;
-import com.tadahtech.pub.pitem.PItem;
-import com.tadahtech.pub.utils.Utils;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.items.ItemBuilder;
+import com.minecave.pickaxes.menu.Button;
+import com.minecave.pickaxes.menu.Menu;
+import com.minecave.pickaxes.pitem.PItem;
+import com.minecave.pickaxes.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

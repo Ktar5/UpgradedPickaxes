@@ -1,16 +1,15 @@
 package com.minecave.pickaxes.config;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.builder.FireworkBuilder;
-import com.tadahtech.pub.drops.BlockDrop;
-import com.tadahtech.pub.drops.BlockValues;
-import com.tadahtech.pub.drops.MobDrop;
-import com.tadahtech.pub.level.Level;
-import com.tadahtech.pub.level.LevelGenerator;
-import com.tadahtech.pub.menu.menus.*;
-import com.tadahtech.pub.skill.skills.Bomber;
-import com.tadahtech.pub.skill.skills.Earthquake;
-import com.tadahtech.pub.skill.skills.Lightning;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.drops.BlockDrop;
+import com.minecave.pickaxes.drops.BlockValues;
+import com.minecave.pickaxes.drops.MobDrop;
+import com.minecave.pickaxes.level.Level;
+import com.minecave.pickaxes.level.LevelGenerator;
+import com.minecave.pickaxes.menu.menus.*;
+import com.minecave.pickaxes.skill.skills.Bomber;
+import com.minecave.pickaxes.skill.skills.Earthquake;
+import com.minecave.pickaxes.skill.skills.Lightning;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

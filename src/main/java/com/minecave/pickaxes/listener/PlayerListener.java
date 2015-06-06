@@ -1,7 +1,7 @@
 package com.minecave.pickaxes.listener;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.sql.PlayerInfo;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.sql.PlayerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

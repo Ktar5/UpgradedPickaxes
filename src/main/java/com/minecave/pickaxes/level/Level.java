@@ -1,11 +1,9 @@
 package com.minecave.pickaxes.level;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.builder.FireworkBuilder;
-import com.tadahtech.pub.builder.MessageBuilder;
-import com.tadahtech.pub.builder.MessageBuilder.IntegerType;
-import com.tadahtech.pub.pitem.PItem;
-import com.tadahtech.pub.utils.Title;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.builder.MessageBuilder;
+import com.minecave.pickaxes.pitem.PItem;
+import com.minecave.pickaxes.utils.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -52,28 +50,28 @@ public class Level {
         for (String s : LEVEL_UP_MESSAGE) {
             MessageBuilder builder = new MessageBuilder(s);
             builder.replace(player)
-              .replace(rep, IntegerType.PLAYER_LEVEL)
-              .replace(next.xp, IntegerType.NEXT_XP)
-              .replace(next.rep, IntegerType.NEXT_LEVEL)
-              .replace(0, IntegerType.XP)
+              .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
+              .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
+              .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
+              .replace(0, MessageBuilder.IntegerType.XP)
               .replace(pItem);
             messages.add(builder.build());
         }
         String[] to = messages.toArray(new String[messages.size()]);
         String title_line1 = new MessageBuilder(plugin.getConfigValues().getTitleLine1())
           .replace(player)
-          .replace(rep, IntegerType.PLAYER_LEVEL)
-          .replace(next.xp, IntegerType.NEXT_XP)
-          .replace(next.rep, IntegerType.NEXT_LEVEL)
-          .replace(0, IntegerType.XP)
+          .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
+          .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
+          .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
+          .replace(0, MessageBuilder.IntegerType.XP)
           .replace(pItem)
           .build();
         String title_line2 = new MessageBuilder(plugin.getConfigValues().getTitleLine2())
           .replace(player)
-          .replace(rep, IntegerType.PLAYER_LEVEL)
-          .replace(next.xp, IntegerType.NEXT_XP)
-          .replace(next.rep, IntegerType.NEXT_LEVEL)
-          .replace(0, IntegerType.XP)
+          .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
+          .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
+          .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
+          .replace(0, MessageBuilder.IntegerType.XP)
           .replace(pItem)
           .build();
         Title title = new Title(title_line1, title_line2);

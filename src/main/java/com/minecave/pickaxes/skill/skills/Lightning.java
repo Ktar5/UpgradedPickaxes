@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.skill.skills;
 
-import com.tadahtech.pub.skill.Skill;
+import com.minecave.pickaxes.skill.Skill;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

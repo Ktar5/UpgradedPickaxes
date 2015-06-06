@@ -1,8 +1,8 @@
 package com.minecave.pickaxes.enchant.enchants;
 
-import com.tadahtech.pub.drops.BlockDrop;
-import com.tadahtech.pub.drops.MobDrop;
-import com.tadahtech.pub.enchant.PEnchant;
+import com.minecave.pickaxes.drops.BlockDrop;
+import com.minecave.pickaxes.drops.MobDrop;
+import com.minecave.pickaxes.enchant.PEnchant;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;

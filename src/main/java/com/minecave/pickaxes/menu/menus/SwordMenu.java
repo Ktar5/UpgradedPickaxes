@@ -1,11 +1,11 @@
 package com.minecave.pickaxes.menu.menus;
 
-import com.tadahtech.pub.menu.Button;
-import com.tadahtech.pub.menu.InteractiveMenu;
-import com.tadahtech.pub.menu.Page;
-import com.tadahtech.pub.menu.buttons.SwordButton;
-import com.tadahtech.pub.pitem.Sword;
-import com.tadahtech.pub.sql.PlayerInfo;
+import com.minecave.pickaxes.menu.Button;
+import com.minecave.pickaxes.menu.InteractiveMenu;
+import com.minecave.pickaxes.menu.Page;
+import com.minecave.pickaxes.menu.buttons.SwordButton;
+import com.minecave.pickaxes.pitem.Sword;
+import com.minecave.pickaxes.sql.PlayerInfo;
 import org.bukkit.entity.Player;
 
 import java.util.*;

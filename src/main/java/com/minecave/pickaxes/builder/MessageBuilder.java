@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.builder;
 
-import com.tadahtech.pub.pitem.PItem;
+import com.minecave.pickaxes.pitem.PItem;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 

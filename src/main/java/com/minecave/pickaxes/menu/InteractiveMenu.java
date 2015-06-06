@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.menu;
 
-import com.tadahtech.pub.items.ItemBuilder;
+import com.minecave.pickaxes.items.ItemBuilder;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;

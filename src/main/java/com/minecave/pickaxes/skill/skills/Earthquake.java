@@ -1,7 +1,7 @@
 package com.minecave.pickaxes.skill.skills;
 
-import com.tadahtech.pub.PickaxesRevamped;
-import com.tadahtech.pub.skill.Skill;
+import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.skill.Skill;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;

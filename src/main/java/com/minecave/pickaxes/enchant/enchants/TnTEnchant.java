@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.enchant.enchants;
 
-import com.tadahtech.pub.enchant.PEnchant;
+import com.minecave.pickaxes.enchant.PEnchant;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

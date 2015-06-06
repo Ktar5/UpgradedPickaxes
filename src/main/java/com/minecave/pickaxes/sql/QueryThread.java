@@ -1,6 +1,6 @@
 package com.minecave.pickaxes.sql;
 
-import com.tadahtech.pub.*;
+import com.minecave.pickaxes.PickaxesRevamped;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

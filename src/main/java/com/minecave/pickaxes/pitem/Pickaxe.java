@@ -1,9 +1,9 @@
 package com.minecave.pickaxes.pitem;
 
-import com.tadahtech.pub.drops.BlockValues;
-import com.tadahtech.pub.enchant.PEnchant;
-import com.tadahtech.pub.level.Level;
-import com.tadahtech.pub.skill.Skill;
+import com.minecave.pickaxes.drops.BlockValues;
+import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.level.Level;
+import com.minecave.pickaxes.skill.Skill;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
