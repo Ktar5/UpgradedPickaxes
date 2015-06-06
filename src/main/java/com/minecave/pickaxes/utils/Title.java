@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Minecraft 1.8 Title
@@ -15,6 +16,10 @@ import java.util.Map;
  * @version 1.1.0
  * @author Maxim Van de Wynckel
  */
+/*
+Deprecated because holy shit this thing was coded poorly.
+ */
+@Deprecated
 public class Title {
     /* Title packet */
     private Class<?> packetTitle;
@@ -35,7 +40,7 @@ public class Title {
     private int fadeOutTime = -1;
     private boolean ticks = false;
 
-    private static final Map<Class<?>, Class<?>> CORRESPONDING_TYPES = new HashMap<Class<?>, Class<?>>();
+    private static final Map<Class<?>, Class<?>> CORRESPONDING_TYPES = new HashMap<>();
 
     /**
      * Create a new 1.8 title
@@ -256,7 +261,7 @@ public class Title {
                 packet = packetTitle.getConstructor(packetActions,
                     chatBaseComponent).newInstance(actions[0], serialized);
                 sendPacket.invoke(connection, packet);
-                if (subtitle != "") {
+                if (!Objects.equals(subtitle, "")) {
                     // Send subtitle if present
                     serialized = getMethod(nmsChatSerializer, "a", String.class)
                         .invoke(null,
@@ -366,8 +371,7 @@ public class Title {
 
     private String getVersion() {
         String name = Bukkit.getServer().getClass().getPackage().getName();
-        String version = name.substring(name.lastIndexOf('.') + 1) + ".";
-        return version;
+        return name.substring(name.lastIndexOf('.') + 1) + ".";
     }
 
     private Class<?> getNMSClass(String className) {

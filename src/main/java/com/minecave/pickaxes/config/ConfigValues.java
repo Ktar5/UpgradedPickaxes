@@ -1,6 +1,7 @@
 package com.minecave.pickaxes.config;
 
 import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.builder.FireworkBuilder;
 import com.minecave.pickaxes.drops.BlockDrop;
 import com.minecave.pickaxes.drops.BlockValues;
 import com.minecave.pickaxes.drops.MobDrop;

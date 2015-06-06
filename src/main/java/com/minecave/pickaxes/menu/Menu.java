@@ -103,8 +103,7 @@ public abstract class Menu {
         try {
             buttons[slot] = new FillerButton(new ItemStack(Material.AIR));
             update(player);
-        } catch (IndexOutOfBoundsException e) {
-            return;
+        } catch (IndexOutOfBoundsException ignored) {
         }
     }
 
@@ -112,8 +111,7 @@ public abstract class Menu {
         try {
             buttons[slot] = button;
             update(player);
-        } catch (IndexOutOfBoundsException e) {
-            return;
+        } catch (IndexOutOfBoundsException ignored) {
         }
     }
 

@@ -1,5 +1,7 @@
 package com.minecave.pickaxes.utils;
 
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -17,11 +19,11 @@ public class PacketUtil {
         EntityPlayer p = ((CraftPlayer) player).getHandle();
 
         if (text != null) {
-            p.playerConnection.sendPacket(new PacketPlayOutTitle(EnumTitleAction.TITLE, makeComponent(text)));
+            p.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, makeComponent(text)));
         }
 
         if (subtitle != null) {
-            p.playerConnection.sendPacket(new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, makeComponent(text)));
+            p.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, makeComponent(text)));
         }
     }
 
@@ -56,7 +58,7 @@ public class PacketUtil {
     }
 
     public static IChatBaseComponent makeComponent(String text) {
-        return ChatSerializer.a(convert(text));
+        return IChatBaseComponent.ChatSerializer.a(convert(text));
     }
 
     public static String convert(String text) {

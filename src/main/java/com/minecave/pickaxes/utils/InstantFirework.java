@@ -1,8 +1,12 @@
 package com.minecave.pickaxes.utils;
 
+import net.minecraft.server.v1_8_R3.EntityFireworks;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -23,12 +27,11 @@ public class InstantFirework extends EntityFireworks {
 
 
     @Override
-    public void s_() {
+    public boolean s_() {
         if (gone) {
-            return;
+            return false;
         }
-
-        if (!this.world.isStatic) {
+        if (!this.world.isStatic) {/*The fuck is this?*/ //TODO
             this.gone = true;
 
             if (players != null) {
@@ -42,6 +45,7 @@ public class InstantFirework extends EntityFireworks {
                 this.die();
             }
         }
+        return false;
     }
 
     public static void spawn(Location location, FireworkEffect effect, Player... players) {

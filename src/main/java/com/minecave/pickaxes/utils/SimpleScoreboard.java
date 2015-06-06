@@ -174,8 +174,7 @@ public class SimpleScoreboard {
     }
 
     public void reset() {
-        for (Team t : teams)
-            t.unregister();
+        teams.forEach(org.bukkit.scoreboard.Team::unregister);
         teams.clear();
         scores.clear();
     }

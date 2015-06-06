@@ -129,9 +129,7 @@ public class Utils {
     }
 
     public static String locToString(Location location) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(location.getWorld().getName()).append(",").append(location.getBlockX()).append(",").append(location.getBlockY()).append(",").append(location.getBlockZ()).append(",").append(location.getYaw()).append(",").append(location.getPitch());
-        return builder.toString();
+        return location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + "," + location.getYaw() + "," + location.getPitch();
     }
 
     public static Location locFromString(String s) {
