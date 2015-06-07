@@ -31,7 +31,7 @@ public class InstantFirework extends EntityFireworks {
         if (gone) {
             return false;
         }
-        if (!this.world.isStatic) {/*The fuck is this?*/ //TODO
+        if (!this.world.isClientSide) {
             this.gone = true;
 
             if (players != null) {
