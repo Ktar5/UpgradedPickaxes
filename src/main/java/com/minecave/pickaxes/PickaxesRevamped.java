@@ -31,6 +31,7 @@ public class PickaxesRevamped extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
         this.configValues = new ConfigValues(getConfig());
+        configValues.init();
         new PItemListener();
         new PlayerListener();
         new MenuListener();
@@ -49,11 +50,6 @@ public class PickaxesRevamped extends JavaPlugin {
         this.sqlManager = new SQLManager(host, db, user, pass, port);
         getCommand("pick").setExecutor(new MainCommand());
         getCommand("givePick").setExecutor(new PickaxeCommand());
-    }
-
-    @Override
-    public void onDisable(){
-        instance = null;
     }
 
     public SQLManager getSqlManager() {

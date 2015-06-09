@@ -40,6 +40,9 @@ public class ConfigValues {
 
     public ConfigValues(FileConfiguration config) {
         this.config = config;
+    }
+
+    public void init() {
         load();
         loadDrops();
         loadMenus();
@@ -55,7 +58,6 @@ public class ConfigValues {
         ConfigurationSection firework = config.getConfigurationSection("cosmetics.firework");
         boolean perLevel = firework.getBoolean("determinePerLevel");
         boolean enabled = firework.getBoolean("enabled");
-        new LevelGenerator(levelConfig, perLevel);
         if(enabled) {
             if(!perLevel) {
                 this.fireworkBuilder = new FireworkBuilder();
@@ -70,6 +72,7 @@ public class ConfigValues {
                 this.fireworkBuilder.trail(firework.getBoolean("trail"));
                 this.fireworkBuilder.flicker(firework.getBoolean("flicker"));
             }
+            new LevelGenerator(levelConfig, perLevel);
         }
     }
 
@@ -113,8 +116,8 @@ public class ConfigValues {
         FileConfiguration config = config("menus");
         this.mainMenu = new MainMenu(color(config.getString("mainMenu")));
         this.skillsMenu = new SkillsMenu(color(config.getString("skillsMenu")));
-        this.upgradesMenu = new UpgradesMenu(color(config.getString("upgradeMnu")));
-        this.pickMenu = new PickMenu(color(config.getString("pickMenu")));
+        this.upgradesMenu = new UpgradesMenu(color(config.getString("upgradeMenu")));
+        this.pickMenu = new PickMenu(color(config.getString("pickaxeMenu")));
         this.swordMenu = new SwordMenu(color(config.getString("swordMenu")));
     }
 
@@ -141,7 +144,12 @@ public class ConfigValues {
     }
 
     private FileConfiguration config(String file) {
-        return YamlConfiguration.loadConfiguration(new File(PickaxesRevamped.getInstance().getDataFolder(), file + ".yml"));
+        file += ".yml";
+        File f = new File(PickaxesRevamped.getInstance().getDataFolder(), file);
+        if(!f.exists()) {
+            PickaxesRevamped.getInstance().saveResource(file, true);
+        }
+        return YamlConfiguration.loadConfiguration(f);
     }
 
     private String color(String s) {

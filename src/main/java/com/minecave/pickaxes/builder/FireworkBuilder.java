@@ -63,26 +63,26 @@ public class FireworkBuilder {
     }
 
     public FireworkBuilder addColor(String color) {
-        DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase());
-        if (dyeColor == null) {
+        if (color.equalsIgnoreCase("RANDOM")) {
             if (!color.equalsIgnoreCase("RANDOM")) {
                 PickaxesRevamped.getInstance().getLogger().warning("Tried building a firework, but the Color String: " + color + " is not known!");
                 return this;
             }
             return this.addColor(Color.fromRGB(RANDOM.nextInt(255), RANDOM.nextInt(255), RANDOM.nextInt(255)));
         }
+        DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase());
         return this.addColor(dyeColor.getFireworkColor());
     }
 
     public FireworkBuilder addFadeColor(String color) {
-        DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase());
-        if (dyeColor == null) {
+        if (color.equalsIgnoreCase("RANDOM")) {
             if (!color.equalsIgnoreCase("RANDOM")) {
                 PickaxesRevamped.getInstance().getLogger().warning("Tried building a firework, but the Color String: " + color + " is not known!");
                 return this;
             }
             return this.addFadeColor(Color.fromRGB(RANDOM.nextInt(255), RANDOM.nextInt(255), RANDOM.nextInt(255)));
         }
+        DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase());
         return this.addFadeColor(dyeColor.getFireworkColor());
     }
 

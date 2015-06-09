@@ -28,7 +28,7 @@ public class SQLManager {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db, user, pass);
-            PreparedStatement statement = connection.prepareStatement("CREATE DATAVASE IF NOT EXISTS " + db);
+            PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + db);
             statement.execute();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -47,7 +47,7 @@ public class SQLManager {
           "`picks` longtext," +
           "`swords` longtext" +
           ")");
-        new QueryThread();
+//        new QueryThread();
     }
 
     public Connection getConnection() {
