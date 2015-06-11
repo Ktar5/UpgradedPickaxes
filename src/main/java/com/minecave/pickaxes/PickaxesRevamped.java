@@ -6,12 +6,16 @@ import com.minecave.pickaxes.config.ConfigValues;
 import com.minecave.pickaxes.listener.MenuListener;
 import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
+import com.minecave.pickaxes.skill.Skills;
+import com.minecave.pickaxes.sql.PlayerInfo;
 import com.minecave.pickaxes.sql.SQLManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * Created by Carter on 6/4/2015.
@@ -29,6 +33,7 @@ public class PickaxesRevamped extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        Skills.skills = new HashMap<>();
         saveDefaultConfig();
 
         attemptSaveResource("drops.yml");
@@ -53,6 +58,13 @@ public class PickaxesRevamped extends JavaPlugin {
         this.sqlManager = new SQLManager(host, db, user, pass, port);
         getCommand("pick").setExecutor(new MainCommand());
         getCommand("givePick").setExecutor(new PickaxeCommand());
+        Bukkit.getOnlinePlayers().forEach(sqlManager::init);
+    }
+
+    @Override
+    public void onDisable() {
+        Skills.skills = null;
+        PlayerInfo.getInfoMap().clear();
     }
 
     public void attemptSaveResource(String name) {

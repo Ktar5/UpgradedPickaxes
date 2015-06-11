@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class Skills {
 
-    private static Map<String, Skill> skills = new HashMap<>();
+    public static Map<String, Skill> skills = new HashMap<>();
 
     static {
         skills = new HashMap<>();
