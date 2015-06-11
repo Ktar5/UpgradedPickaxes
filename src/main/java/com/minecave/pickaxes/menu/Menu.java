@@ -39,6 +39,10 @@ public abstract class Menu {
         return menus.get(name);
     }
 
+    public void close(Player player) {
+        player.closeInventory();
+    }
+
     public void display(Player player) {
         this.buttons = fill(player);
         int size = (buttons.length + 8) / 9 * 9;
@@ -47,6 +51,7 @@ public abstract class Menu {
             Button burton = buttons[i];
             inventory.setItem(i, burton.getItem());
         }
+        player.closeInventory();
         player.openInventory(inventory);
     }
 

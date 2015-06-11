@@ -64,8 +64,13 @@ public abstract class PEnchant {
         this.level = level;
     }
 
-    public void incrementLevel(Player player, PItem pItem) {
+    public void increaseLevel(Player player, PItem pItem) {
+        if(level == maxLevel) {
+            player.sendMessage(ChatColor.RED + "That enchantment is already at maxLevel.");
+            return;
+        }
         this.setLevel(getLevel() + 1);
+        pItem.setPoints(pItem.getPoints() - getLevelCost(getLevelCost(level - 1)));
         pItem.update(player);
     }
 
@@ -84,4 +89,18 @@ public abstract class PEnchant {
     }
 
     public abstract String getTrueName();
+
+    public int getCost() {
+        return getLevelCost(this.level);
+    }
+
+    public void decreaseLevel(Player player, PItem pItem){
+        if(level == 0) {
+            player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
+            return;
+        }
+        this.setLevel(getLevel() - 1);
+        pItem.setPoints(pItem.getPoints() + getLevelCost(getLevelCost(level + 1)));
+        pItem.update(player);
+    }
 }

@@ -40,7 +40,7 @@ public class PickaxeCommand  implements CommandExecutor {
                     builder.name(name);
 
                     Pickaxe pickaxe = new Pickaxe(builder.build(), Level.ONE, 0, name, skill);
-                    pickaxe.getEnchant("luck").incrementLevel(player, pickaxe);
+                    pickaxe.getEnchant("luck").increaseLevel(player, pickaxe);
                     player.getInventory().addItem(pickaxe.getItemStack());
                     pickaxe.update(player);
                     break;
@@ -62,7 +62,7 @@ public class PickaxeCommand  implements CommandExecutor {
                     builder.name(name);
 
                     pickaxe = new Pickaxe(builder.build(), Level.ONE, 0, name, skill);
-                    pickaxe.getEnchant("luck").incrementLevel(other, pickaxe);
+                    pickaxe.getEnchant("luck").increaseLevel(other, pickaxe);
                     player.getInventory().addItem(pickaxe.getItemStack());
                     pickaxe.update(player);
                     break;

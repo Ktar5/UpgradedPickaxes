@@ -56,7 +56,7 @@ public class Pickaxe extends PItem {
 
     public void onBreak(BlockBreakEvent event) {
         blocksBroken++;
-        for(PEnchant enchant : this.getEnchants()) {
+        for(PEnchant enchant : this.getEnchants().values()) {
             enchant.activate(event);
         }
         int xp = 1;

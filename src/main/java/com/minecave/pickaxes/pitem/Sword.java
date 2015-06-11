@@ -42,7 +42,7 @@ public class Sword extends PItem {
     }
 
     public void onHit(EntityDamageByEntityEvent event) {
-        for(PEnchant enchant : this.getEnchants()) {
+        for(PEnchant enchant : this.getEnchants().values()) {
             enchant.activate(event);
         }
     }

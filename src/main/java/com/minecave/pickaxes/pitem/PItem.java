@@ -59,9 +59,9 @@ public abstract class PItem {
                 default:
                     NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.valueOf(s.toUpperCase());
                     NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.valueOf(s.toUpperCase());
-                    if (pick != null) {
+                    if (pick != null && (this instanceof Pickaxe)) {
                         this.addEnchant(new NormalEnchant(pick.getEnchantment()));
-                    } else if (sword != null) {
+                    } else if (sword != null && (this instanceof Sword)) {
                         this.addEnchant(new NormalEnchant(sword.getEnchantment()));
                     }
                     break;
