@@ -51,6 +51,7 @@ public class Bomber extends Skill {
                 for(int i = 0; i < amount; i++) {
                     Location loc = new Location(location.getWorld(), (Math.random() * 3) + x, (Math.random() * 2) + y, (Math.random() * 3) + z);
                     player.getInventory().addItem(loc.getBlock().getDrops().toArray(new ItemStack[loc.getBlock().getDrops().size()]));
+                    player.updateInventory();
                     loc.getBlock().setType(Material.AIR);
                     player.playSound(loc, Sound.EXPLODE, 1.0F, 1.0F);
                     player.playEffect(loc, Effect.LARGE_SMOKE, 1);

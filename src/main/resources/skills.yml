@@ -10,6 +10,11 @@ tnt:
   fuse: 2
   toSeconds: true
   maxBlocks: 10
+ice:
+  name: Ice Blast
+  cooldown: 20
+  radius: 5
+  levelUnlocked: 2
 lightning:
   name: Lightning
   cooldown: 20
