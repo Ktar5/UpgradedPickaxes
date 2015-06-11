@@ -27,6 +27,7 @@ public abstract class PItem {
     protected Skill skill;
 
     public PItem(ItemStack itemStack, String name) {
+        this(itemStack, Level.ONE, 0, name, null);
         this.itemStack = itemStack;
         this.xp = 0;
         this.name = name;
@@ -34,13 +35,12 @@ public abstract class PItem {
         this.level = Level.ONE;
     }
 
-    public PItem(ItemStack itemStack, Level level, int xp, List<PEnchant> enchants, String name, Skill skill) {
+    public PItem(ItemStack itemStack, Level level, int xp, String name, Skill skill) {
         this.level = level;
         this.xp = xp;
-        this.enchants = enchants;
         this.itemStack = itemStack;
         this.name = name;
-    this.skill = skill;
+        this.skill = skill;
     }
 
     public void addEnchant(PEnchant enchant, Player player) {

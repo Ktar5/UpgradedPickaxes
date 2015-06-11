@@ -11,6 +11,7 @@ import com.minecave.pickaxes.menu.menus.*;
 import com.minecave.pickaxes.skill.skills.Bomber;
 import com.minecave.pickaxes.skill.skills.Earthquake;
 import com.minecave.pickaxes.skill.skills.Lightning;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,6 +29,8 @@ public class ConfigValues {
     private FireworkBuilder fireworkBuilder;
     private String titleLine1, titleLine2;
     private FileConfiguration config;
+    @Getter
+    private FileConfiguration enchants;
     private List<Integer> blacklist;
     private MainPickMenu mainPickMenu;
     private MainSwordMenu mainSwordMenu;
@@ -75,6 +78,9 @@ public class ConfigValues {
             }
             new LevelGenerator(levelConfig, perLevel);
         }
+
+        enchants = config("enchants");
+
     }
 
     private void loadDrops() {

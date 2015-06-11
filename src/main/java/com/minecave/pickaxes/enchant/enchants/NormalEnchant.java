@@ -9,6 +9,7 @@
 package com.minecave.pickaxes.enchant.enchants;
 
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.pitem.PItem;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -16,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class NormalEnchant extends PEnchant {
 
+    @Getter
     private Enchantment enchantment;
 
     public NormalEnchant(Enchantment enchantment) {
@@ -25,12 +27,16 @@ public class NormalEnchant extends PEnchant {
 
     @Override
     public void activate(BlockBreakEvent event) {
-
+        //nothing this is just an object to manage the enchants more easily
     }
 
     @Override
     public void activate(EntityDamageByEntityEvent event) {
+        //nothing this is just an object to manage the enchants more easily
+    }
 
+    public void apply(PItem pItem) {
+        pItem.getItemStack().addEnchantment(enchantment, this.getLevel());
     }
 
     @Override

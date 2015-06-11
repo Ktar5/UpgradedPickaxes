@@ -37,6 +37,7 @@ public class PickaxesRevamped extends JavaPlugin {
         attemptSaveResource("sql.yml");
         attemptSaveResource("menus.yml");
         attemptSaveResource("skills.yml");
+        attemptSaveResource("enchants.yml");
 
         this.configValues = new ConfigValues(getConfig());
         configValues.init();

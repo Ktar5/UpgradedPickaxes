@@ -1,0 +1,57 @@
+#if normal mc enchantment is not listed it will have ingame max value of default mc
+## tnt
+## luck
+##
+## sharpness
+## fire_aspect
+## knockback
+## bane_of_arthropods
+## smite
+## looting
+## unbreaking
+## silk_touch
+## efficiency
+## fortune
+##
+#defaults to everything if this isnt set
+#must be lowercase
+availableEnchants:
+  - 'tnt'
+  - 'luck'
+  - 'fire_aspect'
+  - 'bane_of_arthropods'
+  - 'smite'
+  - 'looting'
+  - 'unbreaking'
+  - 'silk_touch'
+  - 'efficiency'
+  - 'fortune'
+
+tnt:
+  maxLevel: 10
+  #levelCosts defaults to 1 if has less than the maxLevel
+  levelCosts:
+    - 1
+    - 2
+    - 2
+    - 3
+    - 4
+    - 4
+    - 4
+    - 4
+    - 4
+    - 5
+luck:
+  maxLevel: 10
+  #levelCosts defaults to 1 if has less than the maxLevel
+  levelCosts:
+    - 1
+    - 2
+    - 2
+    - 3
+    - 4
+    - 4
+    - 4
+    - 4
+    - 4
+    - 5
