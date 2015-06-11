@@ -1,0 +1,9 @@
+````
+AttributeStorage storage = AttributeStorage.newTarget(stack, ID);
+                String name = storage.getData(null);
+
+AttributeStorage storage = AttributeStorage.newTarget(key.clone(), ID);
+            storage.setData(type.getName());
+
+storage.getTarget(); //retrieves the item
+````
