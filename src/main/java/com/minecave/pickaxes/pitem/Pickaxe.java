@@ -75,4 +75,8 @@ public class Pickaxe extends PItem {
         return ChatColor.AQUA + player.getName() + String.format("'s Diamond Pickaxe: Level: %d XP: %d Blocks: %d",
                 this.level.getId(), this.xp, this.blocksBroken);
     }
+
+    public void setBlocksBroken(int blocksBroken) {
+        this.blocksBroken = blocksBroken;
+    }
 }

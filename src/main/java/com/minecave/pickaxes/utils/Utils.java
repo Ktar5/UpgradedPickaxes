@@ -1,22 +1,21 @@
 package com.minecave.pickaxes.utils;
 
+import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.items.ItemBuilder;
+import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.menu.Menu;
 import com.minecave.pickaxes.menu.Menu.FillerButton;
+import com.minecave.pickaxes.pitem.PItem;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
+import com.minecave.pickaxes.skill.Skill;
+import com.minecave.pickaxes.skill.Skills;
+import com.minecave.pickaxes.utils.nbt.AttributeStorage;
 import org.bukkit.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Tim [calebbfmv]
@@ -55,58 +54,121 @@ public class Utils {
         return list;
     }
 
-    public static String serialSwords(List<Sword> inventory) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-
-            for (int i = 0; i < inventory.size(); i++) {
-                DataItem dataItem = new DataItem(i, inventory.get(i));
-                dataOutput.writeObject(dataItem);
+    public static byte[] serialSwords(List<Sword> inventory) {
+        ItemStack[] items = new ItemStack[inventory.size()];
+        int i = 0;
+        for (Sword p : inventory) {
+            ItemStack item = p.getItemStack();
+            Skill skill = p.getSkill();
+            int points = p.getPoints();
+            int level = p.getLevel().getId();
+            int xp = p.getXp();
+            Map<PEnchant, Integer> enchantMap = new HashMap<>();
+            for (PEnchant enchant : p.getEnchants().values()) {
+                enchantMap.put(enchant, enchant.getLevel());
             }
-
-            dataOutput.close();
-            return Base64Coder.encodeLines(outputStream.toByteArray());
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to save item stacks.", e);
+            AttributeStorage storage;
+            storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
+            storage.setData(skill.getName());
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
+            storage.setData(p.getName());
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
+            storage.setData(String.valueOf(points));
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
+            storage.setData(String.valueOf(level));
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
+            storage.setData(String.valueOf(xp));
+            for (Map.Entry<PEnchant, Integer> entry : enchantMap.entrySet()) {
+                storage = AttributeStorage.newTarget(storage.getTarget(),
+                        UUIDs.getUUIDFromString(entry.getKey().getTrueName()));
+                storage.setData(String.valueOf(entry.getValue()));
+            }
+            items[i++] = storage.getTarget();
         }
+        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
     }
 
-    public static String serialPicks(List<Pickaxe> inventory) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-
-            for (int i = 0; i < inventory.size(); i++) {
-                DataItem dataItem = new DataItem(i, inventory.get(i));
-                dataOutput.writeObject(dataItem);
+    public static byte[] serialPicks(List<Pickaxe> inventory) {
+        ItemStack[] items = new ItemStack[inventory.size()];
+        int i = 0;
+        for (Pickaxe p : inventory) {
+            ItemStack item = p.getItemStack();
+            Skill skill = p.getSkill();
+            int blocks = p.getBlocksBroken();
+            int points = p.getPoints();
+            int level = p.getLevel().getId();
+            int xp = p.getXp();
+            Map<PEnchant, Integer> enchantMap = new HashMap<>();
+            for (PEnchant enchant : p.getEnchants().values()) {
+                enchantMap.put(enchant, enchant.getLevel());
             }
-
-            dataOutput.close();
-            return Base64Coder.encodeLines(outputStream.toByteArray());
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to save item stacks.", e);
+            AttributeStorage storage;
+            storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
+            storage.setData(skill.getName());
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
+            storage.setData(p.getName());
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
+            storage.setData(String.valueOf(blocks));
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
+            storage.setData(String.valueOf(points));
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
+            storage.setData(String.valueOf(level));
+            storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
+            storage.setData(String.valueOf(xp));
+            for (Map.Entry<PEnchant, Integer> entry : enchantMap.entrySet()) {
+                storage = AttributeStorage.newTarget(storage.getTarget(),
+                        UUIDs.getUUIDFromString(entry.getKey().getTrueName()));
+                storage.setData(String.valueOf(entry.getValue()));
+            }
+            items[i++] = storage.getTarget();
         }
+        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
     }
 
-    public static DataItem[] deserializeInventory(String data) {
-        try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
-            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-
-            List<DataItem> items = new ArrayList<>();
-
-            while (dataInput.readObject() != null) {
-                items.add((DataItem) dataInput.readObject());
-            }
-
-            dataInput.close();
-            return items.toArray(new DataItem[items.size()]);
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+    public static Pickaxe deserializePick(ItemStack item) {
+        AttributeStorage storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("name"));
+        String name = storage.getData("name");
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
+        Skill skill = Skills.getSkill(storage.getData(null));
+        Pickaxe pick = new Pickaxe(item, Level.ONE, 0, name, skill);
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
+        pick.setBlocksBroken(Integer.parseInt(storage.getData("0")));
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
+        pick.setPoints(Integer.parseInt(storage.getData("0")));
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
+        pick.setLevel(Integer.parseInt(storage.getData("1")));
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
+        pick.setXP(Integer.parseInt(storage.getData("0")));
+        for (PEnchant enchant : pick.getEnchants().values()) {
+            storage = AttributeStorage.newTarget(storage.getTarget(),
+                    UUIDs.getUUIDFromString(enchant.getTrueName()));
+            enchant.setLevel(Integer.parseInt(storage.getData("0")));
         }
+        return pick;
+    }
 
-        return null;
+    public static Sword deserializeSword(ItemStack item) {
+        AttributeStorage storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("name"));
+        String name = storage.getData("name");
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
+        Skill skill = Skills.getSkill(storage.getData(null));
+        Sword sword = new Sword(item, Level.ONE, 0, name, skill);
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
+        sword.setPoints(Integer.parseInt(storage.getData("0")));
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
+        sword.setLevel(Integer.parseInt(storage.getData("1")));
+        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
+        sword.setXP(Integer.parseInt(storage.getData("0")));
+        for (PEnchant enchant : sword.getEnchants().values()) {
+            storage = AttributeStorage.newTarget(storage.getTarget(),
+                    UUIDs.getUUIDFromString(enchant.getTrueName()));
+            enchant.setLevel(Integer.parseInt(storage.getData("0")));
+        }
+        return sword;
+    }
+
+    public static Inventory deserializeInventory(byte[] data) {
+        return ItemSerialization.fromBlob(data);
     }
 
 
@@ -183,55 +245,55 @@ public class Utils {
 
     public static String toRoman(int i) {
         StringBuilder builder = new StringBuilder();
-        while(i >= 1000) {
+        while (i >= 1000) {
             builder.append("M");
             i -= 1000;
         }
-        while(i >= 900) {
+        while (i >= 900) {
             builder.append("CM");
             i -= 900;
         }
-        while(i >= 500) {
+        while (i >= 500) {
             builder.append("D");
             i -= 500;
         }
-        while(i >= 400) {
+        while (i >= 400) {
             builder.append("CD");
             i -= 400;
         }
-        while(i >= 100) {
+        while (i >= 100) {
             builder.append("C");
             i -= 100;
         }
-        while(i >= 90) {
+        while (i >= 90) {
             builder.append("XC");
-            i =- 90;
+            i = -90;
         }
-        while(i >= 50) {
+        while (i >= 50) {
             builder.append("L");
             i -= 50;
         }
-        while(i >= 40) {
+        while (i >= 40) {
             builder.append("XL");
             i -= 40;
         }
-        while(i >= 10) {
+        while (i >= 10) {
             builder.append("X");
             i -= 10;
         }
-        while(i >= 9) {
+        while (i >= 9) {
             builder.append("IX");
             i -= 9;
         }
-        while(i >= 5) {
+        while (i >= 5) {
             builder.append("V");
-            i-= 5;
+            i -= 5;
         }
-        while(i >= 4) {
+        while (i >= 4) {
             builder.append("IV");
             i -= 4;
         }
-        while(i >= 1) {
+        while (i >= 1) {
             builder.append("I");
             i--;
         }

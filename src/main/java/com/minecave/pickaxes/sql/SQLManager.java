@@ -6,6 +6,8 @@ import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.utils.DataItem;
 import com.minecave.pickaxes.utils.Utils;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
@@ -44,8 +46,8 @@ public class SQLManager {
         QueryThread.addQuery("CREATE TABLE IF NOT EXISTS `player_info`" +
           "(" +
           "`player` varchar(64) PRIMARY KEY NOT NULL, " +
-          "`picks` longtext," +
-          "`swords` longtext" +
+          "`picks` BLOB," +
+          "`swords` BLOB" +
           ")");
 //        new QueryThread();
     }
@@ -96,22 +98,18 @@ public class SQLManager {
                 ResultSet res = getResultSet(query);
                 try {
                     if(res.next()) {
-                        DataItem[] swords = Utils.deserializeInventory(res.getString("swords"));
-                        if(swords == null) {
-                            swords = new DataItem[45];
-                        }
-                        DataItem[] picks = Utils.deserializeInventory(res.getString("picks"));
-                        if(picks == null) {
-                            picks = new DataItem[45];
-                        }
+                        Inventory swords = Utils.deserializeInventory(res.getBytes("swords"));
+                        Inventory picks = Utils.deserializeInventory(res.getBytes("picks"));
                         List<Sword> swordList = new ArrayList<>();
                         List<Pickaxe> pickaxes = new ArrayList<>();
-                        for(DataItem dataItem : swords) {
-                            if(dataItem == null) {
-                                continue;
+                        if(swords != null) {
+                            for(ItemStack stack : swords.getContents()) {
+                                if(dataItem == null) {
+                                    continue;
+                                }
+                                Sword sword = (Sword) dataItem.getItemStack();
+                                swordList.set(dataItem.getSlot(), sword);
                             }
-                            Sword sword = (Sword) dataItem.getItemStack();
-                            swordList.set(dataItem.getSlot(), sword);
                         }
                         for(DataItem dataItem : picks) {
                             if(dataItem == null) {
@@ -133,8 +131,8 @@ public class SQLManager {
         List<Sword> swords = info.getSwords();
         List<Pickaxe> pickaxes = info.getPickaxes();
         UUID uuid = info.getPlayer().getUniqueId();
-        String swordData = Utils.serialSwords(swords);
-        String pickData = Utils.serialPicks(pickaxes);
+        byte[] swordData = Utils.serialSwords(swords);
+        byte[] pickData = Utils.serialPicks(pickaxes);
         String query = "INSERT INTO `player_info` VALUES ('" + uuid.toString() + "', '" + swordData + "', '" + pickData + "') " +
           "ON DUPLICATE KEY UPDATE `swords` ='" + swordData + "', `picks` ='" + pickData + "'";
         QueryThread.addQuery(query);

@@ -74,6 +74,16 @@ public abstract class PEnchant {
         pItem.update(player);
     }
 
+    public void decreaseLevel(Player player, PItem pItem){
+        if(level == 0) {
+            player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
+            return;
+        }
+        this.setLevel(getLevel() - 1);
+        pItem.setPoints(pItem.getPoints() + getLevelCost(getLevelCost(level + 1)));
+        pItem.update(player);
+    }
+
     public void loadConfig(String key) {
         FileConfiguration config = PickaxesRevamped.getInstance().getConfigValues().getEnchants();
         if (config.contains(key + ".maxLevel")) {
@@ -94,13 +104,4 @@ public abstract class PEnchant {
         return getLevelCost(this.level);
     }
 
-    public void decreaseLevel(Player player, PItem pItem){
-        if(level == 0) {
-            player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
-            return;
-        }
-        this.setLevel(getLevel() - 1);
-        pItem.setPoints(pItem.getPoints() + getLevelCost(getLevelCost(level + 1)));
-        pItem.update(player);
-    }
 }

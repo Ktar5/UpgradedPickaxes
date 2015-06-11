@@ -36,6 +36,7 @@ public class NormalEnchant extends PEnchant {
     }
 
     public void apply(PItem pItem) {
+        pItem.getItemStack().removeEnchantment(enchantment);
         pItem.getItemStack().addEnchantment(enchantment, this.getLevel());
     }
 

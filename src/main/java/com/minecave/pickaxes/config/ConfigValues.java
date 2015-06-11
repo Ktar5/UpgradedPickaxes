@@ -8,6 +8,7 @@ import com.minecave.pickaxes.drops.MobDrop;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.level.LevelGenerator;
 import com.minecave.pickaxes.menu.menus.*;
+import com.minecave.pickaxes.skill.Skills;
 import com.minecave.pickaxes.skill.skills.Bomber;
 import com.minecave.pickaxes.skill.skills.Earthquake;
 import com.minecave.pickaxes.skill.skills.Ice;
@@ -134,17 +135,21 @@ public class ConfigValues {
 
         ConfigurationSection eq = config.getConfigurationSection("earthquake");
         this.earthquake = new Earthquake(eq.getInt("radius"), color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("level"));
+        Skills.add("earthquake", this.earthquake);
 
         ConfigurationSection ice = config.getConfigurationSection("ice");
         this.ice = new Ice(color(ice.getString("name")), ice.getInt("cooldown"), ice.getInt("level"), ice.getInt("radius"));
+        Skills.add("ice", this.ice);
 
         ConfigurationSection tnt = config.getConfigurationSection("tnt");
         this.bomber = new Bomber(color(tnt.getString("name")), tnt.getInt("cooldown"), tnt.getInt("level"),
                 tnt.getInt("maxBlocks"), tnt.getInt("fuse"), tnt.getBoolean("toSeconds"));
+        Skills.add("bomber", this.bomber);
 
         ConfigurationSection light = config.getConfigurationSection("lightning");
         this.lightning = new Lightning(color(light.getString("name")), light.getInt("cooldown"), light.getInt("level"),
                 light.getInt("depth"), light.getInt("distance"));
+        Skills.add("lightning", this.lightning);
     }
 
     public void loadXp() {

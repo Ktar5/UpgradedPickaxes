@@ -34,6 +34,7 @@ public abstract class PItem {
     protected ItemStack itemStack;
     protected String name;
     protected Skill skill;
+    private int XP;
 
     public PItem(ItemStack itemStack, String name) {
         this(itemStack, Level.ONE, 0, name, null);
@@ -125,6 +126,12 @@ public abstract class PItem {
         }
         lore.add(builder.toString());
         meta.setLore(lore);
+        boolean sword = this instanceof Sword;
+        name = ChatColor.AQUA + player.getName() + "'s Diamond " +
+                (sword ? "Sword" : "Pickaxe") +
+                ": Level: " + level + " XP: " + xp +
+                (sword ? "" : (" Blocks: " + ((Pickaxe) this).getBlocksBroken()));
+        meta.setDisplayName(this.name);
         item.setItemMeta(meta);
         player.getInventory().setItem(slot, item);
         if (this instanceof Pickaxe) {
@@ -178,9 +185,20 @@ public abstract class PItem {
     }
 
     public PEnchant getEnchant(String enchant) {
-        if(!this.enchants.containsKey(enchant)) {
+        if (!this.enchants.containsKey(enchant)) {
             throw new IllegalArgumentException("No Enchantment with that name");
         }
         return this.enchants.get(enchant);
+    }
+
+    public void setLevel(int level) {
+        this.level = Level.ONE;
+        for (int i = 1; i < level; i++) {
+            this.level = this.level.getNext();
+        }
+    }
+
+    public void setXP(int XP) {
+        this.XP = XP;
     }
 }

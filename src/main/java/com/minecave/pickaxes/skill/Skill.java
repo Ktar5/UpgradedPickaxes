@@ -50,4 +50,8 @@ public abstract class Skill {
     public int getLevel() {
         return level;
     }
+
+    public String getName() {
+        return name;
+    }
 }
