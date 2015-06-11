@@ -7,9 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Timothy Andis
  */
@@ -18,7 +15,6 @@ public abstract class PEnchant {
     private String name;
     private int level;
     private boolean inUse;
-    private static Map<String, PEnchant> enchants = new HashMap<>();
 
     public PEnchant(String name) {
         this.name = name;
@@ -26,7 +22,6 @@ public abstract class PEnchant {
         this.level = 1;
         name = ChatColor.stripColor(name);
         name = name.toLowerCase();
-        enchants.put(name, this);
     }
 
     public abstract void activate(BlockBreakEvent event);

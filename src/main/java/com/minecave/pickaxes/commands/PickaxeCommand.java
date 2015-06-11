@@ -39,9 +39,10 @@ public class PickaxeCommand  implements CommandExecutor {
         enchants.add(new LuckEnchant());
         Skill skill = PickaxesRevamped.getInstance().getConfigValues().getEarthquake();
         ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
-        builder.name(ChatColor.AQUA + "Diamond Pickaxe");
+        String name = ChatColor.AQUA + player.getName() + "'s Diamond Pickaxe: Level: 1 XP: 0 Blocks: 0";
+        builder.name(name);
 
-        Pickaxe pickaxe = new Pickaxe(builder.build(), Level.ONE, 0, enchants, ChatColor.AQUA + player.getName() + "'s Diamond Pickaxe: Level: 1 XP: 0", skill);
+        Pickaxe pickaxe = new Pickaxe(builder.build(), Level.ONE, 0, enchants, name, skill);
         player.getInventory().addItem(pickaxe.getItemStack());
         pickaxe.update(player);
 

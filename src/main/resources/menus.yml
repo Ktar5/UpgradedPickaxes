@@ -1,4 +1,5 @@
-mainMenu: '&eMain Menu'
+mainPickMenu: '&eMain Pick Menu'
+mainSwordMenu: '&eMain Sword Menu'
 skillsMenu: '&eSkills Menu'
 pickaxeMenu: '&ePick Menu'
 swordMenu: '&eSword Menu'

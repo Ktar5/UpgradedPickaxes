@@ -4,25 +4,18 @@ import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.items.ItemBuilder;
 import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
-import com.minecave.pickaxes.pitem.PItem;
 import com.minecave.pickaxes.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 /**
  * @author Timothy Andis
  */
-public class MainMenu extends Menu {
+public class MainPickMenu extends Menu {
 
-    public static Map<UUID, PItem> ITEMS = new HashMap<>();
-
-    public MainMenu(String name) {
+    public MainPickMenu(String name) {
         super(name);
     }
 

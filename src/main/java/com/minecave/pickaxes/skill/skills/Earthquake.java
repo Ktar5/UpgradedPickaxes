@@ -20,8 +20,9 @@ public class Earthquake extends Skill {
     private int radius;
     private  Random random = new Random();
 
-    public Earthquake(String name, long cooldown, int level) {
+    public Earthquake(int radius, String name, long cooldown, int level) {
         super(name, cooldown, level);
+        this.radius = radius;
     }
 
     @Override
@@ -39,6 +40,8 @@ public class Earthquake extends Skill {
                 fallingBlock.setVelocity(new Vector(Math.random() * 4.1, (random.nextInt(3) * Math.random()), Math.random() * 4.1));
                 fallingBlock.setDropItem(false);
                 fallingBlock.setMetadata("custom", new FixedMetadataValue(PickaxesRevamped.getInstance(), ""));
+                //not sure if they want this
+                block.getBlock().setType(Material.AIR);
             }
         }
         this.add(player);

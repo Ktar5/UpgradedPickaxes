@@ -29,7 +29,8 @@ public class ConfigValues {
     private String titleLine1, titleLine2;
     private FileConfiguration config;
     private List<Integer> blacklist;
-    private MainMenu mainMenu;
+    private MainPickMenu mainPickMenu;
+    private MainSwordMenu mainSwordMenu;
     private SkillsMenu skillsMenu;
     private PickMenu pickMenu;
     private SwordMenu swordMenu;
@@ -114,7 +115,8 @@ public class ConfigValues {
 
     public void loadMenus() {
         FileConfiguration config = config("menus");
-        this.mainMenu = new MainMenu(color(config.getString("mainMenu")));
+        this.mainPickMenu = new MainPickMenu(color(config.getString("mainPickMenu")));
+        this.mainSwordMenu = new MainSwordMenu(color(config.getString("mainSwordMenu")));
         this.skillsMenu = new SkillsMenu(color(config.getString("skillsMenu")));
         this.upgradesMenu = new UpgradesMenu(color(config.getString("upgradeMenu")));
         this.pickMenu = new PickMenu(color(config.getString("pickaxeMenu")));
@@ -124,7 +126,7 @@ public class ConfigValues {
     public void loadSkills() {
         FileConfiguration config = config("skills");
         ConfigurationSection eq = config.getConfigurationSection("earthquake");
-        this.earthquake = new Earthquake(color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("level"));
+        this.earthquake = new Earthquake(eq.getInt("radius"), color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("level"));
         ConfigurationSection tnt = config.getConfigurationSection("tnt");
         this.bomber = new Bomber(color(tnt.getString("name")), tnt.getInt("cooldown"), tnt.getInt("level"),
           tnt.getInt("maxBlocks"),  tnt.getInt("fuse"), tnt.getBoolean("toSeconds"));
@@ -180,8 +182,8 @@ public class ConfigValues {
         return config;
     }
 
-    public MainMenu getMainMenu() {
-        return mainMenu;
+    public MainPickMenu getMainPickMenu() {
+        return mainPickMenu;
     }
 
     public SkillsMenu getSkillsMenu() {
@@ -210,5 +212,9 @@ public class ConfigValues {
 
     public Bomber getBomber() {
         return bomber;
+    }
+
+    public MainSwordMenu getMainSwordMenu() {
+        return mainSwordMenu;
     }
 }

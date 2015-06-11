@@ -30,26 +30,34 @@ public class PickaxesRevamped extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+
+        attemptSaveResource("drops.yml");
+        attemptSaveResource("levels.yml");
+        attemptSaveResource("xp.yml");
+        attemptSaveResource("sql.yml");
+        attemptSaveResource("menus.yml");
+        attemptSaveResource("skills.yml");
+
         this.configValues = new ConfigValues(getConfig());
         configValues.init();
         new PItemListener();
         new PlayerListener();
         new MenuListener();
-        saveResource("drops.yml", false);
-        saveResource("levels.yml", false);
-        saveResource("xp.yml", false);
-        saveResource("sql.yml", false);
-        saveResource("menus.yml", false);
-        saveResource("skills.yml", false);
         FileConfiguration section = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "sql.yml"));
         String host = section.getString("host");
         String user = section.getString("user");
         String db = section.getString("db-name");
-        String pass = section.getString("pass");
+        String pass = section.getString("password");
         int port = section.getInt("port");
         this.sqlManager = new SQLManager(host, db, user, pass, port);
         getCommand("pick").setExecutor(new MainCommand());
         getCommand("givePick").setExecutor(new PickaxeCommand());
+    }
+
+    public void attemptSaveResource(String name) {
+        if(!(new File(getDataFolder(), name).exists())) {
+            saveResource(name, false);
+        }
     }
 
     public SQLManager getSqlManager() {

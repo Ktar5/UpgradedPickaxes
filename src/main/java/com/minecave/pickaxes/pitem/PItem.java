@@ -19,12 +19,12 @@ import java.util.List;
  */
 public abstract class PItem {
 
-    private Level level;
-    private int xp, points;
-    private List<PEnchant> enchants;
-    private ItemStack itemStack;
-    private String name;
-    private Skill skill;
+    protected Level level;
+    protected int xp, points;
+    protected List<PEnchant> enchants;
+    protected ItemStack itemStack;
+    protected String name;
+    protected Skill skill;
 
     public PItem(ItemStack itemStack, String name) {
         this.itemStack = itemStack;
@@ -40,7 +40,7 @@ public abstract class PItem {
         this.enchants = enchants;
         this.itemStack = itemStack;
         this.name = name;
-        this.skill = skill;
+    this.skill = skill;
     }
 
     public void addEnchant(PEnchant enchant, Player player) {
@@ -119,11 +119,16 @@ public abstract class PItem {
             level.levelUp(player, this);
             this.points++;
         }
+        update(player);
         return xp;
     }
 
     public int getPoints() {
         return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public String getName() {
