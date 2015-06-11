@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,8 +27,8 @@ public class Pickaxe extends PItem {
         super(itemStack, name);
     }
 
-    public Pickaxe(ItemStack itemStack, Level level, int xp, List<PEnchant> enchants, String name, Skill skill) {
-        super(itemStack, level, xp, enchants, name, skill);
+    public Pickaxe(ItemStack itemStack, Level level, int xp, String name, Skill skill) {
+        super(itemStack, level, xp, name, skill);
     }
 
     public static Pickaxe tryFromItem(ItemStack inhand) {

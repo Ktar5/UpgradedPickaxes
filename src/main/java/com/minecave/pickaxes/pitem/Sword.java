@@ -8,7 +8,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,8 +21,8 @@ public class Sword extends PItem {
         super(itemStack, name);
     }
 
-    public Sword(ItemStack itemStack, Level level, int xp, List<PEnchant> enchants, String name, Skill skill) {
-        super(itemStack, level, xp, enchants, name, skill);
+    public Sword(ItemStack itemStack, Level level, int xp, String name, Skill skill) {
+        super(itemStack, level, xp, name, skill);
     }
 
     public static Sword tryFromItem(ItemStack inhand) {

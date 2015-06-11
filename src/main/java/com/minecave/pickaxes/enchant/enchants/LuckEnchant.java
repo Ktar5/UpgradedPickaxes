@@ -14,6 +14,7 @@ public class LuckEnchant extends PEnchant {
 
     public LuckEnchant() {
         super("LuckyDrop");
+        super.loadConfig(getTrueName());
     }
 
     @Override
@@ -32,5 +33,10 @@ public class LuckEnchant extends PEnchant {
     @Override
     public int getMaxLevel() {
         return 10;
+    }
+
+    @Override
+    public String getTrueName() {
+        return "luck";
     }
 }

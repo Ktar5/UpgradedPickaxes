@@ -16,7 +16,7 @@ public class TnTEnchant extends PEnchant {
 
     public TnTEnchant() {
         super("TnT");
-        super.loadConfig("tnt");
+        super.loadConfig(getTrueName());
     }
 
     @Override
@@ -34,5 +34,10 @@ public class TnTEnchant extends PEnchant {
         player.getNearbyEntities(radius, radius, radius).stream()
           .filter(ent -> ent instanceof LivingEntity)
           .forEach(ent -> ((LivingEntity) ent).damage(0.5D * this.getLevel()));
+    }
+
+    @Override
+    public String getTrueName() {
+        return "tnt";
     }
 }

@@ -22,7 +22,7 @@ public abstract class PEnchant {
     @Getter
     private String name;
     @Getter
-    private int level;
+    private int level = 0;
     @Getter
     private boolean inUse;
     @Getter
@@ -33,7 +33,6 @@ public abstract class PEnchant {
     public PEnchant(String name) {
         this.name = name;
         this.inUse = true;
-        this.level = 1;
         name = ChatColor.stripColor(name);
         name = name.toLowerCase();
     }
@@ -83,4 +82,6 @@ public abstract class PEnchant {
             }
         }
     }
+
+    public abstract String getTrueName();
 }

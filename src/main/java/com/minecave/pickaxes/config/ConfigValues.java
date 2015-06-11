@@ -11,7 +11,6 @@ import com.minecave.pickaxes.menu.menus.*;
 import com.minecave.pickaxes.skill.skills.Bomber;
 import com.minecave.pickaxes.skill.skills.Earthquake;
 import com.minecave.pickaxes.skill.skills.Lightning;
-import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,7 +28,6 @@ public class ConfigValues {
     private FireworkBuilder fireworkBuilder;
     private String titleLine1, titleLine2;
     private FileConfiguration config;
-    @Getter
     private FileConfiguration enchants;
     private List<Integer> blacklist;
     private MainPickMenu mainPickMenu;
@@ -62,8 +60,8 @@ public class ConfigValues {
         ConfigurationSection firework = config.getConfigurationSection("cosmetics.firework");
         boolean perLevel = firework.getBoolean("determinePerLevel");
         boolean enabled = firework.getBoolean("enabled");
-        if(enabled) {
-            if(!perLevel) {
+        if (enabled) {
+            if (!perLevel) {
                 this.fireworkBuilder = new FireworkBuilder();
                 if (firework.get("blacklist") != null) {
                     this.blacklist = firework.getIntegerList("blacklist");
@@ -86,13 +84,13 @@ public class ConfigValues {
     private void loadDrops() {
         FileConfiguration config = config("drops");
         ConfigurationSection blocks = config.getConfigurationSection("blocks");
-        for(String s : blocks.getKeys(false)) {
+        for (String s : blocks.getKeys(false)) {
             ConfigurationSection section = blocks.getConfigurationSection(s);
-            for(String l : section.getKeys(false)) {
+            for (String l : section.getKeys(false)) {
                 ConfigurationSection levels = section.getConfigurationSection("levels");
-                for(String d : levels.getKeys(false)) {
+                for (String d : levels.getKeys(false)) {
                     List<String> drops = levels.getStringList(d + ".drops");
-                    for(String raw : drops) {
+                    for (String raw : drops) {
                         String[] str = raw.split("%");
                         String command = str[0];
                         int weight = Integer.parseInt(str[1]);
@@ -102,13 +100,13 @@ public class ConfigValues {
             }
         }
         blocks = config.getConfigurationSection("mobs");
-        for(String s : blocks.getKeys(false)) {
+        for (String s : blocks.getKeys(false)) {
             ConfigurationSection section = blocks.getConfigurationSection(s);
-            for(String l : section.getKeys(false)) {
+            for (String l : section.getKeys(false)) {
                 ConfigurationSection levels = section.getConfigurationSection("levels");
-                for(String d : levels.getKeys(false)) {
+                for (String d : levels.getKeys(false)) {
                     List<String> drops = levels.getStringList(d + ".drops");
-                    for(String raw : drops) {
+                    for (String raw : drops) {
                         String[] str = raw.split("%");
                         String command = str[0];
                         int weight = Integer.parseInt(str[1]);
@@ -135,16 +133,16 @@ public class ConfigValues {
         this.earthquake = new Earthquake(eq.getInt("radius"), color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("level"));
         ConfigurationSection tnt = config.getConfigurationSection("tnt");
         this.bomber = new Bomber(color(tnt.getString("name")), tnt.getInt("cooldown"), tnt.getInt("level"),
-          tnt.getInt("maxBlocks"),  tnt.getInt("fuse"), tnt.getBoolean("toSeconds"));
+                tnt.getInt("maxBlocks"), tnt.getInt("fuse"), tnt.getBoolean("toSeconds"));
         ConfigurationSection light = config.getConfigurationSection("lightning");
         this.lightning = new Lightning(color(light.getString("name")), light.getInt("cooldown"), light.getInt("level"),
-          light.getInt("depth"), light.getInt("distance"));
+                light.getInt("depth"), light.getInt("distance"));
     }
 
     public void loadXp() {
         FileConfiguration config = config("xp");
         ConfigurationSection section = config.getConfigurationSection("blocks");
-        for(String s : section.getKeys(false)) {
+        for (String s : section.getKeys(false)) {
             Material material = Material.matchMaterial(s);
             int xp = section.getInt(s);
             new BlockValues(xp, material);
@@ -154,7 +152,7 @@ public class ConfigValues {
     private FileConfiguration config(String file) {
         file += ".yml";
         File f = new File(PickaxesRevamped.getInstance().getDataFolder(), file);
-        if(!f.exists()) {
+        if (!f.exists()) {
             PickaxesRevamped.getInstance().saveResource(file, true);
         }
         return YamlConfiguration.loadConfiguration(f);
@@ -222,5 +220,9 @@ public class ConfigValues {
 
     public MainSwordMenu getMainSwordMenu() {
         return mainSwordMenu;
+    }
+
+    public FileConfiguration getEnchants() {
+        return enchants;
     }
 }

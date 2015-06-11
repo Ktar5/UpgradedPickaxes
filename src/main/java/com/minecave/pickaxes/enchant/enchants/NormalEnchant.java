@@ -44,6 +44,11 @@ public class NormalEnchant extends PEnchant {
         return enchantment.getMaxLevel();
     }
 
+    @Override
+    public String getTrueName() {
+        return enchantment.getName().toLowerCase();
+    }
+
     public enum VanillaSword {
         SHARPNESS(Enchantment.DAMAGE_ALL),
         FIRE_ASPECT(Enchantment.FIRE_ASPECT),
