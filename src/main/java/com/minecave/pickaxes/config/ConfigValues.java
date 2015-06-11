@@ -10,6 +10,7 @@ import com.minecave.pickaxes.level.LevelGenerator;
 import com.minecave.pickaxes.menu.menus.*;
 import com.minecave.pickaxes.skill.skills.Bomber;
 import com.minecave.pickaxes.skill.skills.Earthquake;
+import com.minecave.pickaxes.skill.skills.Ice;
 import com.minecave.pickaxes.skill.skills.Lightning;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -38,6 +39,7 @@ public class ConfigValues {
     private UpgradesMenu upgradesMenu;
     private Earthquake earthquake;
     private Lightning lightning;
+    private Ice ice;
     private Bomber bomber;
 
     public ConfigValues(FileConfiguration config) {
@@ -129,11 +131,17 @@ public class ConfigValues {
 
     public void loadSkills() {
         FileConfiguration config = config("skills");
+
         ConfigurationSection eq = config.getConfigurationSection("earthquake");
         this.earthquake = new Earthquake(eq.getInt("radius"), color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("level"));
+
+        ConfigurationSection ice = config.getConfigurationSection("ice");
+        this.ice = new Ice(color(ice.getString("name")), ice.getInt("cooldown"), ice.getInt("level"), ice.getInt("radius"));
+
         ConfigurationSection tnt = config.getConfigurationSection("tnt");
         this.bomber = new Bomber(color(tnt.getString("name")), tnt.getInt("cooldown"), tnt.getInt("level"),
                 tnt.getInt("maxBlocks"), tnt.getInt("fuse"), tnt.getBoolean("toSeconds"));
+
         ConfigurationSection light = config.getConfigurationSection("lightning");
         this.lightning = new Lightning(color(light.getString("name")), light.getInt("cooldown"), light.getInt("level"),
                 light.getInt("depth"), light.getInt("distance"));

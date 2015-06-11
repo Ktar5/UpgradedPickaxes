@@ -3,6 +3,11 @@ earthquake:
   radius: 10
   cooldown: 20
   levelUnlocked: 5
+ice:
+  name: Ice Blast
+  radius: 10
+  cooldown: 20
+  levelUnlocked: 5
 tnt:
   name: Bomber
   cooldown: 20
