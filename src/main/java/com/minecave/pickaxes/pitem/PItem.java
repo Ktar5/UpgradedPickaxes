@@ -33,6 +33,8 @@ public abstract class PItem {
     private Map<String, PEnchant> enchants;
     protected ItemStack itemStack;
     protected String name;
+    @Getter
+    private List<Skill> purchasedSkills = new ArrayList<>();
     protected Skill skill;
     private int XP;
 

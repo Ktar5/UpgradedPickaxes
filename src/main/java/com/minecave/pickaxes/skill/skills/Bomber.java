@@ -24,8 +24,8 @@ public class Bomber extends Skill {
     private int ticks;
     protected Random random = new Random();
 
-    public Bomber(String name, long cooldown, int level, int boomblocks, int ticks, boolean seconds) {
-        super(name, cooldown, level);
+    public Bomber(String name, long cooldown, int level, int cost, String perm, int boomblocks, int ticks, boolean seconds) {
+        super(name, cooldown, level, cost, perm);
         this.boomblocks = boomblocks;
         this.ticks = seconds ? ticks * 20 : ticks;
     }

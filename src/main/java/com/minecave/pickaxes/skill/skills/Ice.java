@@ -22,8 +22,8 @@ public class Ice extends Skill {
 
     private final int radius;
 
-    public Ice(String name, long cooldown, int level, int radius) {
-        super(name, cooldown, level);
+    public Ice(String name, long cooldown, int level, int cost, String perm, int radius) {
+        super(name, cooldown, level, cost, perm);
         this.radius = radius;
     }
 

@@ -3,15 +3,21 @@ earthquake:
   radius: 10
   cooldown: 20
   levelUnlocked: 5
+  cost: 5
+  perm: "skill.earthquake"
 ice:
   name: Ice Blast
   radius: 10
   cooldown: 20
   levelUnlocked: 5
+  cost: 5
+  perm: "skill.ice"
 tnt:
   name: Bomber
   cooldown: 20
   levelUnlocked: 3
+  cost: 5
+  perm: "skill.tnt"
   fuse: 2
   toSeconds: true
   maxBlocks: 10
@@ -19,5 +25,7 @@ lightning:
   name: Lightning
   cooldown: 20
   levelUnlocked: 3
+  cost: 5
+  perm: "skill.lightning"
   depth: 10
   distance: 8

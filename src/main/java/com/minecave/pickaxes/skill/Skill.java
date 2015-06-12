@@ -1,6 +1,7 @@
 package com.minecave.pickaxes.skill;
 
 import com.minecave.pickaxes.pitem.PItem;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -17,12 +18,18 @@ public abstract class Skill {
     private String name;
     private long cooldown;
     private int level;
+    @Getter
+    private int cost;
+    @Getter
+    private String perm;
     private Map<UUID, Long> cooldowns;
 
-    public Skill(String name, long cooldown, int level) {
+    public Skill(String name, long cooldown, int level, int cost, String perm) {
         this.name = name;
         this.cooldown = cooldown;
         this.level = level;
+        this.cost = cost;
+        this.perm = perm;
         this.cooldowns = new HashMap<>();
     }
 

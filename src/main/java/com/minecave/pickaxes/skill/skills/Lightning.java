@@ -18,8 +18,8 @@ public class Lightning extends Skill {
 
     private int depth, distance;
 
-    public Lightning(String name, long cooldown, int level, int depth, int distance) {
-        super(name, cooldown, level);
+    public Lightning(String name, long cooldown, int level, int cost, String perm, int depth, int distance) {
+        super(name, cooldown, level, cost, perm);
         this.depth = depth;
         this.distance = distance;
     }

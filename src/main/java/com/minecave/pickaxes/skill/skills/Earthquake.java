@@ -20,8 +20,8 @@ public class Earthquake extends Skill {
     private int radius;
     private  Random random = new Random();
 
-    public Earthquake(int radius, String name, long cooldown, int level) {
-        super(name, cooldown, level);
+    public Earthquake(int radius, String name, long cooldown, int level, int cost, String perm) {
+        super(name, cooldown, level, cost, perm);
         this.radius = radius;
     }
 
