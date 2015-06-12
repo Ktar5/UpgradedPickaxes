@@ -54,6 +54,7 @@ public class UpgradesMenu extends Menu {
             meta.setDisplayName(enchant.getLevel() > 0 ?
                     ChatColor.RED + "Click to remove a level." :
                     ChatColor.DARK_RED + "Level 0. Cannot decrease.");
+            redWool.setItemMeta(meta);
             buttons[redWoolIndex] = new Button(redWool,
                     (p, clickType) -> {
                         if (enchant.getLevel() > 0) {
@@ -65,6 +66,7 @@ public class UpgradesMenu extends Menu {
             ItemStack book = new ItemStack(Material.ENCHANTED_BOOK, enchant.getLevel());
             meta = book.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + enchant.getName() + " Level: " + enchant.getLevel());
+            book.setItemMeta(meta);
             buttons[bookIndex] = new FillerButton(book);
 
             ItemStack greenWool = new Wool(DyeColor.GREEN).toItemStack(enchant.getCost());
@@ -73,6 +75,7 @@ public class UpgradesMenu extends Menu {
             meta.setDisplayName(enchant.getLevel() < enchant.getMaxLevel() ?
                     ChatColor.GREEN + "Click to add a level." :
                     ChatColor.DARK_GREEN + "Max level. Cannot increase.");
+            greenWool.setItemMeta(meta);
             buttons[greenWoolIndex] = new Button(greenWool,
                     (p, clickType) -> {
                         if (enchant.getLevel() < enchant.getMaxLevel()) {
