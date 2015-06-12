@@ -3,7 +3,6 @@ package com.minecave.pickaxes.enchant;
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.pitem.PItem;
 import com.minecave.pickaxes.utils.Utils;
-import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -19,15 +18,10 @@ import java.util.Map;
  */
 public abstract class PEnchant {
 
-    @Getter
     private String name;
-    @Getter
     private int level = 0;
-    @Getter
     private boolean inUse;
-    @Getter
     protected int maxLevel = 10;
-    @Getter
     private Map<Integer, Integer> costMap = new HashMap<>();
 
     public PEnchant(String name) {
@@ -104,4 +98,23 @@ public abstract class PEnchant {
         return getLevelCost(this.level);
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public int getLevel() {
+        return this.level;
+    }
+
+    public boolean isInUse() {
+        return this.inUse;
+    }
+
+    public int getMaxLevel() {
+        return this.maxLevel;
+    }
+
+    public Map<Integer, Integer> getCostMap() {
+        return this.costMap;
+    }
 }

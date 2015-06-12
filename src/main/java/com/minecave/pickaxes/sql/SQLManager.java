@@ -139,6 +139,7 @@ public class SQLManager {
         String query = "INSERT INTO `player_info` VALUES ('" + uuid.toString() + "', '" + swordData + "', '" + pickData + "') " +
                 "ON DUPLICATE KEY UPDATE `swords` ='" + swordData + "', `picks` ='" + pickData + "'";
         QueryThread.addQuery(query);
+        PlayerInfo.getInfoMap().remove(info.getPlayer().getUniqueId());
     }
 
 }

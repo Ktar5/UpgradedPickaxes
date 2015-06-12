@@ -5,7 +5,6 @@ import com.minecave.pickaxes.items.ItemBuilder;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.menu.Menu;
 import com.minecave.pickaxes.menu.Menu.FillerButton;
-import com.minecave.pickaxes.pitem.PItem;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.skill.Skill;
@@ -83,6 +82,14 @@ public class Utils {
                         UUIDs.getUUIDFromString(entry.getKey().getTrueName()));
                 storage.setData(String.valueOf(entry.getValue()));
             }
+            for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
+                if(!p.getPurchasedSkills().contains(entry.getValue())) {
+                    continue;
+                }
+                storage = AttributeStorage.newTarget(storage.getTarget(),
+                        UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
+                storage.setData(entry.getKey());
+            }
             items[i++] = storage.getTarget();
         }
         return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
@@ -120,6 +127,14 @@ public class Utils {
                         UUIDs.getUUIDFromString(entry.getKey().getTrueName()));
                 storage.setData(String.valueOf(entry.getValue()));
             }
+            for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
+                if(!p.getPurchasedSkills().contains(entry.getValue())) {
+                    continue;
+                }
+                storage = AttributeStorage.newTarget(storage.getTarget(),
+                        UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
+                storage.setData(entry.getKey());
+            }
             items[i++] = storage.getTarget();
         }
         return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
@@ -144,6 +159,14 @@ public class Utils {
                     UUIDs.getUUIDFromString(enchant.getTrueName()));
             enchant.setLevel(Integer.parseInt(storage.getData("0")));
         }
+        for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
+            storage = AttributeStorage.newTarget(storage.getTarget(),
+                    UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
+            String s = storage.getData(null);
+            if(s != null && s.equals(entry.getKey())) {
+                pick.getPurchasedSkills().add(entry.getValue());
+            }
+        }
         return pick;
     }
 
@@ -163,6 +186,14 @@ public class Utils {
             storage = AttributeStorage.newTarget(storage.getTarget(),
                     UUIDs.getUUIDFromString(enchant.getTrueName()));
             enchant.setLevel(Integer.parseInt(storage.getData("0")));
+        }
+        for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
+            storage = AttributeStorage.newTarget(storage.getTarget(),
+                    UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
+            String s = storage.getData(null);
+            if(s != null && s.equals(entry.getKey())) {
+                sword.getPurchasedSkills().add(entry.getValue());
+            }
         }
         return sword;
     }

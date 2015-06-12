@@ -3,7 +3,6 @@ package com.minecave.pickaxes.sql;
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
-import lombok.Getter;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -16,7 +15,6 @@ public class PlayerInfo {
     private List<Pickaxe> pickaxes;
     private List<Sword> swords;
     private Player player;
-    @Getter
     private static Map<UUID, PlayerInfo> infoMap = new HashMap<>();
 
     public PlayerInfo(Player player) {
@@ -63,6 +61,10 @@ public class PlayerInfo {
 
     public List<Sword> getSwords() {
         return swords;
+    }
+
+    public static Map<UUID, PlayerInfo> getInfoMap() {
+        return infoMap;
     }
 
     public void logOff() {

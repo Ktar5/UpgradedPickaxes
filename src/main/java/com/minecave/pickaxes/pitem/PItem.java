@@ -17,10 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Timothy Andis
@@ -34,7 +31,7 @@ public abstract class PItem {
     protected ItemStack itemStack;
     protected String name;
     @Getter
-    private List<Skill> purchasedSkills = new ArrayList<>();
+    private Set<Skill> purchasedSkills = new HashSet<>();
     protected Skill skill;
     private int XP;
 

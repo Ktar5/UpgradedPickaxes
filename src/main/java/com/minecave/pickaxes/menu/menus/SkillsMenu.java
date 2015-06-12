@@ -6,6 +6,7 @@ import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.skill.Skill;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,7 +32,7 @@ public class SkillsMenu extends Menu {
             if(!player.hasPermission(skill.getPerm())) {
                 continue;
             }
-            ItemStack item = new ItemStack()
+            ItemStack item = new ItemStack(Material.AIR);
             buttons[i] = new FillerButton(item);
             buttons[i + 9] = null;
             i++;
