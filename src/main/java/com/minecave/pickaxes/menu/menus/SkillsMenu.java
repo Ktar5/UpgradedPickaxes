@@ -47,6 +47,7 @@ public class SkillsMenu extends Menu {
             }
             PItem fItem = pItem;
             boolean purchased = pItem.getPurchasedSkills().contains(skill);
+            boolean isHighEnough = skill.highEnough(pItem);
             ItemStack item = new ItemStack(purchased ?
                     pItem.getSkill().equals(skill) ?
                             Material.REDSTONE : Material.SULPHUR :
@@ -55,11 +56,17 @@ public class SkillsMenu extends Menu {
             meta.setDisplayName((purchased ? ChatColor.GOLD : ChatColor.RED) + skill.getName());
             meta.setLore(Collections.singletonList(purchased ?
                     ChatColor.DARK_GREEN + "Click to activate." :
-                    ChatColor.DARK_RED + "Click to purchase."));
+                    isHighEnough ? ChatColor.DARK_RED + "Click to purchase." :
+                            ChatColor.DARK_RED + "You need level " + skill.getLevel() + "."));
             item.setItemMeta(meta);
             buttons[i] = new Button(item, (p, clickType) -> {
+                if(!isHighEnough) {
+                    p.sendMessage(ChatColor.RED + "You need level " + skill.getLevel());
+                    return;
+                }
                 if(!purchased) {
                     fItem.getPurchasedSkills().add(skill);
+                    fItem.setPoints(fItem.getPoints() - skill.getCost());
                 }
                 fItem.setSkill(skill);
                 p.sendMessage(ChatColor.GOLD + "You activated " + skill.getName() + ".");
