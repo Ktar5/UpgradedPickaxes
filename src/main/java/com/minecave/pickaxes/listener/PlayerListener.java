@@ -2,7 +2,6 @@ package com.minecave.pickaxes.listener;
 
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.sql.PlayerInfo;
-import com.minecave.pickaxes.utils.WorldBorderUtil;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +26,6 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         plugin.getSqlManager().init(player);
-        WorldBorderUtil.setWarningBlocks(player, 5);
     }
 
     @EventHandler

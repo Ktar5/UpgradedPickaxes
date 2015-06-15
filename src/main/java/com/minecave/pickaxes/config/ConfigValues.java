@@ -177,7 +177,7 @@ public class ConfigValues {
         ConfigurationSection r = config.getConfigurationSection("rain");
         this.rain = new Rain(color(r.getString("name")), r.getInt("cooldown"),
                 r.getInt("levelUnlocked"), r.getInt("cost"), r.getString("permission"),
-                r.getInt("numberOfSnowballs"));
+                r.getInt("arrowHeight"),r.getInt("arrowCount"),r.getInt("seconds"));
         Skills.add("rain", this.rain);
 
         ConfigurationSection fire = config.getConfigurationSection("fireball");
