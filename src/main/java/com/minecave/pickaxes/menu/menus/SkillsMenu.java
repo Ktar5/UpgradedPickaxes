@@ -60,11 +60,11 @@ public class SkillsMenu extends Menu {
                             ChatColor.DARK_RED + "You need level " + skill.getLevel() + "."));
             item.setItemMeta(meta);
             buttons[i] = new Button(item, (p, clickType) -> {
-                if(!isHighEnough) {
+                if (!isHighEnough) {
                     p.sendMessage(ChatColor.RED + "You need level " + skill.getLevel());
                     return;
                 }
-                if(!purchased) {
+                if (!purchased) {
                     fItem.getPurchasedSkills().add(skill);
                     fItem.setPoints(fItem.getPoints() - skill.getCost());
                 }
@@ -80,9 +80,10 @@ public class SkillsMenu extends Menu {
     public List<Skill> getSkills(ItemStack item) {
         if (Pickaxe.tryFromItem(item) != null) {
             return getPickaxeSkills();
-        } else {
+        } else if(Sword.tryFromItem(item) != null){
             return getSwordSkills();
         }
+        return Collections.emptyList();
     }
 
     public List<Skill> getPickaxeSkills() {
@@ -97,7 +98,11 @@ public class SkillsMenu extends Menu {
 
     public List<Skill> getSwordSkills() {
         List<Skill> skills = new ArrayList<>();
-
+        ConfigValues cv = PickaxesRevamped.getInstance().getConfigValues();
+        skills.add(cv.getAcid());
+        skills.add(cv.getFireball());
+        skills.add(cv.getRain());
+        skills.add(cv.getShotgun());
         return skills;
     }
 }
