@@ -4,6 +4,7 @@ import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -45,5 +46,6 @@ public class Sword extends PItem {
         for(PEnchant enchant : this.getEnchants().values()) {
             enchant.activate(event);
         }
+        incrementXp(xp, (Player) event.getDamager());
     }
 }

@@ -13,6 +13,10 @@ import com.minecave.pickaxes.skill.skills.Bomber;
 import com.minecave.pickaxes.skill.skills.Earthquake;
 import com.minecave.pickaxes.skill.skills.Ice;
 import com.minecave.pickaxes.skill.skills.Lightning;
+import com.minecave.pickaxes.skill.skills.sword.Acid;
+import com.minecave.pickaxes.skill.skills.sword.FireBallSkill;
+import com.minecave.pickaxes.skill.skills.sword.Rain;
+import com.minecave.pickaxes.skill.skills.sword.Shotgun;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,10 +42,16 @@ public class ConfigValues {
     private PickMenu pickMenu;
     private SwordMenu swordMenu;
     private UpgradesMenu upgradesMenu;
+
+
     private Earthquake earthquake;
     private Lightning lightning;
     private Ice ice;
     private Bomber bomber;
+    private Shotgun shotgun;
+    private Acid acid;
+    private FireBallSkill fireball;
+    private Rain rain;
 
     public ConfigValues(FileConfiguration config) {
         this.config = config;
@@ -52,6 +62,7 @@ public class ConfigValues {
         loadDrops();
         loadMenus();
         loadSkills();
+        loadXp();
     }
 
     public void load() {
@@ -134,22 +145,45 @@ public class ConfigValues {
         FileConfiguration config = config("skills");
 
         ConfigurationSection eq = config.getConfigurationSection("earthquake");
-        this.earthquake = new Earthquake(eq.getInt("radius"), color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("level"), eq.getInt("cost"), eq.getString("perm"));
+        this.earthquake = new Earthquake(eq.getInt("radius"), color(eq.getString("name")), eq.getInt("cooldown"), eq.getInt("levelUnlocked"), eq.getInt("cost"), eq.getString("permission"));
         Skills.add("earthquake", this.earthquake);
 
         ConfigurationSection ice = config.getConfigurationSection("ice");
-        this.ice = new Ice(color(ice.getString("name")), ice.getInt("cooldown"), ice.getInt("level"), ice.getInt("cost"), ice.getString("perm"), ice.getInt("radius"));
+        this.ice = new Ice(color(ice.getString("name")), ice.getInt("cooldown"), ice.getInt("levelUnlocked"), ice.getInt("cost"), ice.getString("permission"), ice.getInt("radius"));
         Skills.add("ice", this.ice);
 
         ConfigurationSection tnt = config.getConfigurationSection("tnt");
-        this.bomber = new Bomber(color(tnt.getString("name")), tnt.getInt("cooldown"), tnt.getInt("level"), tnt.getInt("cost"), tnt.getString("perm"),
+        this.bomber = new Bomber(color(tnt.getString("name")), tnt.getInt("cooldown"), tnt.getInt("levelUnlocked"), tnt.getInt("cost"), tnt.getString("permission"),
                 tnt.getInt("maxBlocks"), tnt.getInt("fuse"), tnt.getBoolean("toSeconds"));
         Skills.add("bomber", this.bomber);
 
         ConfigurationSection light = config.getConfigurationSection("lightning");
-        this.lightning = new Lightning(color(light.getString("name")), light.getInt("cooldown"), light.getInt("level"), light.getInt("cost"), light.getString("perm"),
+        this.lightning = new Lightning(color(light.getString("name")), light.getInt("cooldown"), light.getInt("levelUnlocked"), light.getInt("cost"), light.getString("permission"),
                 light.getInt("depth"), light.getInt("distance"));
         Skills.add("lightning", this.lightning);
+
+        ConfigurationSection shot = config.getConfigurationSection("shotgun");
+        this.shotgun = new Shotgun(color(shot.getString("name")), shot.getInt("cooldown"),
+                shot.getInt("levelUnlocked"), shot.getInt("cost"), shot.getString("permission"),
+                shot.getInt("numberOfSnowballs"));
+        Skills.add("shotgun", this.shotgun);
+
+        ConfigurationSection acidC = config.getConfigurationSection("acid");
+        this.acid = new Acid(color(acidC.getString("name")), acidC.getInt("cooldown"),
+                acidC.getInt("levelUnlocked"), acidC.getInt("cost"), acidC.getString("permission"),
+                acidC.getInt("numberOfAcidParts"), acidC.getInt("radiusPerHit"));
+        Skills.add("acid", this.acid);
+
+        ConfigurationSection r = config.getConfigurationSection("rain");
+        this.rain = new Rain(color(r.getString("name")), r.getInt("cooldown"),
+                r.getInt("levelUnlocked"), r.getInt("cost"), r.getString("permission"),
+                r.getInt("numberOfSnowballs"));
+        Skills.add("rain", this.rain);
+
+        ConfigurationSection fire = config.getConfigurationSection("fireball");
+        this.fireball = new FireBallSkill(color(fire.getString("name")), fire.getInt("cooldown"),
+                fire.getInt("levelUnlocked"), fire.getInt("cost"), fire.getString("permission"));
+        Skills.add("fireball", this.fireball);
     }
 
     public void loadXp() {
@@ -233,6 +267,22 @@ public class ConfigValues {
 
     public Bomber getBomber() {
         return bomber;
+    }
+
+    public Shotgun getShotgun() {
+        return shotgun;
+    }
+
+    public Acid getAcid() {
+        return acid;
+    }
+    
+    public Rain getRain() {
+        return rain;
+    }
+    
+    public FireBallSkill getFireball() {
+        return fireball;
     }
 
     public MainSwordMenu getMainSwordMenu() {

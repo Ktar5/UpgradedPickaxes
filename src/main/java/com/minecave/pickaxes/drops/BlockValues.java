@@ -13,7 +13,7 @@ public class BlockValues {
 
     private int xp;
     private Material type;
-    private static Map<Material, Integer> values = new HashMap<>();
+    public static Map<Material, Integer> values = new HashMap<>();
 
     public BlockValues(int xp, Material type) {
         this.xp = xp;

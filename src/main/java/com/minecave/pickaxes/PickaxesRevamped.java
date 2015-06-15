@@ -3,6 +3,7 @@ package com.minecave.pickaxes;
 import com.minecave.pickaxes.commands.MainCommand;
 import com.minecave.pickaxes.commands.PickaxeCommand;
 import com.minecave.pickaxes.config.ConfigValues;
+import com.minecave.pickaxes.drops.BlockValues;
 import com.minecave.pickaxes.listener.MenuListener;
 import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
@@ -65,6 +66,7 @@ public class PickaxesRevamped extends JavaPlugin {
     public void onDisable() {
         Skills.skills = null;
         PlayerInfo.getInfoMap().clear();
+        BlockValues.values.clear();
     }
 
     public void attemptSaveResource(String name) {

@@ -4,20 +4,20 @@ earthquake:
   cooldown: 20
   levelUnlocked: 5
   cost: 5
-  perm: "skill.earthquake"
+  permission: "skill.earthquake"
 ice:
   name: Ice Blast
   radius: 10
   cooldown: 20
   levelUnlocked: 5
   cost: 5
-  perm: "skill.ice"
+  permission: "skill.ice"
 tnt:
   name: Bomber
   cooldown: 20
   levelUnlocked: 3
   cost: 5
-  perm: "skill.tnt"
+  permission: "skill.tnt"
   fuse: 2
   toSeconds: true
   maxBlocks: 10
@@ -26,6 +26,36 @@ lightning:
   cooldown: 20
   levelUnlocked: 3
   cost: 5
-  perm: "skill.lightning"
+  permission: "skill.lightning"
   depth: 10
   distance: 8
+shotgun:
+  name: Shotgun
+  cooldown: 10
+  levelUnlocked: 3
+  cost: 5
+  permission: "skill.shotgun"
+  numberOfSnowballs: 10
+acid:
+  name: Acid
+  cooldown: 10
+  levelUnlocked: 3
+  cost: 5
+  permission: "skill.acid"
+  numberOfAcidParts: 20
+  radiusPerHit: 2
+fireball:
+  name: Fireball
+  cooldown: 10
+  levelUnlocked: 3
+  cost: 5
+  permission: "skill.fireball"
+rain:
+  name: Arrow Rain
+  cooldown: 10
+  levelUnlocked: 3
+  cost: 5
+  permission: "skill.arrowrain"
+  arrowHeight: 15
+  arrowCount: 10
+  seconds: 3

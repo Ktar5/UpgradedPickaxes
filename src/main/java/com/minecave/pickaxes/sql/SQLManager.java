@@ -93,9 +93,12 @@ public class SQLManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                String query = "SELECT * FROM `player_info` WHERE `player` ='" + player.getUniqueId().toString();
+                String query = "SELECT * FROM `player_info` WHERE `player`='" + player.getUniqueId().toString() + "'";
                 ResultSet res = getResultSet(query);
                 try {
+                    if(res == null) {
+                        return;
+                    }
                     if (res.next()) {
                         Inventory swords = Utils.deserializeInventory(res.getBytes("swords"));
                         Inventory picks = Utils.deserializeInventory(res.getBytes("picks"));
