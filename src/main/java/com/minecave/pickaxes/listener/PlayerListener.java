@@ -1,7 +1,10 @@
 package com.minecave.pickaxes.listener;
 
 import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.sql.PlayerInfo;
+import com.minecave.pickaxes.utils.Utils;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @author Timothy Andis
@@ -26,6 +30,7 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         plugin.getSqlManager().init(player);
+        player.getInventory().forEach(this::tryGetPItem);
     }
 
     @EventHandler
@@ -35,7 +40,26 @@ public class PlayerListener implements Listener {
         if (info == null) {
             return;
         }
+        for (int j = 0; j < player.getInventory().getContents().length; j++) {
+            ItemStack i = player.getInventory().getItem(j);
+            Pickaxe p = Pickaxe.tryFromItem(i);
+            if(p == null) {
+                Sword s = Sword.tryFromItem(i);
+                if(s != null) {
+                    player.getInventory().setItem(j, Utils.serializeSword(s));
+                }
+            } else {
+                player.getInventory().setItem(j, Utils.serializePick(p));
+            }
+        }
         info.logOff();
+    }
+
+    public void tryGetPItem(ItemStack i) {
+        Pickaxe p = Pickaxe.tryFromItem(i);
+        if(p == null) {
+            Sword.tryFromItem(i);
+        }
     }
 
     @EventHandler

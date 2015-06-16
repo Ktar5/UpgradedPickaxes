@@ -68,7 +68,7 @@ public class PickaxesRevamped extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Skills.skills = null;
+        Skills.skills.clear();
         Bukkit.getOnlinePlayers().forEach(PlayerInfo::save);
         PlayerInfo.getInfoMap().clear();
         BlockValues.values.clear();

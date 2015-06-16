@@ -34,6 +34,29 @@ public class QueryThread extends Thread {
         }
     }
 
+    public static void addQuery(final PreparedStatement pst) {
+        queue.add(() -> {
+            Connection con = null;
+            try {
+                con = PickaxesRevamped.getInstance().getSqlManager().getConnection();
+                pst.executeUpdate();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    if (pst != null) {
+                        pst.close();
+                    }
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
     public static void addQuery(final String query) {
         queue.add(() -> {
             Connection con = null;

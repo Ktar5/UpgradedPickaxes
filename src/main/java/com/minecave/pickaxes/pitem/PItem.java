@@ -5,6 +5,7 @@ import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.enchant.enchants.LuckEnchant;
 import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
 import com.minecave.pickaxes.enchant.enchants.TnTEnchant;
+import com.minecave.pickaxes.items.GlowEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import com.minecave.pickaxes.utils.Message;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Timothy Andis
@@ -33,7 +35,6 @@ public abstract class PItem {
     @Getter
     private Set<Skill> purchasedSkills = new HashSet<>();
     protected Skill skill;
-    private int XP;
 
     public PItem(ItemStack itemStack, String name) {
         this(itemStack, Level.ONE, 0, name, null);
@@ -57,16 +58,24 @@ public abstract class PItem {
                     this.addEnchant(new LuckEnchant());
                     break;
                 default:
-                    NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.valueOf(s.toUpperCase());
-                    NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.valueOf(s.toUpperCase());
-                    if (pick != null && (this instanceof Pickaxe)) {
-                        this.addEnchant(new NormalEnchant(pick.getEnchantment()));
-                    } else if (sword != null && (this instanceof Sword)) {
-                        this.addEnchant(new NormalEnchant(sword.getEnchantment()));
+                    if (NormalEnchant.VanillaPick.has(s)) {
+                        NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.valueOf(s.toUpperCase());
+                        if (pick != null && (this instanceof Pickaxe)) {
+                            this.addEnchant(new NormalEnchant(pick.getEnchantment()));
+                        }
+                    } else if (NormalEnchant.VanillaSword.has(s)) {
+                        NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.valueOf(s.toUpperCase());
+                        if (sword != null && (this instanceof Sword)) {
+                            this.addEnchant(new NormalEnchant(sword.getEnchantment()));
+                        }
                     }
-                    break;
             }
         }
+        this.enchants.values().forEach(e -> {
+            if (e.getLevel() > 0 && !(e instanceof NormalEnchant)) {
+                GlowEnchant.apply(this.itemStack);
+            }
+        });
     }
 
     public void addEnchant(PEnchant enchant) {
@@ -110,25 +119,16 @@ public abstract class PItem {
             Sword.swordMap.remove(item);
         }
         ItemMeta meta = item.getItemMeta();
-        List<String> lore = new ArrayList<>(meta.getLore());
-        String enchants = null;
-        StringBuilder builder = new StringBuilder("Custom Enchants: ");
-        for (String s : lore) {
-            if (s.startsWith(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Custom Enchants")) {
-                enchants = s;
-                break;
-            }
-        }
-        lore.remove(enchants);
-        for (PEnchant enchant : this.enchants.values()) {
-            builder.append(enchant.toString());
-        }
-        lore.add(builder.toString());
+        List<String> lore = new ArrayList<>();
+        lore.add("Custom Enchants: ");
+        lore.addAll(this.enchants.values().stream()
+                .map(enchant -> ChatColor.AQUA + enchant.toString())
+                .collect(Collectors.toList()));
         meta.setLore(lore);
         boolean sword = this instanceof Sword;
         name = ChatColor.AQUA + player.getName() + "'s Diamond " +
                 (sword ? "Sword" : "Pickaxe") +
-                ": Level: " + level + " XP: " + xp +
+                ": Level: " + level.getId() + " XP: " + xp +
                 (sword ? "" : (" Blocks: " + ((Pickaxe) this).getBlocksBroken()));
         meta.setDisplayName(this.name);
         item.setItemMeta(meta);
@@ -142,6 +142,10 @@ public abstract class PItem {
 
     public int getXp() {
         return xp;
+    }
+
+    public void setXp(int i) {
+        this.xp = i;
     }
 
     public Level getLevel() {
@@ -195,9 +199,5 @@ public abstract class PItem {
         for (int i = 1; i < level; i++) {
             this.level = this.level.getNext();
         }
-    }
-
-    public void setXP(int XP) {
-        this.XP = XP;
     }
 }

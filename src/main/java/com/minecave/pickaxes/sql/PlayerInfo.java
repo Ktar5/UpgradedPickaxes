@@ -4,6 +4,7 @@ import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -15,12 +16,16 @@ public class PlayerInfo {
     private List<Pickaxe> pickaxes;
     private List<Sword> swords;
     private Player player;
+    private List<Pickaxe> invPicks;
+    private List<Sword> invSwords;
     private static Map<UUID, PlayerInfo> infoMap = new HashMap<>();
 
     public PlayerInfo(Player player) {
         this.player = player;
         this.pickaxes = new ArrayList<>();
         this.swords = new ArrayList<>();
+        this.invPicks = new ArrayList<>();
+        this.invSwords = new ArrayList<>();
         infoMap.put(player.getUniqueId(), this);
     }
 
@@ -39,6 +44,17 @@ public class PlayerInfo {
         PlayerInfo info = PlayerInfo.get(player);
         if (info == null) {
             return;
+        }
+        for(ItemStack i : player.getInventory()) {
+            Pickaxe p = Pickaxe.tryFromItem(i);
+            if(p != null) {
+                info.invPicks.add(p);
+                continue;
+            }
+            Sword s = Sword.tryFromItem(i);
+            if(s != null) {
+                info.invSwords.add(s);
+            }
         }
         info.logOff();
     }

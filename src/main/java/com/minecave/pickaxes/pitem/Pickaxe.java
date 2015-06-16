@@ -4,6 +4,7 @@ import com.minecave.pickaxes.drops.BlockValues;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
+import com.minecave.pickaxes.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -40,7 +41,8 @@ public class Pickaxe extends PItem {
             && inhand.getType() != Material.WOOD_PICKAXE)) {
             return null;
         }
-        return get(inhand);
+        Pickaxe p = get(inhand);
+        return p != null ? p : Utils.deserializePick(inhand);
     }
 
     public static Pickaxe get(ItemStack itemStack) {

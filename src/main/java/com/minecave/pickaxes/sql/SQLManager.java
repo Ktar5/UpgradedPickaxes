@@ -81,8 +81,7 @@ public class SQLManager {
         PreparedStatement pst;
         try {
             pst = getConnection().prepareStatement(query);
-            pst.execute();
-            return pst.getResultSet();
+            return pst.executeQuery();
         } catch (Exception err) {
             err.printStackTrace();
             return null;
@@ -90,14 +89,14 @@ public class SQLManager {
     }
 
     public void init(Player player) {
+        new PlayerInfo(player);
         new BukkitRunnable() {
             @Override
             public void run() {
                 String query = "SELECT * FROM `player_info` WHERE `player`='" + player.getUniqueId().toString() + "'";
                 ResultSet res = getResultSet(query);
                 try {
-                    if(res == null) {
-                        new PlayerInfo(new ArrayList<>(), new ArrayList<>(), player);
+                    if(res == null || !res.isBeforeFirst()) {
                         return;
                     }
                     if (res.next()) {
@@ -141,8 +140,23 @@ public class SQLManager {
         byte[] swordData = Utils.serialSwords(swords);
         byte[] pickData = Utils.serialPicks(pickaxes);
         String query = "INSERT INTO `player_info` VALUES ('" + uuid.toString() + "', '" + swordData + "', '" + pickData + "') " +
-                "ON DUPLICATE KEY UPDATE `swords` ='" + swordData + "', `picks` ='" + pickData + "'";
-        QueryThread.addQuery(query);
+                "ON DUPLICATE KEY UPDATE `swords` = ?, `picks` = ?";
+        try {
+            PreparedStatement pst = PickaxesRevamped.getInstance().getSqlManager().getConnection().prepareStatement(query);
+            if(swordData != null) {
+                pst.setBytes(1, swordData);
+            } else {
+                pst.setNull(1, Types.BLOB);
+            }
+            if(pickData != null) {
+                pst.setBytes(2, pickData);
+            } else {
+                pst.setNull(2, Types.BLOB);
+            }
+            QueryThread.addQuery(pst);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         PlayerInfo.getInfoMap().remove(info.getPlayer().getUniqueId());
     }
 

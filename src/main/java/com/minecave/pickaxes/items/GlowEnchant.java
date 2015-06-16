@@ -29,12 +29,15 @@ public class GlowEnchant extends Enchantment {
      * @param itemStack The itemstack to enchant
      * @return If the enchantment was successful
      */
-    public static boolean appply(final ItemStack itemStack) {
+    public static boolean apply(final ItemStack itemStack) {
         if(itemStack == null || !registered) {
             System.out.println("Cannot enchant because: " + (itemStack == null ? " NULL ITEM" : itemStack.getType().name() + " enchantment not registered"));
             return false;
         }
         ItemMeta meta = itemStack.getItemMeta();
+        if(meta.hasEnchant(instance)) {
+            return true;
+        }
         meta.addEnchant(instance, 1 ,true);
         itemStack.setItemMeta(meta);
         return true;

@@ -85,6 +85,9 @@ public class UpgradesMenu extends Menu {
                     });
 
             c += 4;
+            if(c + 1 % 9 == 0) {
+                c += 1;
+            }
         }
         return buttons;
     }

@@ -12,6 +12,7 @@ import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.pitem.PItem;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -35,9 +36,16 @@ public class NormalEnchant extends PEnchant {
         //nothing this is just an object to manage the enchants more easily
     }
 
-    public void apply(PItem pItem) {
-        pItem.getItemStack().removeEnchantment(enchantment);
-        pItem.getItemStack().addEnchantment(enchantment, this.getLevel());
+    @Override
+    public void apply(PItem pItem, Player player) {
+        super.apply(pItem, player);
+        if(pItem.getItemStack().containsEnchantment(this.enchantment) ||
+                super.getLevel()  >= 0) {
+            pItem.getItemStack().removeEnchantment(enchantment);
+            if(super.getLevel()  > 0) {
+                pItem.getItemStack().addUnsafeEnchantment(enchantment, this.getLevel());
+            }
+        }
     }
 
     @Override
@@ -65,6 +73,15 @@ public class NormalEnchant extends PEnchant {
         VanillaSword(Enchantment enchantment) {
             this.enchantment = enchantment;
         }
+
+        public static boolean has(String name) {
+            for (VanillaSword vanilla : values()) {
+                if(vanilla.toString().equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public enum VanillaPick {
@@ -78,6 +95,15 @@ public class NormalEnchant extends PEnchant {
 
         VanillaPick(Enchantment enchantment) {
             this.enchantment = enchantment;
+        }
+
+        public static boolean has(String name) {
+            for (VanillaPick vanilla : values()) {
+                if(vanilla.toString().equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
