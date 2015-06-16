@@ -23,6 +23,9 @@ public class FireBallSkill extends Skill {
     @Override
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        if(!this.wg.canBuild(event.getPlayer(), player.getEyeLocation())){
+            return;
+        }
         Location spawn = player.getEyeLocation().toVector()
                 .add(player.getEyeLocation().getDirection().multiply(3))
                 .toLocation(player.getWorld());

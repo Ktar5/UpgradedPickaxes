@@ -35,6 +35,9 @@ public class Earthquake extends Skill {
         for(int x = playerX - radius; x <= (playerX + radius); x++) {
             for(int z = playerZ - radius; z <= (playerZ + radius); z++) {
                 Location block = new Location(location.getWorld(), x, y, z);
+                if(!this.wg.canBuild(event.getPlayer(), block)){
+                    continue;
+                }
                 Material type = block.getBlock().getType();
                 FallingBlock fallingBlock = location.getWorld().spawnFallingBlock(block, type, block.getBlock().getData());
                 fallingBlock.setVelocity(new Vector(Math.random() * 4.1, (random.nextInt(3) * Math.random()), Math.random() * 4.1));

@@ -35,6 +35,9 @@ public class Lightning extends Skill {
         int targetBlockY = target.getBlockY();
         for(int y = targetBlockY; y < (targetBlockY + depth); y++) {
             Location loc = target.clone().subtract(0, y, 0);
+            if(!this.wg.canBuild(event.getPlayer(), loc)){
+                continue;
+            }
             player.getInventory().addItem(loc.getBlock().getDrops().toArray(new ItemStack[loc.getBlock().getDrops().size()]));
             player.updateInventory();
         }

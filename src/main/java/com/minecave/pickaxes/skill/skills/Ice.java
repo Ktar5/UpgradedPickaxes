@@ -33,6 +33,9 @@ public class Ice extends Skill {
         List<Block> blocks = getRegionBlocks(player.getLocation(), radius);
 
         for(Block block : blocks){
+            if(!this.wg.canBuild(event.getPlayer(), block)){
+                continue;
+            }
             Collection<ItemStack> items = block.getDrops(player.getItemInHand());
             player.getInventory().addItem(items.toArray(new ItemStack[items.size()]));
             player.updateInventory();
@@ -44,6 +47,9 @@ public class Ice extends Skill {
             public void run() {
                 player.playSound(event.getPlayer().getLocation(), Sound.GLASS, 3.0F, 2.0F);
                 for(Block block : blocks){
+                    if(!wg.canBuild(event.getPlayer(), block)){
+                        continue;
+                    }
                     block.setType(Material.AIR);
                 }
             }

@@ -39,6 +39,9 @@ public class Rain extends Skill {
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Location lookingAt = player.getEyeLocation();
+        if(!this.wg.canBuild(event.getPlayer(), lookingAt)){
+            return;
+        }
         lookingAt.add(0, arrowHeight, 0);
         new BukkitRunnable() {
             int count = 0;
@@ -50,6 +53,9 @@ public class Rain extends Skill {
                 for (int i = -(arrowCount / 2); i < (arrowCount / 2); i++) {
                     for (int j = -(arrowCount / 2); j < (arrowCount / 2); j++) {
                         Location spawnLocation = lookingAt.clone().add(i, 0, j);
+                        if(!wg.canBuild(event.getPlayer(), spawnLocation)){
+                            continue;
+                        }
                         Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, 1, 0), 1f, 12);
                         arrow.setBounce(false);
                         arrow.setShooter(player);

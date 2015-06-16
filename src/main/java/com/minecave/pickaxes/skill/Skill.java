@@ -1,7 +1,9 @@
 package com.minecave.pickaxes.skill;
 
 import com.minecave.pickaxes.pitem.PItem;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -23,8 +25,10 @@ public abstract class Skill {
     @Getter
     private String perm;
     private Map<UUID, Long> cooldowns;
+    protected final WorldGuardPlugin wg;
 
     public Skill(String name, long cooldown, int level, int cost, String perm) {
+        wg = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
         this.name = name;
         this.cooldown = cooldown;
         this.level = level;
