@@ -36,6 +36,9 @@ public class UpgradesMenu extends Menu {
         if (pItem == null) {
             pItem = Sword.tryFromItem(item);
         }
+        if(pItem == null) {
+            return new Button[0];
+        }
         final PItem fItem = pItem;
         int enchantCount = pItem.getEnchants().size();
         Button[] buttons = new Button[(int) (Math.ceil(enchantCount / 2) * 9)];

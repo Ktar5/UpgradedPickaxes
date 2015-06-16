@@ -8,6 +8,9 @@ import com.minecave.pickaxes.menu.buttons.PickaxeButton;
 import com.minecave.pickaxes.menu.buttons.SwordButton;
 import com.minecave.pickaxes.menu.menus.PickMenu;
 import com.minecave.pickaxes.menu.menus.SwordMenu;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.pitem.Sword;
+import com.minecave.pickaxes.sql.PlayerInfo;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -42,6 +45,11 @@ public class MenuListener implements Listener {
         event.setCancelled(true);
         event.setResult(Result.DENY);
 
+        PlayerInfo info = PlayerInfo.get(player);
+        if(info == null) {
+            throw new RuntimeException(player.getName() + " doesn't have PlayerInfo.");
+        }
+
         if (menu instanceof PickMenu) {
             PickMenu pickMenu = (PickMenu) menu;
             Button button = menu.getButton(event.getRawSlot());
@@ -63,6 +71,7 @@ public class MenuListener implements Listener {
             int slot = event.getSlot();
             inventory.setItem(slot, null);
             pickMenu.addButton(new PickaxeButton(inhand), player);
+            info.addPickaxe(Pickaxe.tryFromItem(inhand));
             return;
         }
 
@@ -87,6 +96,7 @@ public class MenuListener implements Listener {
             int slot = event.getSlot();
             inventory.setItem(slot, null);
             swordMenu.addButton(new SwordButton(inhand), player);
+            info.addSword(Sword.tryFromItem(inhand));
             return;
         }
 

@@ -18,6 +18,7 @@ public abstract class Menu {
     protected Button[] buttons;
     protected final Button[] EMPTY = new Button[45];
     private static Map<String, Menu> menus = new HashMap<>();
+    private Inventory inventory;
 
     public Menu(String name) {
         this.name = name;
@@ -40,6 +41,7 @@ public abstract class Menu {
     }
 
     public void close(Player player) {
+        this.inventory = null;
         player.closeInventory();
     }
 
@@ -52,6 +54,7 @@ public abstract class Menu {
             inventory.setItem(i, burton.getItem());
         }
         player.closeInventory();
+        this.inventory = inventory;
         player.openInventory(inventory);
     }
 
