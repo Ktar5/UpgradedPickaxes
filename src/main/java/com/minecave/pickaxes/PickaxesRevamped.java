@@ -2,8 +2,10 @@ package com.minecave.pickaxes;
 
 import com.minecave.pickaxes.commands.MainCommand;
 import com.minecave.pickaxes.commands.PickaxeCommand;
+import com.minecave.pickaxes.commands.SwordCommand;
 import com.minecave.pickaxes.config.ConfigValues;
 import com.minecave.pickaxes.drops.BlockValues;
+import com.minecave.pickaxes.items.GlowEnchant;
 import com.minecave.pickaxes.listener.MenuListener;
 import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
@@ -59,12 +61,15 @@ public class PickaxesRevamped extends JavaPlugin {
         this.sqlManager = new SQLManager(host, db, user, pass, port);
         getCommand("pick").setExecutor(new MainCommand());
         getCommand("givePick").setExecutor(new PickaxeCommand());
+        getCommand("sword").setExecutor(new SwordCommand());
+        GlowEnchant.register();
         Bukkit.getOnlinePlayers().forEach(sqlManager::init);
     }
 
     @Override
     public void onDisable() {
         Skills.skills = null;
+        Bukkit.getOnlinePlayers().forEach(PlayerInfo::save);
         PlayerInfo.getInfoMap().clear();
         BlockValues.values.clear();
     }

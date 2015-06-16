@@ -1,12 +1,12 @@
 #All blocks have a default value of 1 XP per block
 #If it's specified here, this value (right of the colon), will override
 blocks:
-  DIAMOND_ORE:10
-  IRON_ORE:5
-  GOLD_ORE:7
+  DIAMOND_ORE: 10
+  IRON_ORE: 5
+  GOLD_ORE: 7
 #Enable double XP (For donors)
 mob:
-  ZOMBIE:10
+  ZOMBIE: 10
 multiplier: true
 multiplier-amount: 3
 #Permission required

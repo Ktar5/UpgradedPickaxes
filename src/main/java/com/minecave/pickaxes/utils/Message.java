@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
  */
 public enum Message {
 
-    SUCCESS(ChatColor.GRAY.toString() + "[" + ChatColor.GREEN + ChatColor.BOLD + "THub" + ChatColor.GRAY + "] " + ChatColor.YELLOW),
-    FAILURE(ChatColor.GRAY.toString() + "[" + ChatColor.RED + ChatColor.BOLD + "THub" + ChatColor.GRAY + "] " + ChatColor.GRAY);
+    SUCCESS(ChatColor.GRAY.toString() + "[" + ChatColor.GREEN + ChatColor.BOLD + "Pickaxes" + ChatColor.GRAY + "] " + ChatColor.YELLOW),
+    FAILURE(ChatColor.GRAY.toString() + "[" + ChatColor.RED + ChatColor.BOLD + "Pickaxes" + ChatColor.GRAY + "] " + ChatColor.GRAY);
     private String text;
 
     Message(String text) {

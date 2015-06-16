@@ -35,6 +35,14 @@ public class PlayerInfo {
         return infoMap.get(player.getUniqueId());
     }
 
+    public static void save(Player player) {
+        PlayerInfo info = PlayerInfo.get(player);
+        if (info == null) {
+            return;
+        }
+        info.logOff();
+    }
+
     public void addSword(Sword sword) {
         this.swords.add(sword);
     }

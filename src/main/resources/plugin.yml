@@ -4,3 +4,4 @@ main: ${plugin.mainClass}
 commands:
   pick:
   givePick:
+  sword:

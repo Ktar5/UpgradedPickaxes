@@ -41,13 +41,13 @@ public class SQLManager {
         this.port = port;
         this.url = "jdbc:mysql://" + host + ":" + port + "/" + db;
         getConnection();
-        new QueryThread();
         QueryThread.addQuery("CREATE TABLE IF NOT EXISTS `player_info`" +
                 "(" +
                 "`player` varchar(64) PRIMARY KEY NOT NULL, " +
                 "`picks` BLOB," +
                 "`swords` BLOB" +
                 ")");
+        new QueryThread();
 //        new QueryThread();
     }
 
@@ -97,6 +97,7 @@ public class SQLManager {
                 ResultSet res = getResultSet(query);
                 try {
                     if(res == null) {
+                        new PlayerInfo(new ArrayList<>(), new ArrayList<>(), player);
                         return;
                     }
                     if (res.next()) {
@@ -124,7 +125,7 @@ public class SQLManager {
                                 pickList.set(i++, pick);
                             }
                         }
-                        PlayerInfo.getInfoMap().put(player.getUniqueId(), new PlayerInfo(pickList, swordList, player));
+                        new PlayerInfo(pickList, swordList, player);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
