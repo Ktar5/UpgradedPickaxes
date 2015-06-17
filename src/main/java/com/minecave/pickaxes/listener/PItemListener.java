@@ -47,20 +47,17 @@ public class PItemListener implements Listener {
     public void onRightClick(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR &&
                 event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            System.out.println("Not Right Click");
             return;
         }
         Player player = event.getPlayer();
         ItemStack inhand = player.getItemInHand();
         if (inhand == null || inhand.getType() == Material.AIR) {
-            System.out.println("Not Item in hand");
             return;
         }
         Pickaxe pickaxe = Pickaxe.tryFromItem(inhand);
         if (pickaxe != null) {
             Skill skill = pickaxe.getSkill();
             if (skill == null) {
-                System.out.println("Skill's null");
                 return;
             }
             if (!skill.canUse(player, pickaxe)) {
@@ -77,7 +74,6 @@ public class PItemListener implements Listener {
         }
         Skill skill = sword.getSkill();
         if (skill == null) {
-            System.out.println("Skill's null");
             return;
         }
         if (!skill.canUse(player, sword)) {

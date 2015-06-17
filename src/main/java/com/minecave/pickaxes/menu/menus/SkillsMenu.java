@@ -48,7 +48,7 @@ public class SkillsMenu extends Menu {
             boolean purchased = pItem.getPurchasedSkills().contains(skill);
             boolean isHighEnough = skill.highEnough(pItem);
             ItemStack item = new ItemStack(purchased ?
-                    pItem.getSkill().equals(skill) ?
+                    pItem.getSkill() != null && pItem.getSkill().equals(skill) ?
                             Material.REDSTONE : Material.SULPHUR :
                     Material.STAINED_GLASS_PANE, 1);
             ItemMeta meta = item.getItemMeta();
@@ -70,7 +70,7 @@ public class SkillsMenu extends Menu {
                 }
                 fItem.setSkill(skill);
                 p.sendMessage(ChatColor.GOLD + "You activated " + skill.getName() + ".");
-                menu.close(p);
+                this.display(p);
             });
             i++;
         }

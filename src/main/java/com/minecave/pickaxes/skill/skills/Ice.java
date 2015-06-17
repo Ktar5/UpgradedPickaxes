@@ -30,7 +30,7 @@ public class Ice extends Skill {
     @Override
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        List<Block> blocks = getRegionBlocks(player.getLocation(), radius);
+        List<Block> blocks = getRegionBlocks(player, player.getLocation(), radius);
 
         for (Block block : blocks) {
             if (!this.wg.canBuild(event.getPlayer(), block)) {
@@ -39,7 +39,7 @@ public class Ice extends Skill {
             Collection<ItemStack> items = block.getDrops(player.getItemInHand());
             player.getInventory().addItem(items.toArray(new ItemStack[items.size()]));
             player.updateInventory();
-            block.setType(Material.ICE);
+            block.setType(Material.PACKED_ICE);
         }
 
         new BukkitRunnable() {
@@ -57,16 +57,19 @@ public class Ice extends Skill {
         this.add(player);
     }
 
-    public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
+    public ArrayList<Block> getRegionBlocks(Player p, Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
         for (double x = -radius; x <= radius; x++) {
             for (double y = -radius; y <= radius; y++) {
                 for (double z = -radius; z <= radius; z++) {
                     Location l = loc1.clone().add(x, y, z);
-                    if(!l.getChunk().isLoaded()) {
+                    if (!l.getChunk().isLoaded()) {
                         continue;
                     }
-                    blocks.add(l.getBlock());
+                    Block b = l.getBlock();
+                    if (b.getType() != Material.AIR) {
+                        blocks.add(b);
+                    }
                 }
             }
         }

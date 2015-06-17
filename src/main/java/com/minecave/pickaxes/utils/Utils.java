@@ -174,6 +174,7 @@ public class Utils {
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
             String s = storage.getData(null);
             if(s != null && Boolean.parseBoolean(s)) {
+                System.out.println(s + " " + entry.getKey());
                 pick.getPurchasedSkills().add(entry.getValue());
             }
         }

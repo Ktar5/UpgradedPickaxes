@@ -128,6 +128,7 @@ public abstract class PItem {
             lore.add("None");
         } else {
             lore.addAll(list);
+            list.forEach(player::sendMessage);
         }
         meta.setLore(lore);
         boolean sword = this instanceof Sword;
@@ -137,7 +138,8 @@ public abstract class PItem {
                 ChatColor.RED + "Failed to build name.";
         meta.setDisplayName(this.name);
         item.setItemMeta(meta);
-        player.getInventory().setItem(slot, item);
+//        player.getInventory().setItem(slot, item);
+        player.updateInventory();
         if (this instanceof Pickaxe) {
             Pickaxe.pickaxeMap.put(item, (Pickaxe) this);
         } else if (this instanceof Sword) {
@@ -172,7 +174,6 @@ public abstract class PItem {
             this.points++;
         }
         update(player);
-        player.sendMessage("XP increased. Value: " + this.xp);
         return this.xp;
     }
 

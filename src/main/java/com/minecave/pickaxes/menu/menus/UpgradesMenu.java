@@ -83,9 +83,14 @@ public class UpgradesMenu extends Menu {
             buttons[greenWoolIndex] = new Button(greenWool,
                     (p, clickType) -> {
                         if (enchant.getLevel() < enchant.getMaxLevel() &&
-                                enchant.getCost() < fItem.getPoints()) {
+                                enchant.getCost() <= fItem.getPoints()) {
                             enchant.increaseLevel(p, fItem);
                             this.display(p);
+                            return;
+                        }
+                        if(enchant.getCost() > fItem.getPoints()) {
+                            player.sendMessage(ChatColor.RED + "You don't have enough points on this item.");
+                            player.sendMessage(ChatColor.GOLD + "Current Item Points: " + fItem.getPoints());
                         }
                     });
 
