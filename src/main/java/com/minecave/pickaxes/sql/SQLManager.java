@@ -151,12 +151,12 @@ public class SQLManager {
                 "ON DUPLICATE KEY UPDATE `swords` = ?, `picks` = ?";
         try {
             PreparedStatement pst = PickaxesRevamped.getInstance().getSqlManager().getConnection().prepareStatement(query);
-            if(swordData != null) {
+            if(swordData != null || swords.isEmpty()) {
                 pst.setBytes(1, swordData);
             } else {
                 pst.setNull(1, Types.BLOB);
             }
-            if(pickData != null) {
+            if(pickData != null || pickaxes.isEmpty()) {
                 pst.setBytes(2, pickData);
             } else {
                 pst.setNull(2, Types.BLOB);
