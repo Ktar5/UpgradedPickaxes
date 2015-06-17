@@ -60,8 +60,8 @@ public class Ice extends Skill {
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
         for (double x = -radius; x <= radius; x++) {
-            for (double y = -radius; x <= radius; y++) {
-                for (double z = -radius; x <= radius; z++) {
+            for (double y = -radius; y <= radius; y++) {
+                for (double z = -radius; z <= radius; z++) {
                     Location l = loc1.clone().add(x, y, z);
                     if(!l.getChunk().isLoaded()) {
                         continue;
