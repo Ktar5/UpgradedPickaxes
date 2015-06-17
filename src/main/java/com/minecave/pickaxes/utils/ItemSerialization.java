@@ -62,7 +62,7 @@ public class ItemSerialization {
     }
 
     public static Inventory getInventoryFromArray(ItemStack[] items) {
-        Inventory custom = Bukkit.getServer().createInventory(null, items.length);
+        Inventory custom = Bukkit.getServer().createInventory(null, items.length + (9 - items.length % 9));
         for (int i = 0; i < items.length; i++) {
             if (items[i] != null) {
                 custom.setItem(i, items[i]);

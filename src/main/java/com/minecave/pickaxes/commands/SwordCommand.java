@@ -11,7 +11,6 @@ package com.minecave.pickaxes.commands;
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.menu.menus.MainSwordMenu;
 import com.minecave.pickaxes.pitem.Sword;
-import com.minecave.pickaxes.utils.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,10 +24,10 @@ public class SwordCommand implements CommandExecutor {
             MainSwordMenu menu = PickaxesRevamped.getInstance().getConfigValues().getMainSwordMenu();
             Player player = (Player) commandSender;
             Sword sword = Sword.tryFromItem(player.getItemInHand());
-            if (sword == null) {
-                Message.FAILURE.sendMessage(player, "You need to have a sword in your hand.");
-                return true;
-            }
+//            if (sword == null) {
+//                Message.FAILURE.sendMessage(player, "You need to have a sword in your hand.");
+//                return true;
+//            }
             menu.display((Player) commandSender);
         }
         return true;

@@ -17,7 +17,7 @@ import java.util.Map;
 public abstract class InteractiveMenu extends Menu {
 
     protected final Button NEXT_PAGE, PREV_PAGE;
-    private Map<Integer, Page> pages;
+    private Map<Integer, Page> pages = new HashMap<>();
 
     public InteractiveMenu(String name) {
         super(name);

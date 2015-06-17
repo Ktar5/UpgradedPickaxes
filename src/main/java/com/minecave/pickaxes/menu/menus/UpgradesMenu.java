@@ -82,7 +82,8 @@ public class UpgradesMenu extends Menu {
             greenWool.setItemMeta(meta);
             buttons[greenWoolIndex] = new Button(greenWool,
                     (p, clickType) -> {
-                        if (enchant.getLevel() < enchant.getMaxLevel()) {
+                        if (enchant.getLevel() < enchant.getMaxLevel() &&
+                                enchant.getCost() < fItem.getPoints()) {
                             enchant.increaseLevel(p, fItem);
                             this.display(p);
                         }

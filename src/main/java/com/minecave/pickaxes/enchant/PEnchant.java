@@ -64,7 +64,7 @@ public abstract class PEnchant {
             return;
         }
         this.setLevel(getLevel() + 1);
-        pItem.setPoints(pItem.getPoints() - getLevelCost(getLevelCost(level - 1)));
+        pItem.setPoints(pItem.getPoints() - getLevelCost(level - 1));
         pItem.update(player);
     }
 
@@ -74,7 +74,7 @@ public abstract class PEnchant {
             return;
         }
         this.setLevel(getLevel() - 1);
-        pItem.setPoints(pItem.getPoints() + getLevelCost(getLevelCost(level + 1)));
+        pItem.setPoints(pItem.getPoints() + getLevelCost(level + 1));
         pItem.update(player);
     }
 

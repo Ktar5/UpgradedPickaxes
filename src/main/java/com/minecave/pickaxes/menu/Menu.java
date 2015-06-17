@@ -29,7 +29,7 @@ public abstract class Menu {
     public Button getButton(int slot) {
         try {
             return buttons[slot];
-        } catch (IndexOutOfBoundsException e ) {
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
     }
@@ -51,7 +51,9 @@ public abstract class Menu {
         Inventory inventory = Bukkit.createInventory(player, size, name);
         for (int i = 0; i < buttons.length; i++) {
             Button burton = buttons[i];
-            inventory.setItem(i, burton.getItem());
+            if (burton != null) {
+                inventory.setItem(i, burton.getItem());
+            }
         }
         player.closeInventory();
         this.inventory = inventory;
@@ -62,7 +64,7 @@ public abstract class Menu {
         Inventory inventory = player.getOpenInventory().getTopInventory();
         for (int i = 0; i < buttons.length; i++) {
             Button button = buttons[i];
-            if(button == null) {
+            if (button == null) {
                 continue;
             }
             inventory.setItem(i, button.getItem());
@@ -134,7 +136,8 @@ public abstract class Menu {
     public static class FillerButton extends Button {
 
         public FillerButton(ItemStack itemStack) {
-            super(itemStack, (player, clickType) -> {});
+            super(itemStack, (player, clickType) -> {
+            });
         }
 
     }

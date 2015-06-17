@@ -8,7 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,7 +29,7 @@ public class Lightning extends Skill {
     @Override
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Location location = player.getLocation();
+        Location location = player.getEyeLocation();
         Set<Material> materials = new HashSet<>();
         Location target = player.getTargetBlock(materials, distance).getLocation();
         World world = location.getWorld();
@@ -38,7 +40,18 @@ public class Lightning extends Skill {
             if(!this.wg.canBuild(event.getPlayer(), loc)){
                 continue;
             }
-            player.getInventory().addItem(loc.getBlock().getDrops().toArray(new ItemStack[loc.getBlock().getDrops().size()]));
+            List<ItemStack> drops = new ArrayList<>();
+            drops.addAll(loc.getBlock().getDrops());
+            for(int i = 0; i < drops.size(); i++) {
+                ItemStack itemStack = drops.get(i);
+                if(itemStack.getType() == Material.AIR ||
+                        itemStack.getType() == Material.BEDROCK) {
+                    drops.remove(i);
+                } else {
+                    player.getInventory().addItem(drops.toArray(new ItemStack[drops.size()]));
+                }
+            }
+            loc.getBlock().setType(Material.AIR);
             player.updateInventory();
         }
         this.add(player);

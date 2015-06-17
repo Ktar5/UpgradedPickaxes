@@ -59,6 +59,7 @@ public class LevelGenerator {
                     example = new Level(100, i, Collections.singletonList("give $player$ diamond 1"),
                             PickaxesRevamped.getInstance().getConfigValues().getFireworkBuilder());
                 }
+                System.out.println("Generating Level " + i);
                 Level.getLevels().put(i, example);
             }
         }

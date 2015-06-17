@@ -8,7 +8,6 @@ import com.minecave.pickaxes.pitem.PItem;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.skill.Skill;
-import com.minecave.pickaxes.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -51,7 +50,7 @@ public class SkillsMenu extends Menu {
             ItemStack item = new ItemStack(purchased ?
                     pItem.getSkill().equals(skill) ?
                             Material.REDSTONE : Material.SULPHUR :
-                    Utils.BLACK.getItem().getType());
+                    Material.STAINED_GLASS_PANE, 1);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName((purchased ? ChatColor.GOLD : ChatColor.RED) + skill.getName());
             meta.setLore(Collections.singletonList(purchased ?
@@ -59,6 +58,7 @@ public class SkillsMenu extends Menu {
                     isHighEnough ? ChatColor.DARK_RED + "Click to purchase." :
                             ChatColor.DARK_RED + "You need level " + skill.getLevel() + "."));
             item.setItemMeta(meta);
+            Menu menu = this;
             buttons[i] = new Button(item, (p, clickType) -> {
                 if (!isHighEnough) {
                     p.sendMessage(ChatColor.RED + "You need level " + skill.getLevel());
@@ -70,6 +70,7 @@ public class SkillsMenu extends Menu {
                 }
                 fItem.setSkill(skill);
                 p.sendMessage(ChatColor.GOLD + "You activated " + skill.getName() + ".");
+                menu.close(p);
             });
             i++;
         }

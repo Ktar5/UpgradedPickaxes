@@ -4,7 +4,6 @@ import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.builder.FireworkBuilder;
 import com.minecave.pickaxes.builder.MessageBuilder;
 import com.minecave.pickaxes.pitem.PItem;
-import com.minecave.pickaxes.utils.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -39,7 +38,6 @@ public class Level {
     private static Map<Integer, Level> levels = new HashMap<>();
     private static List<String> LEVEL_UP_MESSAGE = new ArrayList<>();
     public static Level ONE;
-    private Level previous, next;
 
     public Level(int xp, int rep, List<String> commands) {
         this.xp = xp;
@@ -49,8 +47,6 @@ public class Level {
             ONE = this;
         }
         levels.put(rep, this);
-        this.previous = prev();
-        this.next = nxt();
     }
 
     public Level(int xp, int rep, List<String> commands, FireworkBuilder builder) {
@@ -59,6 +55,7 @@ public class Level {
     }
 
     public void levelUp(Player player, PItem pItem) {
+        Level next = getNext();
         List<String> messages = new ArrayList<>();
         for (String s : LEVEL_UP_MESSAGE) {
             MessageBuilder builder = new MessageBuilder(s);
@@ -87,16 +84,16 @@ public class Level {
           .replace(0, MessageBuilder.IntegerType.XP)
           .replace(pItem)
           .build();
-        Title title = new Title(title_line1, title_line2);
-        title.setFadeInTime(35);
-        title.setFadeOutTime(30);
-        title.setTimingsToTicks();
+//        Title title = new Title(title_line1, title_line2);
+//        title.setFadeInTime(35);
+//        title.setFadeOutTime(30);
+//        title.setTimingsToTicks();
         for (String s : commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
         }
         player.sendMessage(to);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
-        title.send(player);
+//        title.send(player);
         if (fireworkBuilder != null) {
             fireworkBuilder.play(player);
         }
@@ -116,11 +113,11 @@ public class Level {
     }
 
     public Level getPrevious() {
-        return previous;
+        return prev();
     }
 
     public Level getNext() {
-        return next;
+        return nxt();
     }
 
     public int getXp() {

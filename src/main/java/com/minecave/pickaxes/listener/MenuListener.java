@@ -38,7 +38,7 @@ public class MenuListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         ClickType clickType = event.getClick();
         Menu menu = Menu.get(event.getInventory().getTitle());
-        if(menu == null) {
+        if (menu == null) {
             return;
         }
 
@@ -46,26 +46,29 @@ public class MenuListener implements Listener {
         event.setResult(Result.DENY);
 
         PlayerInfo info = PlayerInfo.get(player);
-        if(info == null) {
+        if (info == null) {
             throw new RuntimeException(player.getName() + " doesn't have PlayerInfo.");
         }
 
         if (menu instanceof PickMenu) {
             PickMenu pickMenu = (PickMenu) menu;
             Button button = menu.getButton(event.getRawSlot());
-            if(!(button instanceof PickaxeButton)) {
-                button.click(player, clickType);
-            } else {
-                ((PickaxeButton) button).click(player, clickType, event.getRawSlot(), pickMenu);
+            if (event.getRawSlot() < event.getView().getTopInventory().getSize() &&
+                    button != null) {
+                if (!(button instanceof PickaxeButton)) {
+                    button.click(player, clickType);
+                } else {
+                    ((PickaxeButton) button).click(player, clickType, event.getRawSlot(), pickMenu);
+                }
             }
             Inventory inventory = event.getView().getBottomInventory();
             ItemStack inhand = event.getCurrentItem();
             if (inhand == null ||
-              (inhand.getType() != Material.DIAMOND_PICKAXE
-                && inhand.getType() != Material.IRON_PICKAXE
-                && inhand.getType() != Material.GOLD_PICKAXE
-                && inhand.getType() != Material.STONE_PICKAXE
-                && inhand.getType() != Material.WOOD_PICKAXE)) {
+                    (inhand.getType() != Material.DIAMOND_PICKAXE
+                            && inhand.getType() != Material.IRON_PICKAXE
+                            && inhand.getType() != Material.GOLD_PICKAXE
+                            && inhand.getType() != Material.STONE_PICKAXE
+                            && inhand.getType() != Material.WOOD_PICKAXE)) {
                 return;
             }
             int slot = event.getSlot();
@@ -75,22 +78,25 @@ public class MenuListener implements Listener {
             return;
         }
 
-        if(menu instanceof SwordMenu) {
+        if (menu instanceof SwordMenu) {
             SwordMenu swordMenu = (SwordMenu) menu;
             Button button = menu.getButton(event.getRawSlot());
-            if(!(button instanceof SwordButton)) {
-                button.click(player, clickType);
-            } else {
-                ((SwordButton) button).click(player, clickType, event.getRawSlot(), swordMenu);
+            if (event.getRawSlot() < event.getView().getTopInventory().getSize() &&
+                    button != null) {
+                if (!(button instanceof SwordButton)) {
+                    button.click(player, clickType);
+                } else {
+                    ((SwordButton) button).click(player, clickType, event.getRawSlot(), swordMenu);
+                }
             }
             Inventory inventory = event.getView().getBottomInventory();
             ItemStack inhand = event.getCurrentItem();
             if (inhand == null ||
-              (inhand.getType() != Material.DIAMOND_SWORD
-                && inhand.getType() != Material.IRON_SWORD
-                && inhand.getType() != Material.GOLD_SWORD
-                && inhand.getType() != Material.STONE_SWORD
-                && inhand.getType() != Material.WOOD_SWORD)) {
+                    (inhand.getType() != Material.DIAMOND_SWORD
+                            && inhand.getType() != Material.IRON_SWORD
+                            && inhand.getType() != Material.GOLD_SWORD
+                            && inhand.getType() != Material.STONE_SWORD
+                            && inhand.getType() != Material.WOOD_SWORD)) {
                 return;
             }
             int slot = event.getSlot();
@@ -101,7 +107,7 @@ public class MenuListener implements Listener {
         }
 
         Button button = menu.getButton(event.getRawSlot());
-        if(button == null) {
+        if (button == null) {
             return;
         }
 

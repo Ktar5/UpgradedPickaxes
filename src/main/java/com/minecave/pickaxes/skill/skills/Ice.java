@@ -32,8 +32,8 @@ public class Ice extends Skill {
         Player player = event.getPlayer();
         List<Block> blocks = getRegionBlocks(player.getLocation(), radius);
 
-        for(Block block : blocks){
-            if(!this.wg.canBuild(event.getPlayer(), block)){
+        for (Block block : blocks) {
+            if (!this.wg.canBuild(event.getPlayer(), block)) {
                 continue;
             }
             Collection<ItemStack> items = block.getDrops(player.getItemInHand());
@@ -46,8 +46,8 @@ public class Ice extends Skill {
             @Override
             public void run() {
                 player.playSound(event.getPlayer().getLocation(), Sound.GLASS, 3.0F, 2.0F);
-                for(Block block : blocks){
-                    if(!wg.canBuild(event.getPlayer(), block)){
+                for (Block block : blocks) {
+                    if (!wg.canBuild(event.getPlayer(), block)) {
                         continue;
                     }
                     block.setType(Material.AIR);
@@ -57,12 +57,16 @@ public class Ice extends Skill {
         this.add(player);
     }
 
-    public ArrayList<Block> getRegionBlocks( Location loc1, double radius) {
+    public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
-        for(double x = -radius; x <= radius; x++) {
-            for(double y = -radius; x <= radius; y++) {
-                for(double z = -radius; x <= radius; z++) {
-                    blocks.add(loc1.clone().add(x,y,z).getBlock());
+        for (double x = -radius; x <= radius; x++) {
+            for (double y = -radius; x <= radius; y++) {
+                for (double z = -radius; x <= radius; z++) {
+                    Location l = loc1.clone().add(x, y, z);
+                    if(!l.getChunk().isLoaded()) {
+                        continue;
+                    }
+                    blocks.add(l.getBlock());
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.utils.Utils;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,6 +40,8 @@ public class PlayerInfo {
         if(this.pickaxes == null) {
             this.pickaxes = new ArrayList<>();
         }
+        this.invPicks = new ArrayList<>();
+        this.invSwords = new ArrayList<>();
         this.player = player;
         infoMap.put(player.getUniqueId(), this);
     }
@@ -53,6 +56,9 @@ public class PlayerInfo {
             return;
         }
         for(ItemStack i : player.getInventory()) {
+            if(i == null || i.getType() == Material.AIR) {
+                continue;
+            }
             Pickaxe p = Pickaxe.tryFromItem(i);
             if(p != null) {
                 info.invPicks.add(p);

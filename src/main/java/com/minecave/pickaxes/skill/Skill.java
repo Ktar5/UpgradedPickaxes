@@ -3,6 +3,7 @@ package com.minecave.pickaxes.skill;
 import com.minecave.pickaxes.pitem.PItem;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -37,23 +38,32 @@ public abstract class Skill {
         this.cooldowns = new HashMap<>();
     }
 
-    //The fuck is this shit?
     public boolean highEnough(PItem item) {
         return item.getLevel().getId() >= level;
     }
 
-    public boolean canUse(Player player) {
+    public boolean canUse(Player player, PItem item) {
+        long seconds = getTimeDiff(player);
+        System.out.println(cooldown <= seconds && highEnough(item));
+        return cooldown <= seconds && highEnough(item);
+    }
+
+    public long getTimeDiff(Player player) {
         long current = System.currentTimeMillis();
         Long in = cooldowns.get(player.getUniqueId());
         if(in == null) {
-            return true;
+            return cooldown;
         }
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(current) - TimeUnit.MILLISECONDS.toSeconds(in);
-        return cooldown <= seconds;
+        return TimeUnit.MILLISECONDS.toSeconds(current) - TimeUnit.MILLISECONDS.toSeconds(in);
     }
 
     public void add(Player player) {
         cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+    }
+
+    public void use(Player player, PlayerInteractEvent event) {
+        player.sendMessage(ChatColor.GOLD + "You used " + this.getName() + ". Cooldown: " + cooldown + "s");
+        this.use(event);
     }
 
     public abstract void use(PlayerInteractEvent event);
@@ -64,5 +74,9 @@ public abstract class Skill {
 
     public String getName() {
         return name;
+    }
+
+    public long getTimeLeft(Player player) {
+        return cooldown - getTimeDiff(player);
     }
 }

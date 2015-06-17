@@ -23,10 +23,12 @@ public class Sword extends PItem {
 
     public Sword(ItemStack itemStack, String name) {
         super(itemStack, name);
+        swordMap.put(itemStack, this);
     }
 
     public Sword(ItemStack itemStack, Level level, int xp, String name, Skill skill) {
         super(itemStack, level, xp, name, skill);
+        swordMap.put(itemStack, this);
     }
 
     public static Sword tryFromItem(ItemStack inhand) {
@@ -53,7 +55,7 @@ public class Sword extends PItem {
         meta.setDisplayName(buildName(player) + ". Do /pick");
     }
 
-    private String buildName(Player player) {
+    public String buildName(Player player) {
         return ChatColor.AQUA + player.getName() + String.format("'s Diamond Sword: Level: %d XP: %d",
                 this.level.getId(), this.xp);
     }
@@ -64,6 +66,5 @@ public class Sword extends PItem {
             enchant.activate(event);
         }
         incrementXp(xp, (Player) event.getDamager());
-        update((Player) event.getDamager());
     }
 }

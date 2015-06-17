@@ -1,6 +1,7 @@
 package com.minecave.pickaxes.builder;
 
 import com.minecave.pickaxes.pitem.PItem;
+import com.minecave.pickaxes.pitem.Pickaxe;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -9,10 +10,13 @@ import org.bukkit.entity.Player;
  */
 public class MessageBuilder {
 
-    private String base;
+    private String base = "";
 
     public MessageBuilder(String base) {
         this.base = base;
+        if (this.base == null) {
+            this.base = "";
+        }
         this.base = ChatColor.translateAlternateColorCodes('&', base);
     }
 
@@ -22,7 +26,12 @@ public class MessageBuilder {
     }
 
     public MessageBuilder replace(PItem PItem) {
-        this.base = base.replace("$skill$", PItem.getName());
+        if(PItem == null) {
+            return this;
+        }
+        this.base = base.replace("$skill$", PItem.getName().substring(0,
+                PItem.getName().indexOf('\'')) + "'s " +
+                (PItem instanceof Pickaxe ? "Pick." : "Sword."));
         return this;
     }
 
@@ -39,7 +48,7 @@ public class MessageBuilder {
 
         PLAYER_LEVEL("$newLevel$", "$currentLevel", "$level$"),
         XP("$currentXp$", "$xp$"),
-        NEXT_XP("$nextXp$"),
+        NEXT_XP("$nextXP$"),
         NEXT_LEVEL("$nextLevel$");
 
         private String[] all;
@@ -49,9 +58,12 @@ public class MessageBuilder {
         }
 
         public String replace(String s, int i) {
+            if (s == null) {
+                return null;
+            }
             String string = s;
-            for(String a : all) {
-                if(s.contains(a)) {
+            for (String a : all) {
+                if (s.contains(a)) {
                     string = string.replace(a, String.valueOf(i));
                 }
             }

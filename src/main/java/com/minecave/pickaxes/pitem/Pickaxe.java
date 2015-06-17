@@ -1,7 +1,6 @@
 package com.minecave.pickaxes.pitem;
 
 import com.minecave.pickaxes.drops.BlockValues;
-import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import com.minecave.pickaxes.utils.Utils;
@@ -26,10 +25,12 @@ public class Pickaxe extends PItem {
 
     public Pickaxe(ItemStack itemStack, String name) {
         super(itemStack, name);
+        pickaxeMap.put(itemStack, this);
     }
 
     public Pickaxe(ItemStack itemStack, Level level, int xp, String name, Skill skill) {
         super(itemStack, level, xp, name, skill);
+        pickaxeMap.put(itemStack, this);
     }
 
     public static Pickaxe tryFromItem(ItemStack inhand) {
@@ -58,22 +59,21 @@ public class Pickaxe extends PItem {
 
     public void onBreak(BlockBreakEvent event) {
         blocksBroken++;
-        for(PEnchant enchant : this.getEnchants().values()) {
-            enchant.activate(event);
-        }
+        this.getEnchants().values().stream()
+                .filter(enchant -> enchant != null && enchant.getLevel() > 0)
+                .forEach(enchant -> enchant.activate(event));
         int xp = 1;
         if(BlockValues.getXp(event.getBlock()) > -1) {
             xp = BlockValues.getXp(event.getBlock());
         }
         incrementXp(xp, event.getPlayer());
-        this.update(event.getPlayer());
     }
 
     public int getBlocksBroken() {
         return blocksBroken;
     }
 
-    private String buildName(Player player) {
+    public String buildName(Player player) {
         return ChatColor.AQUA + player.getName() + String.format("'s Diamond Pickaxe: Level: %d XP: %d Blocks: %d",
                 this.level.getId(), this.xp, this.blocksBroken);
     }

@@ -78,7 +78,7 @@ public class Utils {
         }
         AttributeStorage storage;
         storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
-        storage.setData(skill == null ? null : skill.getName());
+        storage.setData(skill == null ? "null" : skill.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
         storage.setData(p.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
@@ -93,12 +93,9 @@ public class Utils {
             storage.setData(String.valueOf(entry.getValue()));
         }
         for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
-            if(!p.getPurchasedSkills().contains(entry.getValue())) {
-                continue;
-            }
             storage = AttributeStorage.newTarget(storage.getTarget(),
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
-            storage.setData(entry.getKey());
+            storage.setData(String.valueOf(p.getPurchasedSkills().contains(entry.getValue())));
         }
         return storage.getTarget();
     }
@@ -128,7 +125,7 @@ public class Utils {
         }
         AttributeStorage storage;
         storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
-        storage.setData(skill == null ? null : skill.getName());
+        storage.setData(skill == null ? "null" : skill.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
         storage.setData(p.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
@@ -145,12 +142,9 @@ public class Utils {
             storage.setData(String.valueOf(entry.getValue()));
         }
         for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
-            if(!p.getPurchasedSkills().contains(entry.getValue())) {
-                continue;
-            }
             storage = AttributeStorage.newTarget(storage.getTarget(),
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
-            storage.setData(entry.getKey());
+            storage.setData(String.valueOf(p.getPurchasedSkills().contains(entry.getValue())));
         }
         return storage.getTarget();
     }
@@ -161,6 +155,7 @@ public class Utils {
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
         Skill skill = Skills.getSkill(storage.getData(null));
         Pickaxe pick = new Pickaxe(item, Level.ONE, 0, name, skill);
+        pick.setSkill(skill);
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
         pick.setBlocksBroken(Integer.parseInt(storage.getData("0")));
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
@@ -178,7 +173,7 @@ public class Utils {
             storage = AttributeStorage.newTarget(storage.getTarget(),
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
             String s = storage.getData(null);
-            if(s != null && s.equals(entry.getKey())) {
+            if(s != null && Boolean.parseBoolean(s)) {
                 pick.getPurchasedSkills().add(entry.getValue());
             }
         }
@@ -191,6 +186,7 @@ public class Utils {
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
         Skill skill = Skills.getSkill(storage.getData(null));
         Sword sword = new Sword(item, Level.ONE, 0, name, skill);
+        sword.setSkill(skill);
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
         sword.setPoints(Integer.parseInt(storage.getData("0")));
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
@@ -206,7 +202,7 @@ public class Utils {
             storage = AttributeStorage.newTarget(storage.getTarget(),
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
             String s = storage.getData(null);
-            if(s != null && s.equals(entry.getKey())) {
+            if(s != null && Boolean.parseBoolean(s)) {
                 sword.getPurchasedSkills().add(entry.getValue());
             }
         }

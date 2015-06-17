@@ -67,6 +67,7 @@ public class SQLManager {
         } catch (Exception e) {
             e.printStackTrace();
             try {
+                Class.forName("com.mysql.jdbc.Driver");
                 con = DriverManager.getConnection(url, user, pass);
             } catch (Exception err) {
                 err.printStackTrace();
@@ -83,6 +84,9 @@ public class SQLManager {
             pst = getConnection().prepareStatement(query);
             return pst.executeQuery();
         } catch (Exception err) {
+            if (err instanceof NullPointerException) {
+                return null;
+            }
             err.printStackTrace();
             return null;
         }
@@ -90,14 +94,14 @@ public class SQLManager {
 
     public void init(Player player) {
         new PlayerInfo(player);
-        player.getInventory().forEach(this::tryGetPItem);
+        player.getInventory().forEach(i -> this.tryGetPItem(player, i));
         new BukkitRunnable() {
             @Override
             public void run() {
                 String query = "SELECT * FROM `player_info` WHERE `player`='" + player.getUniqueId().toString() + "'";
                 ResultSet res = getResultSet(query);
                 try {
-                    if(res == null || !res.isBeforeFirst()) {
+                    if (res == null || !res.isBeforeFirst()) {
                         return;
                     }
                     if (res.next()) {
@@ -134,10 +138,15 @@ public class SQLManager {
         }.runTaskAsynchronously(PickaxesRevamped.getInstance());
     }
 
-    public void tryGetPItem(ItemStack i) {
+    public void tryGetPItem(Player player, ItemStack i) {
         Pickaxe p = Pickaxe.tryFromItem(i);
-        if(p == null) {
-            Sword.tryFromItem(i);
+        if (p == null) {
+            Sword s;
+            if ((s = Sword.tryFromItem(i)) != null) {
+                s.update(player);
+            }
+        } else {
+            p.update(player);
         }
     }
 
@@ -151,12 +160,12 @@ public class SQLManager {
                 "ON DUPLICATE KEY UPDATE `swords` = ?, `picks` = ?";
         try {
             PreparedStatement pst = PickaxesRevamped.getInstance().getSqlManager().getConnection().prepareStatement(query);
-            if(swordData != null || swords.isEmpty()) {
+            if (swordData != null || swords.isEmpty()) {
                 pst.setBytes(1, swordData);
             } else {
                 pst.setNull(1, Types.BLOB);
             }
-            if(pickData != null || pickaxes.isEmpty()) {
+            if (pickData != null || pickaxes.isEmpty()) {
                 pst.setBytes(2, pickData);
             } else {
                 pst.setNull(2, Types.BLOB);

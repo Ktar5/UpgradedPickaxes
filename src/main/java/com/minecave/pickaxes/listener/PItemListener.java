@@ -4,11 +4,13 @@ import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.skill.Skill;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -22,6 +24,7 @@ public class PItemListener implements Listener {
     private PickaxesRevamped plugin = PickaxesRevamped.getInstance();
 
     public PItemListener() {
+
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -33,7 +36,7 @@ public class PItemListener implements Listener {
             return;
         }
         Pickaxe pickaxe = Pickaxe.tryFromItem(inhand);
-        if(pickaxe == null) {
+        if (pickaxe == null) {
             return;
         }
         pickaxe.onBreak(event);
@@ -42,32 +45,44 @@ public class PItemListener implements Listener {
 
     @EventHandler
     public void onRightClick(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR &&
+                event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            System.out.println("Not Right Click");
+            return;
+        }
         Player player = event.getPlayer();
         ItemStack inhand = player.getItemInHand();
         if (inhand == null || inhand.getType() == Material.AIR) {
+            System.out.println("Not Item in hand");
             return;
         }
         Pickaxe pickaxe = Pickaxe.tryFromItem(inhand);
-        if(pickaxe != null) {
+        if (pickaxe != null) {
             Skill skill = pickaxe.getSkill();
-            if(skill == null) {
+            if (skill == null) {
+                System.out.println("Skill's null");
                 return;
             }
-            if(!skill.canUse(player)) {
+            if (!skill.canUse(player, pickaxe)) {
+                player.sendMessage(ChatColor.RED + "You cannot use " + skill.getName() +
+                        " for another " + skill.getTimeLeft(player) + "s.");
                 return;
             }
             skill.use(event);
             return;
         }
         Sword sword = Sword.tryFromItem(inhand);
-        if(sword == null) {
+        if (sword == null) {
             return;
         }
         Skill skill = sword.getSkill();
-        if(skill == null) {
+        if (skill == null) {
+            System.out.println("Skill's null");
             return;
         }
-        if(!skill.canUse(player)) {
+        if (!skill.canUse(player, sword)) {
+            player.sendMessage(ChatColor.RED + "You cannot use " + skill.getName() +
+                    " for another " + skill.getTimeLeft(player) + "s.");
             return;
         }
         skill.use(event);
@@ -89,7 +104,7 @@ public class PItemListener implements Listener {
             return;
         }
         Sword s = Sword.tryFromItem(inhand);
-        if(s == null) {
+        if (s == null) {
             return;
         }
         s.onHit(event);

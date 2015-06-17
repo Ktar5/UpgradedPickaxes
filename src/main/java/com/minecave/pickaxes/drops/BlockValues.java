@@ -22,8 +22,9 @@ public class BlockValues {
     }
 
     public static int getXp(Block block) {
-        if(values.get(block.getType()) == null) {
-            return -1;
+        if(!values.containsKey(block.getType()) ||
+                values.get(block.getType()) == null) {
+            return 1;
         }
         return values.get(block.getType());
     }

@@ -120,15 +120,21 @@ public abstract class PItem {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
         lore.add("Custom Enchants: ");
-        lore.addAll(this.enchants.values().stream()
+        List<String> list = this.enchants.values().stream()
+                .filter(enchant -> enchant.getLevel() > 0)
                 .map(enchant -> ChatColor.AQUA + enchant.toString())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        if (list.isEmpty()) {
+            lore.add("None");
+        } else {
+            lore.addAll(list);
+        }
         meta.setLore(lore);
         boolean sword = this instanceof Sword;
-        name = ChatColor.AQUA + player.getName() + "'s Diamond " +
-                (sword ? "Sword" : "Pickaxe") +
-                ": Level: " + level.getId() + " XP: " + xp +
-                (sword ? "" : (" Blocks: " + ((Pickaxe) this).getBlocksBroken()));
+        boolean pick = this instanceof Pickaxe;
+        name = sword ? ((Sword) this).buildName(player) :
+                pick ? ((Pickaxe) this).buildName(player) :
+                ChatColor.RED + "Failed to build name.";
         meta.setDisplayName(this.name);
         item.setItemMeta(meta);
         player.getInventory().setItem(slot, item);
@@ -153,13 +159,21 @@ public abstract class PItem {
 
     public int incrementXp(int xp, Player player) {
         this.xp += xp;
-        if (level.getNext().getXp() >= xp) {
-            this.level = level.getNext();
+        Level next = level.getNext();
+        Level lvl = next.getPrevious();
+        int total = 0;
+        while (lvl != null && lvl.getId() >= 1) {
+            total += lvl.getXp();
+            lvl = lvl.getPrevious();
+        }
+        if (total <= this.xp) {
+            this.level = next;
             level.levelUp(player, this);
             this.points++;
         }
         update(player);
-        return xp;
+        player.sendMessage("XP increased. Value: " + this.xp);
+        return this.xp;
     }
 
     public int getPoints() {

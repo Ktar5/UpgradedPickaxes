@@ -11,6 +11,7 @@ import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
 import com.minecave.pickaxes.skill.Skills;
 import com.minecave.pickaxes.sql.PlayerInfo;
+import com.minecave.pickaxes.sql.QueryThread;
 import com.minecave.pickaxes.sql.SQLManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -68,6 +69,8 @@ public class PickaxesRevamped extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        QueryThread.t.cancel();
+        QueryThread.t = null;
         Skills.skills.clear();
         Bukkit.getOnlinePlayers().forEach(PlayerInfo::save);
         PlayerInfo.getInfoMap().clear();
