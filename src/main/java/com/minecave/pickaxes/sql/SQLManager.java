@@ -90,6 +90,7 @@ public class SQLManager {
 
     public void init(Player player) {
         new PlayerInfo(player);
+        player.getInventory().forEach(this::tryGetPItem);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -131,6 +132,13 @@ public class SQLManager {
                 }
             }
         }.runTaskAsynchronously(PickaxesRevamped.getInstance());
+    }
+
+    public void tryGetPItem(ItemStack i) {
+        Pickaxe p = Pickaxe.tryFromItem(i);
+        if(p == null) {
+            Sword.tryFromItem(i);
+        }
     }
 
     public void logoff(PlayerInfo info) {

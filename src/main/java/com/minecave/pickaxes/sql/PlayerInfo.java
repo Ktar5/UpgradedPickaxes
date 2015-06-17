@@ -3,6 +3,7 @@ package com.minecave.pickaxes.sql;
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
+import com.minecave.pickaxes.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -92,6 +93,18 @@ public class PlayerInfo {
     }
 
     public void logOff() {
+        for (int j = 0; j < player.getInventory().getContents().length; j++) {
+            ItemStack i = player.getInventory().getItem(j);
+            Pickaxe p = Pickaxe.tryFromItem(i);
+            if(p == null) {
+                Sword s = Sword.tryFromItem(i);
+                if(s != null) {
+                    player.getInventory().setItem(j, Utils.serializeSword(s));
+                }
+            } else {
+                player.getInventory().setItem(j, Utils.serializePick(p));
+            }
+        }
         infoMap.remove(this.getPlayer().getUniqueId());
         SQLManager sqlManager = PickaxesRevamped.getInstance().getSqlManager();
         sqlManager.logoff(this);
