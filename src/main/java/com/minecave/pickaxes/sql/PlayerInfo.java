@@ -33,6 +33,12 @@ public class PlayerInfo {
     public PlayerInfo(List<Pickaxe> pickaxes, List<Sword> swords, Player player) {
         this.pickaxes = pickaxes;
         this.swords = swords;
+        if(this.swords == null) {
+            this.swords = new ArrayList<>();
+        }
+        if(this.pickaxes == null) {
+            this.pickaxes = new ArrayList<>();
+        }
         this.player = player;
         infoMap.put(player.getUniqueId(), this);
     }

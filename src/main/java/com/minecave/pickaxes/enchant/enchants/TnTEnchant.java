@@ -21,6 +21,9 @@ public class TnTEnchant extends PEnchant {
 
     @Override
     public void activate(BlockBreakEvent event) {
+        if(this.getLevel() <= 0) {
+            return;
+        }
         Block block = event.getBlock();
         Location location = block.getLocation();
         World world = location.getWorld();
@@ -29,6 +32,9 @@ public class TnTEnchant extends PEnchant {
 
     @Override
     public void activate(EntityDamageByEntityEvent event) {
+        if(this.getLevel() <= 0) {
+            return;
+        }
         Player player = (Player) event.getDamager();
         int radius = this.getLevel() * 2;
         player.getNearbyEntities(radius, radius, radius).stream()

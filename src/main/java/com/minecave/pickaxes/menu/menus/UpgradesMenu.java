@@ -25,6 +25,7 @@ public class UpgradesMenu extends Menu {
         super(name);
     }
 
+    boolean start = true;
     @Override
     public Button[] fill(Player player) {
         ItemStack handPick = player.getItemInHand();
@@ -87,10 +88,8 @@ public class UpgradesMenu extends Menu {
                         }
                     });
 
-            c += 4;
-            if(c + 1 % 9 == 0) {
-                c += 1;
-            }
+            c += start ? 4 : 5;
+            start = !start;
         }
         return buttons;
     }

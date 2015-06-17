@@ -8,7 +8,6 @@ import com.minecave.pickaxes.enchant.enchants.TnTEnchant;
 import com.minecave.pickaxes.items.GlowEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
-import com.minecave.pickaxes.utils.Message;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -110,7 +109,7 @@ public abstract class PItem {
             }
         }
         if (item == null || slot == -1) {
-            Message.FAILURE.sendMessage(player, "I couldn't find the Item in your inventory! Please contact an Admin!");
+//            Message.FAILURE.sendMessage(player, "I couldn't find the Item in your inventory! Please contact an Admin!");
             return;
         }
         if (Pickaxe.pickaxeMap.get(item) != null) {

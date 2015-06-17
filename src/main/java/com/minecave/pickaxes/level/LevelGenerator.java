@@ -5,6 +5,7 @@ import com.minecave.pickaxes.builder.FireworkBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ public class LevelGenerator {
             PickaxesRevamped.getInstance().getLogger().warning("No level data found...");
             return;
         }
+        Level example = null;
         for(String s : levels.getKeys(false)) {
             int level = Integer.parseInt(s);
             int xp = levels.getInt(s + ".xp");
@@ -46,7 +48,18 @@ public class LevelGenerator {
                 firework.getStringList("fade-colors").forEach(fireworkBuilder::addFadeColor);
                 fireworkBuilder.trail(firework.getBoolean("trail"));
                 fireworkBuilder.flicker(firework.getBoolean("flicker"));
-                new Level(xp,level, commands, fireworkBuilder);
+                example = new Level(xp,level, commands, fireworkBuilder);
+            }
+        }
+        for(int i = 1; i <= config.getInt("max-level"); i++) {
+            if(!Level.getLevels().containsKey(i)) {
+                if(example != null) {
+                    example = new Level(example.getXp(), i, example.getCommands(), example.getBuilder());
+                } else {
+                    example = new Level(100, i, Collections.singletonList("give $player$ diamond 1"),
+                            PickaxesRevamped.getInstance().getConfigValues().getFireworkBuilder());
+                }
+                Level.getLevels().put(i, example);
             }
         }
     }

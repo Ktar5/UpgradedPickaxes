@@ -24,6 +24,6 @@ public class UUIDs {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return hash == null ? null : UUID.fromString(hash);
+        return hash == null ? null : UUID.nameUUIDFromBytes(hash.getBytes());
     }
 }

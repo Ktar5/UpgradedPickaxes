@@ -78,7 +78,7 @@ public class Utils {
         }
         AttributeStorage storage;
         storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
-        storage.setData(skill.getName());
+        storage.setData(skill == null ? null : skill.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
         storage.setData(p.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
@@ -128,7 +128,7 @@ public class Utils {
         }
         AttributeStorage storage;
         storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
-        storage.setData(skill.getName());
+        storage.setData(skill == null ? null : skill.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
         storage.setData(p.getName());
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));

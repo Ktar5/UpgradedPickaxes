@@ -64,5 +64,6 @@ public class Sword extends PItem {
             enchant.activate(event);
         }
         incrementXp(xp, (Player) event.getDamager());
+        update((Player) event.getDamager());
     }
 }

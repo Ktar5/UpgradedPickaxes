@@ -20,6 +20,9 @@ public class Skills {
     }
 
     public static Skill getSkill(String name) {
+        if(name == null) {
+            return null;
+        }
         return skills.get(name);
     }
 

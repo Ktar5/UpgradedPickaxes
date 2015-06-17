@@ -21,9 +21,21 @@ public class Level {
 
     private PickaxesRevamped plugin = PickaxesRevamped.getInstance();
 
-    private int xp, rep;
+    private int xp;
+    private FireworkBuilder builder;
+
+    public void setRep(int rep) {
+        this.rep = rep;
+    }
+
+    private int rep;
     private List<String> commands;
     private FireworkBuilder fireworkBuilder;
+
+    public static Map<Integer, Level> getLevels() {
+        return levels;
+    }
+
     private static Map<Integer, Level> levels = new HashMap<>();
     private static List<String> LEVEL_UP_MESSAGE = new ArrayList<>();
     public static Level ONE;
@@ -117,5 +129,13 @@ public class Level {
 
     public int getId() {
         return rep;
+    }
+
+    public List<String> getCommands() {
+        return commands;
+    }
+
+    public FireworkBuilder getBuilder() {
+        return builder;
     }
 }
