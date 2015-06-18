@@ -36,6 +36,11 @@ public class LuckEnchant extends PEnchant {
     }
 
     @Override
+    public LuckEnchant cloneEnchant() {
+        return new LuckEnchant();
+    }
+
+    @Override
     public String getTrueName() {
         return "luck";
     }

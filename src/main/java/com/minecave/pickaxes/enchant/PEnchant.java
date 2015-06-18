@@ -24,11 +24,17 @@ public abstract class PEnchant {
     protected int maxLevel = 10;
     private Map<Integer, Integer> costMap = new HashMap<>();
 
-    public PEnchant(String name) {
-        this.name = name;
+    public PEnchant(PEnchant pEnchant) {
+        this.name = pEnchant.getName();
         this.inUse = true;
-        name = ChatColor.stripColor(name);
-        name = name.toLowerCase();
+        this.maxLevel = pEnchant.getMaxLevel();
+        this.level = pEnchant.getLevel();
+    }
+
+    public PEnchant(String name) {
+        this.inUse = true;
+        this.name = ChatColor.stripColor(name);
+        this.name = name.toLowerCase();
     }
 
     public abstract void activate(BlockBreakEvent event);
@@ -59,7 +65,7 @@ public abstract class PEnchant {
     }
 
     public void increaseLevel(Player player, PItem pItem) {
-        if(level == maxLevel) {
+        if (level == maxLevel) {
             player.sendMessage(ChatColor.RED + "That enchantment is already at maxLevel.");
             return;
         }
@@ -68,8 +74,8 @@ public abstract class PEnchant {
         pItem.update(player);
     }
 
-    public void decreaseLevel(Player player, PItem pItem){
-        if(level == 0) {
+    public void decreaseLevel(Player player, PItem pItem) {
+        if (level == 0) {
             player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
             return;
         }
@@ -117,4 +123,10 @@ public abstract class PEnchant {
     public Map<Integer, Integer> getCostMap() {
         return this.costMap;
     }
+
+    public void setMaxLevel(int maxLevel) {
+        this.maxLevel = maxLevel;
+    }
+
+    public abstract PEnchant cloneEnchant();
 }

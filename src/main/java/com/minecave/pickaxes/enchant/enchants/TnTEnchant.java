@@ -46,4 +46,9 @@ public class TnTEnchant extends PEnchant {
     public String getTrueName() {
         return "tnt";
     }
+
+    @Override
+    public TnTEnchant cloneEnchant(){
+        return new TnTEnchant();
+    }
 }

@@ -1,17 +1,11 @@
 package com.minecave.pickaxes.pitem;
 
-import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.enchant.PEnchant;
-import com.minecave.pickaxes.enchant.enchants.LuckEnchant;
-import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
-import com.minecave.pickaxes.enchant.enchants.TnTEnchant;
-import com.minecave.pickaxes.items.GlowEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,6 +29,9 @@ public abstract class PItem {
     private Set<Skill> purchasedSkills = new HashSet<>();
     protected Skill skill;
 
+    @Getter
+    private static Map<String, PEnchant> enchantMap = new HashMap<>();
+
     public PItem(ItemStack itemStack, String name) {
         this(itemStack, Level.ONE, 0, name, null);
     }
@@ -46,35 +43,6 @@ public abstract class PItem {
         this.name = name;
         this.skill = skill;
         this.enchants = new HashMap<>();
-        FileConfiguration config = PickaxesRevamped.getInstance().getConfigValues().getEnchants();
-        List<String> enchants = config.getStringList("availableEnchants");
-        for (String s : enchants) {
-            switch (s) {
-                case "tnt":
-                    this.addEnchant(new TnTEnchant());
-                    break;
-                case "luck":
-                    this.addEnchant(new LuckEnchant());
-                    break;
-                default:
-                    if (NormalEnchant.VanillaPick.has(s)) {
-                        NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.valueOf(s.toUpperCase());
-                        if (pick != null && (this instanceof Pickaxe)) {
-                            this.addEnchant(new NormalEnchant(pick.getEnchantment()));
-                        }
-                    } else if (NormalEnchant.VanillaSword.has(s)) {
-                        NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.valueOf(s.toUpperCase());
-                        if (sword != null && (this instanceof Sword)) {
-                            this.addEnchant(new NormalEnchant(sword.getEnchantment()));
-                        }
-                    }
-            }
-        }
-        this.enchants.values().forEach(e -> {
-            if (e.getLevel() > 0 && !(e instanceof NormalEnchant)) {
-                GlowEnchant.apply(this.itemStack);
-            }
-        });
     }
 
     public void addEnchant(PEnchant enchant) {

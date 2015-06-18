@@ -1,0 +1,50 @@
+#if normal mc enchantment is not listed it will have ingame max value of default mc
+## tnt
+## luck
+##
+## sharpness
+## fire_aspect
+## knockback
+## bane_of_arthropods
+## smite
+## looting
+## unbreaking
+## silk_touch
+## efficiency
+## fortune
+##
+## #################
+## Skills
+##
+## earthquake
+## ice
+## tnt
+## lightning
+## shotgun
+## acid
+## fireball
+## rain
+##
+##
+## if a pick doesnt have an enchant, it'll assume not to attach
+## if no skills listed, it'll assume no skills to attach to pick
+##
+lapis:
+  name: 'Lapis Pickaxe'
+  enchants:
+    luck:
+      startLevel: 4
+      maxLevel: 10
+    tnt:
+      startLevel: 1
+      maxLevel: 5
+    efficiency:
+      startLevel: 2
+      maxLevel: 8
+  skills:
+    - 'earthquake'
+    - 'ice'
+  ##defaults to 0 if not added
+  startXp: 0
+  ##defaults to 1 if not added
+  startLevel: 1

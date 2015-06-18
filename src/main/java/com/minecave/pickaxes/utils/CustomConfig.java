@@ -11,6 +11,7 @@ package com.minecave.pickaxes.utils;
 import com.minecave.pickaxes.PickaxesRevamped;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,14 +24,14 @@ public class CustomConfig {
     private FileConfiguration config;
     private File configFile;
 
-    public CustomConfig(String fileName) {
+    public CustomConfig(Player player) {
         File dir = new File(PickaxesRevamped.getInstance().getDataFolder(), "players");
         dir.mkdirs();
+        this.fileName = player.getUniqueId().toString();
         if(!fileName.endsWith(".yml")) {
             fileName += ".yml";
         }
         configFile = new File(dir, fileName);
-        this.fileName = fileName;
         reloadConfigPlayer();
     }
 
@@ -90,6 +91,17 @@ public class CustomConfig {
 
     public boolean has(String path) {
         return config.contains(path);
+    }
+
+    public <T> T get(String path, Class<T> tClass, T tDefault) {
+        if(!config.contains(path)) {
+            return tDefault;
+        }
+        Object object = config.get(path);
+        if(!tClass.isInstance(object)) {
+            return tDefault;
+        }
+        return tClass.cast(object);
     }
 
     public <T> T get(String path, Class<T> tClass) {

@@ -26,6 +26,10 @@ public class NormalEnchant extends PEnchant {
         this.enchantment = enchantment;
     }
 
+    public NormalEnchant(NormalEnchant normalEnchant) {
+        this(normalEnchant.getEnchantment());
+    }
+
     @Override
     public void activate(BlockBreakEvent event) {
         //nothing this is just an object to manage the enchants more easily
@@ -39,10 +43,10 @@ public class NormalEnchant extends PEnchant {
     @Override
     public void apply(PItem pItem, Player player) {
         super.apply(pItem, player);
-        if(pItem.getItemStack().containsEnchantment(this.enchantment) ||
-                super.getLevel()  >= 0) {
+        if (pItem.getItemStack().containsEnchantment(this.enchantment) ||
+                super.getLevel() >= 0) {
             pItem.getItemStack().removeEnchantment(enchantment);
-            if(super.getLevel()  > 0) {
+            if (super.getLevel() > 0) {
                 pItem.getItemStack().addUnsafeEnchantment(enchantment, this.getLevel());
             }
         }
@@ -76,7 +80,7 @@ public class NormalEnchant extends PEnchant {
 
         public static boolean has(String name) {
             for (VanillaSword vanilla : values()) {
-                if(vanilla.toString().equalsIgnoreCase(name)) {
+                if (vanilla.toString().equalsIgnoreCase(name)) {
                     return true;
                 }
             }
@@ -99,11 +103,16 @@ public class NormalEnchant extends PEnchant {
 
         public static boolean has(String name) {
             for (VanillaPick vanilla : values()) {
-                if(vanilla.toString().equalsIgnoreCase(name)) {
+                if (vanilla.toString().equalsIgnoreCase(name)) {
                     return true;
                 }
             }
             return false;
         }
+    }
+
+    @Override
+    public NormalEnchant cloneEnchant(){
+        return new NormalEnchant(this);
     }
 }
