@@ -4,6 +4,7 @@ import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.config.ConfigValues;
 import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
+import com.minecave.pickaxes.menu.Page;
 import com.minecave.pickaxes.menu.buttons.PickaxeButton;
 import com.minecave.pickaxes.menu.buttons.SwordButton;
 import com.minecave.pickaxes.menu.menus.PickMenu;
@@ -49,6 +50,9 @@ public class MenuListener implements Listener {
         if (info == null) {
             throw new RuntimeException(player.getName() + " doesn't have PlayerInfo.");
         }
+        if(menu instanceof Page) {
+            menu = ((Page) menu).getMenu();
+        }
 
         if (menu instanceof PickMenu) {
             PickMenu pickMenu = (PickMenu) menu;
@@ -75,6 +79,9 @@ public class MenuListener implements Listener {
             inventory.setItem(slot, null);
             pickMenu.addButton(new PickaxeButton(inhand), player);
             info.addPickaxe(Pickaxe.tryFromItem(inhand));
+//            pickMenu.close(player);
+//            pickMenu.display(player);
+            pickMenu.update(player);
             return;
         }
 
@@ -103,6 +110,9 @@ public class MenuListener implements Listener {
             inventory.setItem(slot, null);
             swordMenu.addButton(new SwordButton(inhand), player);
             info.addSword(Sword.tryFromItem(inhand));
+//            swordMenu.close(player);
+//            swordMenu.display(player);
+            swordMenu.update(player);
             return;
         }
 

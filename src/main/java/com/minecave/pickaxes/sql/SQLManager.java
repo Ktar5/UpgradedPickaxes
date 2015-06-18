@@ -109,27 +109,25 @@ public class SQLManager {
                         Inventory picks = Utils.deserializeInventory(res.getBytes("picks"));
                         List<Sword> swordList = new ArrayList<>();
                         List<Pickaxe> pickList = new ArrayList<>();
-                        if (swords != null) {
-                            int i = 0;
-                            for (ItemStack stack : swords.getContents()) {
-                                if (stack == null) {
-                                    continue;
-                                }
-                                Sword sword = Utils.deserializeSword(stack);
-                                swordList.set(i++, sword);
+                        int i = 0;
+                        for (ItemStack stack : swords.getContents()) {
+                            if (stack == null) {
+                                continue;
                             }
+                            Sword sword = Utils.deserializeSword(stack);
+                            swordList.set(i++, sword);
                         }
-                        if (picks != null) {
-                            int i = 0;
-                            for (ItemStack stack : picks.getContents()) {
-                                if (stack == null) {
-                                    continue;
-                                }
-                                Pickaxe pick = Utils.deserializePick(stack);
-                                pickList.set(i++, pick);
+                        i = 0;
+                        for (ItemStack stack : picks.getContents()) {
+                            if (stack == null) {
+                                continue;
                             }
+                            Pickaxe pick = Utils.deserializePick(stack);
+                            pickList.set(i++, pick);
                         }
-                        new PlayerInfo(pickList, swordList, player);
+                        PlayerInfo info = new PlayerInfo(player);
+                        pickList.forEach(info::addPickaxe);
+                        swordList.forEach(info::addSword);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

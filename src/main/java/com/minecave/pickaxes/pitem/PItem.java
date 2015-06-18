@@ -128,7 +128,6 @@ public abstract class PItem {
             lore.add("None");
         } else {
             lore.addAll(list);
-            list.forEach(player::sendMessage);
         }
         meta.setLore(lore);
         boolean sword = this instanceof Sword;

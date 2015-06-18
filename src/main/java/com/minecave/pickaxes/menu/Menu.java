@@ -37,7 +37,15 @@ public abstract class Menu {
     public abstract Button[] fill(Player player);
 
     public static Menu get(String name) {
-        return menus.get(name);
+        Menu menu = menus.get(name);
+        if (menu == null) {
+            for (Menu menu1 : menus.values()) {
+                if (menu1.getTitle().equalsIgnoreCase(name)) {
+                    return menu1;
+                }
+            }
+        }
+        return menu;
     }
 
     public void close(Player player) {

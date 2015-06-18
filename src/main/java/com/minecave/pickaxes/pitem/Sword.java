@@ -1,6 +1,5 @@
 package com.minecave.pickaxes.pitem;
 
-import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import com.minecave.pickaxes.utils.Utils;
@@ -62,9 +61,9 @@ public class Sword extends PItem {
 
 
     public void onHit(EntityDamageByEntityEvent event) {
-        for(PEnchant enchant : this.getEnchants().values()) {
-            enchant.activate(event);
-        }
+        this.getEnchants().values().stream()
+                .filter(enchant -> enchant != null && enchant.getLevel() > 0)
+                .forEach(enchant -> enchant.activate(event));
         incrementXp(xp, (Player) event.getDamager());
     }
 }

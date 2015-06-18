@@ -17,28 +17,38 @@ import java.util.Map;
 public abstract class InteractiveMenu extends Menu {
 
     protected final Button NEXT_PAGE, PREV_PAGE;
-    private Map<Integer, Page> pages = new HashMap<>();
+    protected Map<Integer, Page> pages = new HashMap<>();
 
     public InteractiveMenu(String name) {
         super(name);
         ItemStack green = new Wool(DyeColor.GREEN).toItemStack(1);
         ItemStack red = new Wool(DyeColor.RED).toItemStack(1);
         NEXT_PAGE = new Button(ItemBuilder.wrap(green)
-          .name(ChatColor.GREEN.toString() + ChatColor.BOLD + "Next Page").build(), (player, clickType) -> {
-            Page page = pages.get(getCurrentPage(player).getId() - 1);
-            if(page == null) {
-               display(player);
+                .name(ChatColor.GREEN.toString() + ChatColor.BOLD + "Next Page").build(), (player, clickType) -> {
+            Page curPage = getCurrentPage(player);
+            if (curPage == null) {
+                display(player);
             } else {
-                page.display(player);
+                Page page = pages.get(curPage.getId() - 1);
+                if (page == null) {
+                    display(player);
+                } else {
+                    page.display(player);
+                }
             }
         });
         PREV_PAGE = new Button(ItemBuilder.wrap(red)
-          .name(ChatColor.RED.toString() + ChatColor.BOLD + "Previous Page").build(), (player, clickType) -> {
-            Page page = pages.get(getCurrentPage(player).getId() + 1);
-            if(page == null) {
+                .name(ChatColor.RED.toString() + ChatColor.BOLD + "Previous Page").build(), (player, clickType) -> {
+            Page curPage = getCurrentPage(player);
+            if (curPage == null) {
                 display(player);
             } else {
-                page.display(player);
+                Page page = pages.get(curPage.getId() + 1);
+                if (page == null) {
+                    display(player);
+                } else {
+                    page.display(player);
+                }
             }
         });
         this.pages = new HashMap<>();
@@ -52,12 +62,12 @@ public abstract class InteractiveMenu extends Menu {
 
     public void addButton(Button button, Player player) {
         int slot = -1;
-        for(int i = 0; i < getButtons().length; i++) {
-            if(buttons[i] == null) {
+        for (int i = 0; i < getButtons().length; i++) {
+            if (buttons[i] == null) {
                 slot = i;
             }
         }
-        if(slot >= 0 ) {
+        if (slot >= 0) {
             setButton(button, slot, player);
         }
     }
@@ -75,14 +85,14 @@ public abstract class InteractiveMenu extends Menu {
 
     @Override
     public void update(Player player) {
-        Button[] buttons = getButtons();
+        Button[] buttons = fill(player);
         Inventory inventory = player.getOpenInventory().getTopInventory();
         for (int i = 0; i < buttons.length; i++) {
             Button button = buttons[i];
-            if(button == null) {
+            if (button == null) {
                 continue;
             }
-            if(i > inventory.getSize()) {
+            if (i > inventory.getSize()) {
                 fill(player);
                 return;
             }

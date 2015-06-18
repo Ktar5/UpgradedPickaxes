@@ -8,11 +8,9 @@
  */
 package com.minecave.pickaxes.commands;
 
-import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.items.ItemBuilder;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.pitem.Sword;
-import com.minecave.pickaxes.skill.Skill;
 import com.minecave.pickaxes.sql.PlayerInfo;
 import com.minecave.pickaxes.utils.Message;
 import net.md_5.bungee.api.ChatColor;
@@ -38,12 +36,11 @@ public class GiveSwordCommand implements CommandExecutor {
                         return true;
                     }
 
-                    Skill skill = PickaxesRevamped.getInstance().getConfigValues().getEarthquake();
-                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
+                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
                     String name = ChatColor.AQUA + player.getName() + "'s Diamond Sword: Level: 1 XP: 0";
                     builder.name(name);
 
-                    Sword sword = new Sword(builder.build(), Level.ONE, 0, name, skill);
+                    Sword sword = new Sword(builder.build(), Level.ONE, 0, name, null);
                     sword.getEnchant("luck").increaseLevel(player, sword);
                     player.getInventory().addItem(sword.getItemStack());
                     sword.update(player);
@@ -60,12 +57,11 @@ public class GiveSwordCommand implements CommandExecutor {
                         return true;
                     }
 
-                    skill = PickaxesRevamped.getInstance().getConfigValues().getEarthquake();
-                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
+                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
                     name = ChatColor.AQUA + other.getName() + "'s Diamond Sword: Level: 1 XP: 0";
                     builder.name(name);
 
-                    sword = new Sword(builder.build(), Level.ONE, 0, name, skill);
+                    sword = new Sword(builder.build(), Level.ONE, 0, name, null);
                     sword.getEnchant("luck").increaseLevel(other, sword);
                     player.getInventory().addItem(sword.getItemStack());
                     sword.update(other);

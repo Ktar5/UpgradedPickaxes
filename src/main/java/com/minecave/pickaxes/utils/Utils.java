@@ -54,6 +54,18 @@ public class Utils {
         return list;
     }
 
+    public static byte[] serialPicks(List<Pickaxe> inventory) {
+        if(inventory.isEmpty()) {
+            return null;
+        }
+        ItemStack[] items = new ItemStack[inventory.size()];
+        int i = 0;
+        for (Pickaxe p : inventory) {
+            items[i++] = serializePick(p);
+        }
+        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
+    }
+
     public static byte[] serialSwords(List<Sword> inventory) {
         if(inventory.isEmpty()) {
             return null;
@@ -100,18 +112,6 @@ public class Utils {
         return storage.getTarget();
     }
 
-    public static byte[] serialPicks(List<Pickaxe> inventory) {
-        if(inventory.isEmpty()) {
-            return null;
-        }
-        ItemStack[] items = new ItemStack[inventory.size()];
-        int i = 0;
-        for (Pickaxe p : inventory) {
-            items[i++] = serializePick(p);
-        }
-        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
-    }
-
     public static ItemStack serializePick(Pickaxe p) {
         ItemStack item = p.getItemStack();
         Skill skill = p.getSkill();
@@ -153,7 +153,8 @@ public class Utils {
         AttributeStorage storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("name"));
         String name = storage.getData("name");
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
-        Skill skill = Skills.getSkill(storage.getData(null));
+        String skillName = storage.getData(null);
+        Skill skill = Skills.getSkill(skillName);
         Pickaxe pick = new Pickaxe(item, Level.ONE, 0, name, skill);
         pick.setSkill(skill);
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
@@ -174,7 +175,9 @@ public class Utils {
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
             String s = storage.getData(null);
             if(s != null && Boolean.parseBoolean(s)) {
-                System.out.println(s + " " + entry.getKey());
+                if(entry.getKey().equalsIgnoreCase(skillName)) {
+                    pick.setSkill(entry.getValue());
+                }
                 pick.getPurchasedSkills().add(entry.getValue());
             }
         }
@@ -185,7 +188,8 @@ public class Utils {
         AttributeStorage storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("name"));
         String name = storage.getData("name");
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
-        Skill skill = Skills.getSkill(storage.getData(null));
+        String skillName = storage.getData(null);
+        Skill skill = Skills.getSkill(skillName);
         Sword sword = new Sword(item, Level.ONE, 0, name, skill);
         sword.setSkill(skill);
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
@@ -204,6 +208,9 @@ public class Utils {
                     UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
             String s = storage.getData(null);
             if(s != null && Boolean.parseBoolean(s)) {
+                if(entry.getKey().equalsIgnoreCase(skillName)) {
+                    sword.setSkill(entry.getValue());
+                }
                 sword.getPurchasedSkills().add(entry.getValue());
             }
         }

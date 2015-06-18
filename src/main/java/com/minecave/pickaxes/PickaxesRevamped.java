@@ -1,5 +1,6 @@
 package com.minecave.pickaxes;
 
+import com.minecave.pickaxes.commands.GiveSwordCommand;
 import com.minecave.pickaxes.commands.MainCommand;
 import com.minecave.pickaxes.commands.PickaxeCommand;
 import com.minecave.pickaxes.commands.SwordCommand;
@@ -63,6 +64,7 @@ public class PickaxesRevamped extends JavaPlugin {
         getCommand("pick").setExecutor(new MainCommand());
         getCommand("givePick").setExecutor(new PickaxeCommand());
         getCommand("sword").setExecutor(new SwordCommand());
+        getCommand("giveSword").setExecutor(new GiveSwordCommand());
         GlowEnchant.register();
         Bukkit.getOnlinePlayers().forEach(sqlManager::init);
     }

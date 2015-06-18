@@ -44,7 +44,6 @@ public abstract class Skill {
 
     public boolean canUse(Player player, PItem item) {
         long seconds = getTimeDiff(player);
-        System.out.println(cooldown <= seconds && highEnough(item));
         return cooldown <= seconds && highEnough(item);
     }
 

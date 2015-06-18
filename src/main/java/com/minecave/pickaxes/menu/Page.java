@@ -31,4 +31,8 @@ public class Page extends InteractiveMenu {
     public int getId() {
         return id;
     }
+
+    public InteractiveMenu getMenu() {
+        return menu;
+    }
 }
