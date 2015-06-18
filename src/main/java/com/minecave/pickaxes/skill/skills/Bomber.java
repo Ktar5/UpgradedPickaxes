@@ -37,23 +37,25 @@ public class Bomber extends Skill {
         Vector dir = location.getDirection();
         Vector to = dir.multiply(Math.random() * 4);
         TNTPrimed tnt = location.getWorld().spawn(location.clone().add(0, 0.2, 0), TNTPrimed.class);
-        tnt.setFuseTicks(ticks+1);
+        tnt.setFuseTicks(ticks + 1);
         tnt.setVelocity(to);
-        int amount = random.nextInt(boomblocks - 2) + 2;
+        int amount = random.nextInt(boomblocks) + 1;
         new BukkitRunnable() {
             @Override
             public void run() {
                 tnt.remove();
                 Location location = tnt.getLocation();
-                if(!wg.canBuild(event.getPlayer(), location)){
+                if (!wg.canBuild(event.getPlayer(), location)) {
                     return;
                 }
-                int x = location.getBlockX();
-                int z = location.getBlockZ();
-                int y = location.getBlockY();
-                for(int i = 0; i < amount; i++) {
-                    Location loc = new Location(location.getWorld(), (Math.random() * 3) + x, (Math.random() * 2) + y, (Math.random() * 3) + z);
-                    if(!wg.canBuild(event.getPlayer(), loc)){
+                for (int i = 0; i < amount; i++) {
+                    Location loc = location.clone()
+                            .add((Math.random() * 8 - 3),
+                                    (Math.random() * 2 - 3),
+                                    (Math.random() * 8 - 3));
+                    if (!wg.canBuild(event.getPlayer(), loc) ||
+                            loc.getBlock().getType() == Material.BEDROCK ||
+                            loc.getBlock().getType() == Material.AIR) {
                         continue;
                     }
                     player.getInventory().addItem(loc.getBlock().getDrops().toArray(new ItemStack[loc.getBlock().getDrops().size()]));

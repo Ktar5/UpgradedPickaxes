@@ -25,17 +25,13 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        plugin.getSqlManager().init(player);
+        PlayerInfo.init(player);
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        PlayerInfo info = PlayerInfo.get(player);
-        if (info == null) {
-            return;
-        }
-        info.logOff();
+        PlayerInfo.save(player);
     }
 
     @EventHandler

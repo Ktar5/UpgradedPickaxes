@@ -12,11 +12,7 @@ import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
 import com.minecave.pickaxes.skill.Skills;
 import com.minecave.pickaxes.sql.PlayerInfo;
-import com.minecave.pickaxes.sql.QueryThread;
-import com.minecave.pickaxes.sql.SQLManager;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -28,7 +24,6 @@ import java.util.HashMap;
 public class PickaxesRevamped extends JavaPlugin {
 
     private static PickaxesRevamped instance;
-    private SQLManager sqlManager;
     private ConfigValues configValues;
 
     public static PickaxesRevamped getInstance() {
@@ -54,26 +49,17 @@ public class PickaxesRevamped extends JavaPlugin {
         new PItemListener();
         new PlayerListener();
         new MenuListener();
-        FileConfiguration section = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "sql.yml"));
-        String host = section.getString("host");
-        String user = section.getString("user");
-        String db = section.getString("db-name");
-        String pass = section.getString("password");
-        int port = section.getInt("port");
-        this.sqlManager = new SQLManager(host, db, user, pass, port);
         getCommand("pick").setExecutor(new MainCommand());
         getCommand("givePick").setExecutor(new PickaxeCommand());
         getCommand("sword").setExecutor(new SwordCommand());
         getCommand("giveSword").setExecutor(new GiveSwordCommand());
         GlowEnchant.register();
-        Bukkit.getOnlinePlayers().forEach(sqlManager::init);
+        Bukkit.getOnlinePlayers().forEach(PlayerInfo::init);
     }
 
     @Override
     public void onDisable() {
         Bukkit.getOnlinePlayers().forEach(PlayerInfo::save);
-        QueryThread.t.cancel();
-        QueryThread.t = null;
         Skills.skills.clear();
         PlayerInfo.getInfoMap().clear();
         BlockValues.values.clear();
@@ -83,10 +69,6 @@ public class PickaxesRevamped extends JavaPlugin {
         if(!(new File(getDataFolder(), name).exists())) {
             saveResource(name, false);
         }
-    }
-
-    public SQLManager getSqlManager() {
-        return sqlManager;
     }
 
     public ConfigValues getConfigValues() {
