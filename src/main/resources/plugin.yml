@@ -3,6 +3,21 @@ version: ${version}
 main: ${plugin.mainClass}
 commands:
   pick:
-  givePick:
+    description: Opens up your pick UI.
+    usage: /<command>
   sword:
-  giveSword:
+    description: Opens up your sword UI.
+    usage: /<command>
+  pGive:
+    description: Give a new enhanced pick or sword to a player.
+    usage: /<command> [pick/sword] [config name] [player]
+    permission: pickaxes.admin
+    aliases: [givepick, givesword]
+permissions:
+  pickaxes.*:
+    description: Gives access to all enhanced pickaxes commands.
+    children:
+      pickaxes.admin: true
+  pickaxes.admin:
+    description: Allows to give enhanced item to player.
+    default: op

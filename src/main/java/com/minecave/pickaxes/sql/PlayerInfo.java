@@ -1,9 +1,9 @@
 package com.minecave.pickaxes.sql;
 
+import com.minecave.pickaxes.pitem.PItemSerializer;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.utils.CustomConfig;
-import com.minecave.pickaxes.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +25,7 @@ public class PlayerInfo {
         this.player = player;
         this.pickaxes = new ArrayList<>();
         this.swords = new ArrayList<>();
-        this.config = new CustomConfig(player.getUniqueId().toString());
+        this.config = new CustomConfig(player);
         infoMap.put(player.getUniqueId(), this);
     }
 
@@ -39,7 +39,7 @@ public class PlayerInfo {
             this.pickaxes = new ArrayList<>();
         }
         this.player = player;
-        this.config = new CustomConfig(player.getUniqueId().toString());
+        this.config = new CustomConfig(player);
         infoMap.put(player.getUniqueId(), this);
     }
 
@@ -47,26 +47,26 @@ public class PlayerInfo {
         PlayerInfo info = new PlayerInfo(player);
         if (config.has("swordData")) {
             byte[] swordData = Base64.getDecoder().decode(config.get("swordData", String.class));
-            Inventory swords = Utils.deserializeInventory(swordData);
+            Inventory swords = PItemSerializer.deserializeInventory(swordData);
             List<Sword> swordList = new ArrayList<>();
             for (ItemStack stack : swords.getContents()) {
                 if (stack == null) {
                     continue;
                 }
-                Sword sword = Utils.deserializeSword(stack);
+                Sword sword = PItemSerializer.deserializeSword(stack);
                 swordList.add(sword);
             }
             swordList.forEach(info::addSword);
         }
         if (config.has("pickData")) {
             byte[] pickData = Base64.getDecoder().decode(config.get("pickData", String.class));
-            Inventory pickaxes = Utils.deserializeInventory(pickData);
+            Inventory pickaxes = PItemSerializer.deserializeInventory(pickData);
             List<Pickaxe> pickList = new ArrayList<>();
             for (ItemStack stack : pickaxes.getContents()) {
                 if (stack == null) {
                     continue;
                 }
-                Pickaxe pick = Utils.deserializePick(stack);
+                Pickaxe pick = PItemSerializer.deserializePick(stack);
                 pickList.add(pick);
             }
             pickList.forEach(info::addPickaxe);
@@ -84,7 +84,7 @@ public class PlayerInfo {
     public static void init(Player player) {
         PlayerInfo info = PlayerInfo.get(player);
         if (info == null) {
-            return;
+            info = new PlayerInfo(player);
         }
         info.init();
     }
@@ -92,6 +92,7 @@ public class PlayerInfo {
     public static void save(Player player) {
         PlayerInfo info = PlayerInfo.get(player);
         if (info == null) {
+            System.out.println(player.getUniqueId().toString() + " info is missing");
             return;
         }
         info.logOff();
@@ -136,16 +137,16 @@ public class PlayerInfo {
             if (p == null) {
                 Sword s = Sword.tryFromItem(i);
                 if (s != null) {
-                    player.getInventory().setItem(j, Utils.serializeSword(s));
+                    player.getInventory().setItem(j, PItemSerializer.serializeSword(s));
                     tryGetPItem(player, i);
                 }
             } else {
-                player.getInventory().setItem(j, Utils.serializePick(p));
+                player.getInventory().setItem(j, PItemSerializer.serializePick(p));
                 tryGetPItem(player, i);
             }
         }
-        byte[] swordData = Utils.serialSwords(swords);
-        byte[] pickData = Utils.serialPicks(pickaxes);
+        byte[] swordData = PItemSerializer.serialSwords(swords);
+        byte[] pickData = PItemSerializer.serialPicks(pickaxes);
         String pickString = pickData == null ?
                 null : Base64.getEncoder().encodeToString(pickData);
         String swordString = swordData == null ?

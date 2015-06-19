@@ -1,7 +1,6 @@
 package com.minecave.pickaxes.builder;
 
 import com.minecave.pickaxes.pitem.PItem;
-import com.minecave.pickaxes.pitem.Pickaxe;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -29,9 +28,7 @@ public class MessageBuilder {
         if(PItem == null) {
             return this;
         }
-        this.base = base.replace("$skill$", PItem.getName().substring(0,
-                PItem.getName().indexOf('\'')) + "'s " +
-                (PItem instanceof Pickaxe ? "Pick." : "Sword."));
+        this.base = base.replace("$skill$", PItem.getName());
         return this;
     }
 

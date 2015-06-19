@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 /**
  * @author Timothy Andis
  */
-public class MainCommand implements CommandExecutor {
+public class PickCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {

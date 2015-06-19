@@ -1,21 +1,14 @@
 package com.minecave.pickaxes.utils;
 
-import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.items.ItemBuilder;
-import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.menu.Menu;
 import com.minecave.pickaxes.menu.Menu.FillerButton;
-import com.minecave.pickaxes.pitem.Pickaxe;
-import com.minecave.pickaxes.pitem.Sword;
-import com.minecave.pickaxes.skill.Skill;
-import com.minecave.pickaxes.skill.Skills;
-import com.minecave.pickaxes.utils.nbt.AttributeStorage;
 import org.bukkit.*;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Tim [calebbfmv]
@@ -53,179 +46,6 @@ public class Utils {
         Collections.addAll(list, str);
         return list;
     }
-
-    public static byte[] serialPicks(List<Pickaxe> inventory) {
-        if(inventory.isEmpty()) {
-            return null;
-        }
-        ItemStack[] items = new ItemStack[inventory.size()];
-        int i = 0;
-        for (Pickaxe p : inventory) {
-            items[i++] = serializePick(p);
-        }
-        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
-    }
-
-    public static byte[] serialSwords(List<Sword> inventory) {
-        if(inventory.isEmpty()) {
-            return null;
-        }
-        ItemStack[] items = new ItemStack[inventory.size()];
-        int i = 0;
-        for (Sword p : inventory) {
-            items[i++] = serializeSword(p);
-        }
-        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
-    }
-
-    public static ItemStack serializeSword(Sword p) {
-        ItemStack item = p.getItemStack();
-        Skill skill = p.getSkill();
-        int points = p.getPoints();
-        int level = p.getLevel().getId();
-        int xp = p.getXp();
-        Map<PEnchant, Integer> enchantMap = new HashMap<>();
-        for (PEnchant enchant : p.getEnchants().values()) {
-            enchantMap.put(enchant, enchant.getLevel());
-        }
-        AttributeStorage storage;
-        storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
-        storage.setData(skill == null ? "null" : skill.getName());
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
-        storage.setData(p.getName());
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
-        storage.setData(String.valueOf(points));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
-        storage.setData(String.valueOf(level));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
-        storage.setData(String.valueOf(xp));
-        for (Map.Entry<PEnchant, Integer> entry : enchantMap.entrySet()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString(entry.getKey().getTrueName()));
-            storage.setData(String.valueOf(entry.getValue()));
-        }
-        for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
-            storage.setData(String.valueOf(p.getPurchasedSkills().contains(entry.getValue())));
-        }
-        return storage.getTarget();
-    }
-
-    public static ItemStack serializePick(Pickaxe p) {
-        ItemStack item = p.getItemStack();
-        Skill skill = p.getSkill();
-        int blocks = p.getBlocksBroken();
-        int points = p.getPoints();
-        int level = p.getLevel().getId();
-        int xp = p.getXp();
-        Map<PEnchant, Integer> enchantMap = new HashMap<>();
-        for (PEnchant enchant : p.getEnchants().values()) {
-            enchantMap.put(enchant, enchant.getLevel());
-        }
-        AttributeStorage storage;
-        storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("skill"));
-        storage.setData(skill == null ? "null" : skill.getName());
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("name"));
-        storage.setData(p.getName());
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
-        storage.setData(String.valueOf(blocks));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
-        storage.setData(String.valueOf(points));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
-        storage.setData(String.valueOf(level));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
-        storage.setData(String.valueOf(xp));
-        for (Map.Entry<PEnchant, Integer> entry : enchantMap.entrySet()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString(entry.getKey().getTrueName()));
-            storage.setData(String.valueOf(entry.getValue()));
-        }
-        for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
-            storage.setData(String.valueOf(p.getPurchasedSkills().contains(entry.getValue())));
-        }
-        return storage.getTarget();
-    }
-
-    public static Pickaxe deserializePick(ItemStack item) {
-        AttributeStorage storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("name"));
-        String name = storage.getData("name");
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
-        String skillName = storage.getData(null);
-        Skill skill = Skills.getSkill(skillName);
-        Pickaxe pick = new Pickaxe(item, Level.ONE, 0, name, skill);
-        pick.setSkill(skill);
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
-        pick.setBlocksBroken(Integer.parseInt(storage.getData("0")));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
-        pick.setPoints(Integer.parseInt(storage.getData("0")));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
-        pick.setLevel(Integer.parseInt(storage.getData("1")));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
-        pick.setXp(Integer.parseInt(storage.getData("0")));
-        for (PEnchant enchant : pick.getEnchants().values()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString(enchant.getTrueName()));
-            enchant.setLevel(Integer.parseInt(storage.getData("0")));
-        }
-        for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
-            String s = storage.getData(null);
-            if(s != null && Boolean.parseBoolean(s)) {
-                if(entry.getKey().equalsIgnoreCase(skillName)) {
-                    pick.setSkill(entry.getValue());
-                }
-                pick.getPurchasedSkills().add(entry.getValue());
-            }
-        }
-        return pick;
-    }
-
-    public static Sword deserializeSword(ItemStack item) {
-        AttributeStorage storage = AttributeStorage.newTarget(item, UUIDs.getUUIDFromString("name"));
-        String name = storage.getData("name");
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
-        String skillName = storage.getData(null);
-        Skill skill = Skills.getSkill(skillName);
-        Sword sword = new Sword(item, Level.ONE, 0, name, skill);
-        sword.setSkill(skill);
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("points"));
-        sword.setPoints(Integer.parseInt(storage.getData("0")));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
-        sword.setLevel(Integer.parseInt(storage.getData("1")));
-        storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("experience"));
-        sword.setXp(Integer.parseInt(storage.getData("0")));
-        for (PEnchant enchant : sword.getEnchants().values()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString(enchant.getTrueName()));
-            enchant.setLevel(Integer.parseInt(storage.getData("0")));
-        }
-        for(Map.Entry<String, Skill> entry : Skills.skills.entrySet()) {
-            storage = AttributeStorage.newTarget(storage.getTarget(),
-                    UUIDs.getUUIDFromString("purchased_" + entry.getKey()));
-            String s = storage.getData(null);
-            if(s != null && Boolean.parseBoolean(s)) {
-                if(entry.getKey().equalsIgnoreCase(skillName)) {
-                    sword.setSkill(entry.getValue());
-                }
-                sword.getPurchasedSkills().add(entry.getValue());
-            }
-        }
-        return sword;
-    }
-
-    public static Inventory deserializeInventory(byte[] data) {
-        try {
-            return ItemSerialization.fromBlob(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Bukkit.createInventory(null, 9);
-    }
-
 
     public static String friendlyName(String name) {
         StringBuilder builder = new StringBuilder();

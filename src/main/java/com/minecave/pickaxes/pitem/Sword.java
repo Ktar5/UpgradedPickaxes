@@ -2,7 +2,6 @@ package com.minecave.pickaxes.pitem;
 
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
-import com.minecave.pickaxes.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -40,7 +39,11 @@ public class Sword extends PItem {
             return null;
         }
         Sword p = get(inhand);
-        return p != null ? p : Utils.deserializeSword(inhand);
+        if(p == null) {
+            p = PItemSerializer.deserializeSword(inhand);
+            swordMap.put(inhand, p);
+        }
+        return p;
     }
 
     public static Sword get(ItemStack itemStack) {
@@ -51,19 +54,22 @@ public class Sword extends PItem {
     public void update(Player player) {
         super.update(player);
         ItemMeta meta = this.itemStack.getItemMeta();
-        meta.setDisplayName(buildName(player) + ". Do /pick");
+        meta.setDisplayName(buildName() + ". Do /sword");
+        this.itemStack.setItemMeta(meta);
+        player.updateInventory();
     }
 
-    public String buildName(Player player) {
-        return ChatColor.AQUA + player.getName() + String.format("'s Diamond Sword: Level: %d XP: %d",
+    public String buildName() {
+        return ChatColor.AQUA + name + String.format(": Level: %d XP: %d",
                 this.level.getId(), this.xp);
     }
 
 
     public void onHit(EntityDamageByEntityEvent event) {
+        incrementXp(xp, (Player) event.getDamager());
         this.getEnchants().values().stream()
                 .filter(enchant -> enchant != null && enchant.getLevel() > 0)
                 .forEach(enchant -> enchant.activate(event));
-        incrementXp(xp, (Player) event.getDamager());
+        update((Player) event.getDamager());
     }
 }

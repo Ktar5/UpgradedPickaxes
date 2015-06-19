@@ -33,8 +33,7 @@ public abstract class PEnchant {
 
     public PEnchant(String name) {
         this.inUse = true;
-        this.name = ChatColor.stripColor(name);
-        this.name = name.toLowerCase();
+        this.name = name;
     }
 
     public abstract void activate(BlockBreakEvent event);

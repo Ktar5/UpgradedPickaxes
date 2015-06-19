@@ -1,8 +1,7 @@
 package com.minecave.pickaxes;
 
-import com.minecave.pickaxes.commands.GiveSwordCommand;
-import com.minecave.pickaxes.commands.MainCommand;
-import com.minecave.pickaxes.commands.PickaxeCommand;
+import com.minecave.pickaxes.commands.GiveCommand;
+import com.minecave.pickaxes.commands.PickCommand;
 import com.minecave.pickaxes.commands.SwordCommand;
 import com.minecave.pickaxes.config.ConfigValues;
 import com.minecave.pickaxes.drops.BlockValues;
@@ -59,10 +58,9 @@ public class PickaxesRevamped extends JavaPlugin {
         new PItemListener();
         new PlayerListener();
         new MenuListener();
-        getCommand("pick").setExecutor(new MainCommand());
-        getCommand("givePick").setExecutor(new PickaxeCommand());
+        getCommand("pick").setExecutor(new PickCommand());
         getCommand("sword").setExecutor(new SwordCommand());
-        getCommand("giveSword").setExecutor(new GiveSwordCommand());
+        getCommand("pGive").setExecutor(new GiveCommand());
         GlowEnchant.register();
 
         FileConfiguration config = PickaxesRevamped.getInstance().getConfigValues().getEnchants();
@@ -79,12 +77,22 @@ public class PickaxesRevamped extends JavaPlugin {
                     if (NormalEnchant.VanillaPick.has(s)) {
                         NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.valueOf(s.toUpperCase());
                         if (pick != null) {
-                            PItem.getEnchantMap().put(s, new NormalEnchant(pick.getEnchantment()));
+                            NormalEnchant base = new NormalEnchant(pick.getEnchantment());
+                            PItem.getEnchantMap().put(s, base);
+                            if(s.contains("_")) {
+                                PItem.getEnchantMap().put(s.replace("_", " "), base);
+                                PItem.getEnchantMap().put(s.replace("_", ""), base);
+                            }
                         }
                     } else if (NormalEnchant.VanillaSword.has(s)) {
                         NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.valueOf(s.toUpperCase());
                         if (sword != null) {
-                            PItem.getEnchantMap().put(s, new NormalEnchant(sword.getEnchantment()));
+                            NormalEnchant base = new NormalEnchant(sword.getEnchantment());
+                            PItem.getEnchantMap().put(s, base);
+                            if(s.contains("_")) {
+                                PItem.getEnchantMap().put(s.replace("_", " "), base);
+                                PItem.getEnchantMap().put(s.replace("_", ""), base);
+                            }
                         }
                     }
             }

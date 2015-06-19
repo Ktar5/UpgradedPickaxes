@@ -10,6 +10,8 @@ package com.minecave.pickaxes.pitem;
 
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.items.ItemBuilder;
+import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import com.minecave.pickaxes.skill.Skills;
 import com.minecave.pickaxes.utils.CustomConfig;
@@ -32,14 +34,15 @@ public class PItemCreator {
         this.settingsMap = new HashMap<>();
         CustomConfig pickConfig = new CustomConfig(PickaxesRevamped.getInstance().getDataFolder(), "picks.yml");
         CustomConfig swordConfig = new CustomConfig(PickaxesRevamped.getInstance().getDataFolder(), "swords.yml");
-        for(String n : pickConfig.getConfig().getKeys(false)) {
+        for (String n : pickConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.PICK);
+            settings.setKey(n);
             settings.setName(pickConfig.get(concat(n, "name"), String.class, n));
             settings.setStartXp(pickConfig.get(concat(n, "startXp"), Integer.class, 0));
             settings.setStartLevel(pickConfig.get(concat(n, "startLevel"), Integer.class, 1));
-            for(String e : pickConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
+            for (String e : pickConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
                 PEnchant enchant = PItem.getEnchantMap().get(e);
-                if(enchant == null) {
+                if (enchant == null) {
                     PickaxesRevamped.getInstance().getLogger().warning(n + " enchant does not exist.");
                     continue;
                 }
@@ -47,17 +50,51 @@ public class PItemCreator {
                 String startLevel = concat(ePath, "startLevel");
                 String maxLevel = concat(ePath, "maxLevel");
                 PEnchant pEnchant = enchant.cloneEnchant();
-                if(pickConfig.has(maxLevel)) {
+                if (pickConfig.has(maxLevel)) {
                     pEnchant.setMaxLevel(pickConfig.get(maxLevel, Integer.class, enchant.getMaxLevel()));
                 }
-                if(pickConfig.has(startLevel)) {
+                if (pickConfig.has(startLevel)) {
                     pEnchant.setLevel(pickConfig.get(startLevel, Integer.class, enchant.getLevel()));
                 }
                 settings.addEnchant(pEnchant);
             }
-            for(String s : pickConfig.getConfig().getStringList(concat(n, "skills"))) {
+            for (String s : pickConfig.getConfig().getStringList(concat(n, "skills"))) {
                 Skill skill = Skills.getSkill(s);
-                if(skill == null) {
+                if (skill == null) {
+                    PickaxesRevamped.getInstance().getLogger().warning(s + " skill does not exist.");
+                    continue;
+                }
+                settings.addSkill(skill);
+            }
+            this.settingsMap.put(n, settings);
+        }
+
+        for (String n : swordConfig.getConfig().getKeys(false)) {
+            PItemSettings settings = new PItemSettings(n, PItemType.SWORD);
+            settings.setName(swordConfig.get(concat(n, "name"), String.class, n));
+            settings.setStartXp(swordConfig.get(concat(n, "startXp"), Integer.class, 0));
+            settings.setStartLevel(swordConfig.get(concat(n, "startLevel"), Integer.class, 1));
+            for (String e : swordConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
+                PEnchant enchant = PItem.getEnchantMap().get(e);
+                if (enchant == null) {
+                    PickaxesRevamped.getInstance().getLogger().warning(n + " enchant does not exist.");
+                    continue;
+                }
+                String ePath = concat(n, e);
+                String startLevel = concat(ePath, "startLevel");
+                String maxLevel = concat(ePath, "maxLevel");
+                PEnchant pEnchant = enchant.cloneEnchant();
+                if (swordConfig.has(maxLevel)) {
+                    pEnchant.setMaxLevel(swordConfig.get(maxLevel, Integer.class, enchant.getMaxLevel()));
+                }
+                if (swordConfig.has(startLevel)) {
+                    pEnchant.setLevel(swordConfig.get(startLevel, Integer.class, enchant.getLevel()));
+                }
+                settings.addEnchant(pEnchant);
+            }
+            for (String s : swordConfig.getConfig().getStringList(concat(n, "skills"))) {
+                Skill skill = Skills.getSkill(s);
+                if (skill == null) {
                     PickaxesRevamped.getInstance().getLogger().warning(s + " skill does not exist.");
                     continue;
                 }
@@ -67,8 +104,12 @@ public class PItemCreator {
         }
     }
 
-    public PItemSettings getSettings(String name) {
+    public PItemSettings get(String name) {
         return this.settingsMap.get(name);
+    }
+
+    public boolean has(String name) {
+        return this.settingsMap.containsKey(name);
     }
 
     public String concat(String key, String key1) {
@@ -82,7 +123,7 @@ public class PItemCreator {
                 item.getType() != Material.STONE_SWORD &&
                 item.getType() != Material.WOOD_SWORD;
     }
-    
+
     public static boolean isPick(ItemStack item) {
         return item.getType() != Material.DIAMOND_PICKAXE &&
                 item.getType() != Material.IRON_PICKAXE &&
@@ -95,6 +136,7 @@ public class PItemCreator {
     @Setter
     public static class PItemSettings {
 
+        private String key;
         private String name;
         private final PItemType type;
         private final List<Skill> skillList;
@@ -112,20 +154,45 @@ public class PItemCreator {
         }
 
         public void addSkill(Skill skill) {
-            if(!skillList.contains(skill))
-            skillList.add(skill);
+            if (!skillList.contains(skill))
+                skillList.add(skill);
         }
 
         public void addEnchant(PEnchant enchant) {
-            if(!enchantList.contains(enchant))
+            if (!enchantList.contains(enchant))
                 enchantList.add(enchant);
         }
 
         //TODO: Generate
+        public <P extends PItem> P generate(Class<P> clazz) {
+            PItem pItem = null;
+            Level level = Level.getLevels().get(this.startLevel);
+            if(level == null) level = Level.ONE;
+            switch(type) {
+                case PICK:
+                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
+                    pItem = new Pickaxe(builder.build(), level, this.startXp, this.name, null);
+                    break;
+                case SWORD:
+                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
+                    pItem = new Sword(builder.build(), level, this.startXp, this.name, null);
+                    break;
+            }
+            this.enchantList.forEach(pItem::addEnchant);
+            pItem.setPSettings(this.key);
+            return clazz.cast(pItem);
+        }
     }
 
     public enum PItemType {
-        PICK,
-        SWORD
+        PICK(Pickaxe.class),
+        SWORD(Sword.class);
+
+        @Getter
+        private Class<? extends PItem> type;
+
+        PItemType(Class<? extends PItem> type) {
+            this.type = type;
+        }
     }
 }

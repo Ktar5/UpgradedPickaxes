@@ -4,6 +4,7 @@ import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -28,6 +29,9 @@ public abstract class PItem {
     @Getter
     private Set<Skill> purchasedSkills = new HashSet<>();
     protected Skill skill;
+    @Getter
+    @Setter
+    private String pSettings = "";
 
     @Getter
     private static Map<String, PEnchant> enchantMap = new HashMap<>();
@@ -98,12 +102,7 @@ public abstract class PItem {
             lore.addAll(list);
         }
         meta.setLore(lore);
-        boolean sword = this instanceof Sword;
-        boolean pick = this instanceof Pickaxe;
-        name = sword ? ((Sword) this).buildName(player) :
-                pick ? ((Pickaxe) this).buildName(player) :
-                ChatColor.RED + "Failed to build name.";
-        meta.setDisplayName(this.name);
+        meta.setDisplayName(buildName());
         item.setItemMeta(meta);
 //        player.getInventory().setItem(slot, item);
         player.updateInventory();
@@ -112,6 +111,11 @@ public abstract class PItem {
         } else if (this instanceof Sword) {
             Sword.swordMap.put(item, (Sword) this);
         }
+    }
+
+    public String buildName() {
+        return ChatColor.AQUA + name + String.format(": Level: %d XP: %d",
+                this.level.getId(), this.xp);
     }
 
     public int getXp() {

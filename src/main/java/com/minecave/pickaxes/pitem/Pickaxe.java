@@ -3,7 +3,6 @@ package com.minecave.pickaxes.pitem;
 import com.minecave.pickaxes.drops.BlockValues;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
-import com.minecave.pickaxes.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -43,7 +42,11 @@ public class Pickaxe extends PItem {
             return null;
         }
         Pickaxe p = get(inhand);
-        return p != null ? p : Utils.deserializePick(inhand);
+        if(p == null) {
+            p = PItemSerializer.deserializePick(inhand);
+            pickaxeMap.put(inhand, p);
+        }
+        return p;
     }
 
     public static Pickaxe get(ItemStack itemStack) {
@@ -54,27 +57,30 @@ public class Pickaxe extends PItem {
     public void update(Player player) {
         super.update(player);
         ItemMeta meta = this.itemStack.getItemMeta();
-        meta.setDisplayName(buildName(player) + ". Do /pick");
+        meta.setDisplayName(buildName() + ". Do /pick");
+        this.itemStack.setItemMeta(meta);
+        player.updateInventory();
     }
 
     public void onBreak(BlockBreakEvent event) {
         blocksBroken++;
-        this.getEnchants().values().stream()
-                .filter(enchant -> enchant != null && enchant.getLevel() > 0)
-                .forEach(enchant -> enchant.activate(event));
         int xp = 1;
         if(BlockValues.getXp(event.getBlock()) > -1) {
             xp = BlockValues.getXp(event.getBlock());
         }
         incrementXp(xp, event.getPlayer());
+        this.getEnchants().values().stream()
+                .filter(enchant -> enchant != null && enchant.getLevel() > 0)
+                .forEach(enchant -> enchant.activate(event));
+        update(event.getPlayer());
     }
 
     public int getBlocksBroken() {
         return blocksBroken;
     }
 
-    public String buildName(Player player) {
-        return ChatColor.AQUA + player.getName() + String.format("'s Diamond Pickaxe: Level: %d XP: %d Blocks: %d",
+    public String buildName() {
+        return ChatColor.AQUA + name + String.format(": Level: %d XP: %d Blocks: %d",
                 this.level.getId(), this.xp, this.blocksBroken);
     }
 
