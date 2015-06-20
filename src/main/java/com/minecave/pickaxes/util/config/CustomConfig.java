@@ -100,6 +100,23 @@ public class CustomConfig {
         return tClass.cast(object);
     }
 
+    public <T> T get(String path, Class<T> tClass, T tDefault) {
+        if (!has(path)) {
+            throw new IllegalArgumentException(path + " does not exist.");
+        }
+        if (tClass.isPrimitive()) {
+            throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
+        }
+        Object object = config.get(path);
+        if (object == null) {
+            return tDefault;
+        }
+        if (!tClass.isInstance(object)) {
+            throw new IllegalArgumentException(path + " is not of type " + tClass.getSimpleName());
+        }
+        return tClass.cast(object);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> List<T> getList(String path, Class<T> tClass) {
         if (!has(path)) {

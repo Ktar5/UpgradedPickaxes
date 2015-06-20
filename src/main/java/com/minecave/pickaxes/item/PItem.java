@@ -14,8 +14,10 @@ import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.metadata.Metadata;
 import lombok.Data;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,93 +25,63 @@ public class PItem {
 
     //region CONSTANTS
 
-    public static final String ENCHANTS = "enchants";
-    public static final String CURRENT_SKILL = "current_skill";
-    public static final String SKILLS = "skills";
-    public static final String AVAILABLE_SKILLS = "available_skills";
-    public static final String XP = "xp";
-    public static final String LEVEL = "level";
-    public static final String MAX_LEVEL = "max_level";
-
+    public static final String BLOCKS_BROKEN = "blocks_broken";
     //endregion
 
     private final EnhancedPicks plugin;
-    private final String name;
-    private final Metadata<PItem> metadata;
-    private ItemStack item;
 
-    public PItem(String name, ItemStack item) {
+    private final String name;
+    private final PItemType type;
+    private ItemStack item;
+    private String pItemSettings;
+
+    private int xp;
+    private int points;
+    private Level level;
+    private Level maxLevel;
+
+    private List<PEnchant> enchants;
+    private List<PSkill> purchasedSkills;
+    private List<PSkill> availableSkills;
+    private PSkill currentSkill;
+
+    private Metadata<PItem> metadata;
+
+    public PItem(String name, PItemType type, ItemStack item) {
         this.plugin = EnhancedPicks.getInstance();
         this.name = name;
+        this.type = type;
         this.item = item;
-        this.metadata = new Metadata<>(this);
+        this.enchants = new ArrayList<>();
+        this.purchasedSkills = new ArrayList<>();
+        this.availableSkills = new ArrayList<>();
+        this.metadata = new Metadata<>();
     }
 
-    //region GETTERS && SETTERS
-
-    public void setEnchants(List<PEnchant> enchants) {
-        metadata.set(ENCHANTS, enchants);
+    public String buildName() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(ChatColor.AQUA).append(name)
+                .append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
+                .append("Level: ").append(level)
+                .append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
+                .append("Xp: ").append(xp);
+        if (type == PItemType.PICK) {
+            builder.append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
+                    .append("BlocksBroken: ")
+                    .append(this.metadata.getIfNotSet(BLOCKS_BROKEN, Integer.class, 0));
+        }
+        return builder.toString();
     }
 
-    public List<PEnchant> getEnchants() {
-        return metadata.getIfNotSetList(ENCHANTS, PEnchant.class);
+    public void addEnchant(PEnchant pEnchant) {
+        enchants.add(pEnchant);
     }
 
-    public void setCurrentSkill(PSkill skill) {
-        metadata.set(CURRENT_SKILL, skill);
+    public void addAvailableSkill(PSkill pSkill) {
+        availableSkills.add(pSkill);
     }
 
-    public PSkill getCurrentSkill() {
-        return metadata.getIfNotSet(CURRENT_SKILL, PSkill.class, null);
+    public void addPurchasedSkill(PSkill pSkill) {
+        purchasedSkills.add(pSkill);
     }
-
-    public void setSkills(List<PSkill> skills) {
-        metadata.set(SKILLS, skills);
-    }
-
-    public List<PSkill> getSkills() {
-        return metadata.getIfNotSetList(SKILLS, PSkill.class);
-    }
-
-    public void setAvailableSkills(List<PSkill> skills) {
-        metadata.set(AVAILABLE_SKILLS, skills);
-    }
-
-    public List<PSkill> getAvailableSkills() {
-        return metadata.getIfNotSetList(AVAILABLE_SKILLS, PSkill.class);
-    }
-
-    public void setXp(int xp) {
-        metadata.set(XP, xp);
-    }
-
-    public int getXp() {
-        return metadata.getIfNotSet(XP, Integer.class, 0);
-    }
-
-    public void setLevel(int level) {
-        metadata.set(LEVEL, plugin.getLevelManager().getLevel(level));
-    }
-
-    public void setLevel(Level level) {
-        metadata.set(LEVEL, level);
-    }
-
-    public Level getLevel() {
-        return metadata.getIfNotSet(LEVEL, Level.class, plugin.getLevelManager().getLevel(1));
-    }
-
-    public void setMaxLevel(int level) {
-        metadata.set(MAX_LEVEL, plugin.getLevelManager().getLevel(level));
-    }
-
-    public void setMaxLevel(Level level) {
-        metadata.set(MAX_LEVEL, level);
-    }
-
-    public Level getMaxLevel() {
-        return metadata.getIfNotSet(MAX_LEVEL, Level.class, plugin.getLevelManager().getLevel(10));
-    }
-
-    //endregion
 }

@@ -1,6 +1,7 @@
 package com.minecave.pickaxes;
 
 import com.minecave.pickaxes.level.LevelManager;
+import com.minecave.pickaxes.skill.PSkillManager;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,9 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Carter on 6/4/2015.
- */
 public class EnhancedPicks extends JavaPlugin {
 
     @Getter
@@ -19,6 +17,8 @@ public class EnhancedPicks extends JavaPlugin {
     private Map<String, CustomConfig> configMap;
     @Getter
     private LevelManager levelManager;
+    @Getter
+    private PSkillManager pSkillManager;
 
     @Override
     public void onEnable() {
@@ -35,6 +35,7 @@ public class EnhancedPicks extends JavaPlugin {
         saveDefaultConfig("enchants");
 
         levelManager = new LevelManager();
+        pSkillManager = new PSkillManager();
     }
 
     @Override

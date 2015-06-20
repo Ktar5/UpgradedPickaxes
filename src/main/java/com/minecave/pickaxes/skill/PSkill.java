@@ -10,5 +10,11 @@
  */
 package com.minecave.pickaxes.skill;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 public class PSkill {
+
+    public PSkill(ConfigurationSection configurationSection) {
+
+    }
 }
