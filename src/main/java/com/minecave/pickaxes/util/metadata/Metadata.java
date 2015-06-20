@@ -41,7 +41,7 @@ public class Metadata<P> {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> getList(String key, Class<T> tClass) {
-        if (!has(key)) {
+        if (!hasList(key)) {
             throw new IllegalArgumentException(key + " does not exist.");
         }
         if(tClass.isPrimitive()) {
@@ -82,7 +82,7 @@ public class Metadata<P> {
     }
 
     public <T> List<T> getIfNotSetList(String key, Class<T> tClass) {
-        if(has(key)) {
+        if(hasList(key)) {
             return getList(key, tClass);
         }
         List<T> list = new ArrayList<>();
@@ -90,7 +90,7 @@ public class Metadata<P> {
     }
 
     public <T> List<T> getIfNotSetList(String key, Class<T> tClass, List<T> objects) {
-        if(has(key)) {
+        if(hasList(key)) {
             return getList(key, tClass);
         }
         List<T> list = objects != null ? objects : new ArrayList<>();
