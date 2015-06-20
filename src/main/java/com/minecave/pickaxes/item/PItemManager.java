@@ -164,16 +164,19 @@ public class PItemManager {
                 enchantList.add(enchant);
         }
 
-        public PItem<?> generate() {
+        public <P extends Event> PItem<P> generate(Class<P> pClass) {
             Level level = EnhancedPicks.getInstance().getLevelManager().getLevel(this.startLevel);
             if (level == null) {
                 level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
             }
             ItemBuilder builder = ItemBuilder.wrap(new ItemStack(type.getType()));
-            PItem<?> pItem = null;
+            PItem<P> pItem = null;
             switch (type) {
                 case PICK:
-                    pItem = new PItem<>(BlockBreakEvent.class, this.name, type, builder.build());
+                    if(!pClass.equals(BlockBreakEvent.class)) {
+                        return null;
+                    }
+                    pItem = new PItem<>(pClass, this.name, type, builder.build());
                     pItem.setAction((p, e) -> {
                         BlockBreakEvent blockBreakEvent = (BlockBreakEvent) e;
                         p.setBlocksBroken(p.getBlocksBroken() + 1);
@@ -184,7 +187,10 @@ public class PItemManager {
                     });
                     break;
                 case SWORD:
-                    pItem = new PItem<>(EntityDamageByEntityEvent.class, this.name, type, builder.build());
+                    if(!pClass.equals(EntityDamageByEntityEvent.class)) {
+                        return null;
+                    }
+                    pItem = new PItem<>(pClass, this.name, type, builder.build());
                     pItem.setAction((p, e) -> {
                         EntityDamageByEntityEvent attackEvent = (EntityDamageByEntityEvent) e;
                         int xp = MobValue.getXp(attackEvent.getEntityType());

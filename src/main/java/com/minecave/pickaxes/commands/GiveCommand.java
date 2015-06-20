@@ -9,6 +9,7 @@
 package com.minecave.pickaxes.commands;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemManager;
 import com.minecave.pickaxes.item.PItemType;
 import net.md_5.bungee.api.ChatColor;
@@ -17,6 +18,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class GiveCommand implements CommandExecutor {
 
@@ -45,24 +48,12 @@ public class GiveCommand implements CommandExecutor {
             sender.sendMessage(configStr + " is not of type " + type.name());
             return true;
         }
-        Player player;
+        Player player = null;
         if (strings.length == 2) {
             if (!(sender instanceof Player)) {
                 return true;
             }
             player = (Player) sender;
-            switch(type) {
-                case PICK:
-                    Pickaxe pickaxe = pItemSettings.generate(Pickaxe.class);
-                    player.getInventory().addItem(pickaxe.getItemStack());
-                    pickaxe.update(player);
-                    break;
-                case SWORD:
-                    Sword sword = pItemSettings.generate(Sword.class);
-                    player.getInventory().addItem(sword.getItemStack());
-                    sword.update(player);
-                    break;
-            }
 
         } else if (strings.length >= 3) {
             String playerStr = strings[2];
@@ -71,18 +62,21 @@ public class GiveCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + playerStr + " is not online.");
                 return true;
             }
-            switch(type) {
-                case PICK:
-                    Pickaxe pickaxe = pItemSettings.generate(Pickaxe.class);
-                    player.getInventory().addItem(pickaxe.getItemStack());
-                    pickaxe.update(player);
-                    break;
-                case SWORD:
-                    Sword sword = pItemSettings.generate(Sword.class);
-                    player.getInventory().addItem(sword.getItemStack());
-                    sword.update(player);
-                    break;
-            }
+        }
+        if(player == null) {
+            return true;
+        }
+        switch(type) {
+            case PICK:
+                PItem<BlockBreakEvent> pItem = pItemSettings.generate(BlockBreakEvent.class);
+                player.getInventory().addItem(pItem.getItem());
+                pItem.update(player);
+                break;
+            case SWORD:
+                PItem<EntityDamageByEntityEvent> eItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                player.getInventory().addItem(eItem.getItem());
+                eItem.update(player);
+                break;
         }
         return true;
     }
