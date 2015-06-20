@@ -16,7 +16,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * @author Ktar5
+ * @author Ktar5, not2excel
  */
 public class CustomConfig {
     private String fileName;
