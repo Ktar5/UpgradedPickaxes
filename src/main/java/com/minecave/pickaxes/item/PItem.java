@@ -8,12 +8,21 @@
  */
 package com.minecave.pickaxes.item;
 
+import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.metadata.Metadata;
 import lombok.Data;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 @Data
 public class PItem {
+
+    //region CONSTANTS
+    public static final String ENCHANTS = "enchants";
+    public static final String SKILLS = "skills";
+    //endregion
 
     private final String name;
     private final Metadata<PItem> metadata;
@@ -23,5 +32,13 @@ public class PItem {
         this.name = name;
         this.item = item;
         this.metadata = new Metadata<>(this);
+    }
+
+    public List<PEnchant> getEnchants() {
+        return metadata.getIfNotSetList(ENCHANTS, PEnchant.class);
+    }
+
+    public List<PSkill> getSkills() {
+        return metadata.getIfNotSetList(SKILLS, PSkill.class);
     }
 }

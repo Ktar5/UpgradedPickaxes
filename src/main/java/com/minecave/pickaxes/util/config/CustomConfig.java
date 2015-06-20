@@ -13,15 +13,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Ktar5, not2excel
  */
 public class CustomConfig {
-    private String fileName;
+    private String            fileName;
     private FileConfiguration config;
-    private File configFile;
+    private File              configFile;
 
     public CustomConfig(File folder, String fileName) {
         this.fileName = fileName;
@@ -50,8 +51,10 @@ public class CustomConfig {
     public void saveConfig() {
         try {
             config.save(configFile);
-        } catch (Exception e) {
-            EnhancedPicks.get().getLogger().severe(String.format("Couldn't save '%s', because: '%s'", fileName, e.getMessage()));
+        }
+        catch (Exception e) {
+            EnhancedPicks.get().getLogger().severe(String.format("Couldn't save '%s', because: '%s'", fileName,
+                                                                 e.getMessage()));
         }
     }
 
@@ -71,13 +74,16 @@ public class CustomConfig {
     }
 
     public <T> T get(String path, Class<T> tClass) {
-        if (!config.contains(path)) {
+        if (!has(path)) {
             throw new IllegalArgumentException(path + " does not exist.");
         }
-        if(tClass.isPrimitive()) {
+        if (tClass.isPrimitive()) {
             throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
         }
         Object object = config.get(path);
+        if (object == null) {
+            return null;
+        }
         if (!tClass.isInstance(object)) {
             throw new IllegalArgumentException(path + " is not of type " + tClass.getSimpleName());
         }
@@ -86,18 +92,21 @@ public class CustomConfig {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> getList(String path, Class<T> tClass) {
-        if (!config.contains(path)) {
+        if (!has(path)) {
             throw new IllegalArgumentException(path + " does not exist.");
         }
-        if(tClass.isPrimitive()) {
+        if (tClass.isPrimitive()) {
             throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
         }
         List<?> list = config.getList(path);
-        if(list == null || list.isEmpty()) {
-            throw new IllegalArgumentException(path + " returns a null/empty list.");
+        if (list == null) {
+            return null;
+        }
+        else if (list.isEmpty()) {
+            return Collections.emptyList();
         }
         Object first = list.stream().findFirst();
-        if(!tClass.isInstance(first)) {
+        if (!tClass.isInstance(first)) {
             throw new IllegalArgumentException(path + " is not a list of type " + tClass.getSimpleName());
         }
         return (List<T>) list;
