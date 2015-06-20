@@ -39,6 +39,7 @@ public class PItemListener implements Listener {
         if (pickaxe == null) {
             return;
         }
+        System.out.println("break " + pickaxe.getName());
         pickaxe.onBreak(event);
     }
 

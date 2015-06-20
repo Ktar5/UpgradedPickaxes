@@ -1,5 +1,6 @@
 package com.minecave.pickaxes.sql;
 
+import com.minecave.pickaxes.pitem.PItemCreator;
 import com.minecave.pickaxes.pitem.PItemSerializer;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
@@ -41,36 +42,6 @@ public class PlayerInfo {
         this.player = player;
         this.config = new CustomConfig(player);
         infoMap.put(player.getUniqueId(), this);
-    }
-
-    public void init() {
-        PlayerInfo info = new PlayerInfo(player);
-        if (config.has("swordData")) {
-            byte[] swordData = Base64.getDecoder().decode(config.get("swordData", String.class));
-            Inventory swords = PItemSerializer.deserializeInventory(swordData);
-            List<Sword> swordList = new ArrayList<>();
-            for (ItemStack stack : swords.getContents()) {
-                if (stack == null) {
-                    continue;
-                }
-                Sword sword = PItemSerializer.deserializeSword(stack);
-                swordList.add(sword);
-            }
-            swordList.forEach(info::addSword);
-        }
-        if (config.has("pickData")) {
-            byte[] pickData = Base64.getDecoder().decode(config.get("pickData", String.class));
-            Inventory pickaxes = PItemSerializer.deserializeInventory(pickData);
-            List<Pickaxe> pickList = new ArrayList<>();
-            for (ItemStack stack : pickaxes.getContents()) {
-                if (stack == null) {
-                    continue;
-                }
-                Pickaxe pick = PItemSerializer.deserializePick(stack);
-                pickList.add(pick);
-            }
-            pickList.forEach(info::addPickaxe);
-        }
     }
 
     public static PlayerInfo get(Player player) {
@@ -130,6 +101,49 @@ public class PlayerInfo {
         return infoMap;
     }
 
+    public void init() {
+        PlayerInfo info = new PlayerInfo(player);
+        for (int j = 0; j < player.getInventory().getContents().length; j++) {
+            ItemStack i = player.getInventory().getItem(j);
+            if(PItemCreator.isPick(i)) {
+                Pickaxe p = PItemSerializer.deserializePick(i);
+                System.out.println("init " + p);
+                player.getInventory().setItem(j, p.getItemStack());
+                tryGetPItem(player, p.getItemStack());
+            } else if (PItemCreator.isSword(i)) {
+                Sword s = PItemSerializer.deserializeSword(i);
+                player.getInventory().setItem(j, s.getItemStack());
+                tryGetPItem(player, s.getItemStack());
+            }
+        }
+        if (config.has("swordData")) {
+            byte[] swordData = Base64.getDecoder().decode(config.get("swordData", String.class));
+            Inventory swords = PItemSerializer.deserializeInventory(swordData);
+            List<Sword> swordList = new ArrayList<>();
+            for (ItemStack stack : swords.getContents()) {
+                if (stack == null) {
+                    continue;
+                }
+                Sword sword = PItemSerializer.deserializeSword(stack);
+                swordList.add(sword);
+            }
+            swordList.forEach(info::addSword);
+        }
+        if (config.has("pickData")) {
+            byte[] pickData = Base64.getDecoder().decode(config.get("pickData", String.class));
+            Inventory pickaxes = PItemSerializer.deserializeInventory(pickData);
+            List<Pickaxe> pickList = new ArrayList<>();
+            for (ItemStack stack : pickaxes.getContents()) {
+                if (stack == null) {
+                    continue;
+                }
+                Pickaxe pick = PItemSerializer.deserializePick(stack);
+                pickList.add(pick);
+            }
+            pickList.forEach(info::addPickaxe);
+        }
+    }
+
     public void logOff() {
         for (int j = 0; j < player.getInventory().getContents().length; j++) {
             ItemStack i = player.getInventory().getItem(j);
@@ -138,11 +152,9 @@ public class PlayerInfo {
                 Sword s = Sword.tryFromItem(i);
                 if (s != null) {
                     player.getInventory().setItem(j, PItemSerializer.serializeSword(s));
-                    tryGetPItem(player, i);
                 }
             } else {
                 player.getInventory().setItem(j, PItemSerializer.serializePick(p));
-                tryGetPItem(player, i);
             }
         }
         byte[] swordData = PItemSerializer.serialSwords(swords);

@@ -3,33 +3,33 @@ package com.minecave.pickaxes.pitem;
 import com.minecave.pickaxes.drops.BlockValues;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Timothy Andis
  */
 public class Pickaxe extends PItem {
 
-    protected static Map<ItemStack, Pickaxe> pickaxeMap = new HashMap<>();
+    @Getter
+    protected static List<Pickaxe> pickaxeList = new ArrayList<>();
 
     private int blocksBroken = 0;
 
     public Pickaxe(ItemStack itemStack, String name) {
         super(itemStack, name);
-        pickaxeMap.put(itemStack, this);
+        pickaxeList.add(this);
     }
 
     public Pickaxe(ItemStack itemStack, Level level, int xp, String name, Skill skill) {
         super(itemStack, level, xp, name, skill);
-        pickaxeMap.put(itemStack, this);
+        pickaxeList.add(this);
     }
 
     public static Pickaxe tryFromItem(ItemStack inhand) {
@@ -42,25 +42,33 @@ public class Pickaxe extends PItem {
             return null;
         }
         Pickaxe p = get(inhand);
-        if(p == null) {
-            p = PItemSerializer.deserializePick(inhand);
-            pickaxeMap.put(inhand, p);
-        }
+//        if(p == null) {
+//            p = PItemSerializer.deserializePick(inhand);
+//            pickaxeList.add(p);
+//        }
         return p;
     }
 
     public static Pickaxe get(ItemStack itemStack) {
-        return pickaxeMap.get(itemStack);
+        for (Pickaxe p : pickaxeList) {
+            System.out.println(p.getItemStack());
+            System.out.println(itemStack);
+            if (p.getItemStack().equals(itemStack) || p.getItemStack().isSimilar(itemStack)) {
+                return p;
+            }
+        }
+        return null;
+//        return pickaxeList.get(itemStack);
     }
 
-    @Override
-    public void update(Player player) {
-        super.update(player);
-        ItemMeta meta = this.itemStack.getItemMeta();
-        meta.setDisplayName(buildName() + ". Do /pick");
-        this.itemStack.setItemMeta(meta);
-        player.updateInventory();
-    }
+//    @Override
+//    public void update(Player player) {
+//        super.update(player);
+//        ItemMeta meta = this.itemStack.getItemMeta();
+//        meta.setDisplayName(buildName() + ". Do /pick");
+//        this.itemStack.setItemMeta(meta);
+//        player.updateInventory();
+//    }
 
     public void onBreak(BlockBreakEvent event) {
         blocksBroken++;

@@ -45,6 +45,9 @@ public class SkillsMenu extends Menu {
                 }
             }
             PItem fItem = pItem;
+            if(!pItem.getAvailableSkills().contains(skill)) {
+                continue;
+            }
             boolean purchased = pItem.getPurchasedSkills().contains(skill);
             boolean isHighEnough = skill.highEnough(pItem);
             ItemStack item = new ItemStack(purchased ?

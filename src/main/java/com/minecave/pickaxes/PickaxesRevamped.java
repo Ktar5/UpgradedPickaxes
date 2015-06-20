@@ -14,6 +14,8 @@ import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
 import com.minecave.pickaxes.pitem.PItem;
 import com.minecave.pickaxes.pitem.PItemCreator;
+import com.minecave.pickaxes.pitem.Pickaxe;
+import com.minecave.pickaxes.pitem.Sword;
 import com.minecave.pickaxes.skill.Skills;
 import com.minecave.pickaxes.sql.PlayerInfo;
 import lombok.Getter;
@@ -110,6 +112,8 @@ public class PickaxesRevamped extends JavaPlugin {
         Skills.skills.clear();
         PlayerInfo.getInfoMap().clear();
         BlockValues.values.clear();
+        Pickaxe.getPickaxeList().clear();
+        Sword.getSwordList().clear();
         PItem.getEnchantMap().clear();
     }
 

@@ -133,7 +133,7 @@ public class PItemSerializer {
         storage.setData(String.valueOf(points));
         //blocks broken
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("blocks"));
-        storage.setData(String.valueOf(p.getBlocksBroken()));
+        storage.setData(String.valueOf(blocks));
         //current level
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("level"));
         storage.setData(String.valueOf(level));
@@ -167,12 +167,15 @@ public class PItemSerializer {
         }
 
         PItemCreator.PItemSettings settings = PickaxesRevamped.getInstance().getPItemCreator().get(name);
+        //generate item
+        Pickaxe pick = settings.generate(storage.getTarget(), Pickaxe.class);
+
         //current skill
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
         String skillName = storage.getData(null);
         Skill skill = Skills.getSkill(skillName);
-        //generate item
-        Pickaxe pick = settings.generate(Pickaxe.class);
+
+        System.out.println("deserialize " + pick.getName());
         //set current skill
         pick.setSkill(skill);
         //blocks broken
@@ -229,12 +232,13 @@ public class PItemSerializer {
         }
 
         PItemCreator.PItemSettings settings = PickaxesRevamped.getInstance().getPItemCreator().get(name);
+        //generate item
+        Sword sword = settings.generate(storage.getTarget(), Sword.class);
+
         //current skill
         storage = AttributeStorage.newTarget(storage.getTarget(), UUIDs.getUUIDFromString("skill"));
         String skillName = storage.getData(null);
         Skill skill = Skills.getSkill(skillName);
-        //generate item
-        Sword sword = settings.generate(Sword.class);
         //set current skill
         sword.setSkill(skill);
         //points

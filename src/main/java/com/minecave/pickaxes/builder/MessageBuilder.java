@@ -37,6 +37,11 @@ public class MessageBuilder {
         return this;
     }
 
+    public MessageBuilder replace(String s, IntegerType type) {
+        this.base = type.replace(base, s);
+        return this;
+    }
+
     public String build() {
         return base;
     }
@@ -62,6 +67,19 @@ public class MessageBuilder {
             for (String a : all) {
                 if (s.contains(a)) {
                     string = string.replace(a, String.valueOf(i));
+                }
+            }
+            return string;
+        }
+
+        public String replace(String s, String s1) {
+            if (s == null) {
+                return null;
+            }
+            String string = s;
+            for (String a : all) {
+                if (s.contains(a)) {
+                    string = string.replace(a, String.valueOf(s1));
                 }
             }
             return string;

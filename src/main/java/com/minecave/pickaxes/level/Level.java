@@ -60,30 +60,35 @@ public class Level {
         for (String s : LEVEL_UP_MESSAGE) {
             MessageBuilder builder = new MessageBuilder(s);
             builder.replace(player)
-              .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
-              .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
-              .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
-              .replace(0, MessageBuilder.IntegerType.XP)
-              .replace(pItem);
+                    .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL);
+            if (next != null) {
+                builder.replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
+                        .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL);
+            } else {
+                builder.replace("N/A", MessageBuilder.IntegerType.NEXT_XP)
+                        .replace("Max Level", MessageBuilder.IntegerType.NEXT_LEVEL);
+            }
+            builder.replace(0, MessageBuilder.IntegerType.XP)
+                    .replace(pItem);
             messages.add(builder.build());
         }
         String[] to = messages.toArray(new String[messages.size()]);
-        String title_line1 = new MessageBuilder(plugin.getConfigValues().getTitleLine1())
-          .replace(player)
-          .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
-          .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
-          .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
-          .replace(0, MessageBuilder.IntegerType.XP)
-          .replace(pItem)
-          .build();
-        String title_line2 = new MessageBuilder(plugin.getConfigValues().getTitleLine2())
-          .replace(player)
-          .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
-          .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
-          .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
-          .replace(0, MessageBuilder.IntegerType.XP)
-          .replace(pItem)
-          .build();
+//        String title_line1 = new MessageBuilder(plugin.getConfigValues().getTitleLine1())
+//          .replace(player)
+//          .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
+//          .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
+//          .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
+//          .replace(0, MessageBuilder.IntegerType.XP)
+//          .replace(pItem)
+//          .build();
+//        String title_line2 = new MessageBuilder(plugin.getConfigValues().getTitleLine2())
+//          .replace(player)
+//          .replace(rep, MessageBuilder.IntegerType.PLAYER_LEVEL)
+//          .replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
+//          .replace(next.rep, MessageBuilder.IntegerType.NEXT_LEVEL)
+//          .replace(0, MessageBuilder.IntegerType.XP)
+//          .replace(pItem)
+//          .build();
 //        Title title = new Title(title_line1, title_line2);
 //        title.setFadeInTime(35);
 //        title.setFadeOutTime(30);

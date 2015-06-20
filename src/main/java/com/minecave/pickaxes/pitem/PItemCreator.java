@@ -10,7 +10,6 @@ package com.minecave.pickaxes.pitem;
 
 import com.minecave.pickaxes.PickaxesRevamped;
 import com.minecave.pickaxes.enchant.PEnchant;
-import com.minecave.pickaxes.items.ItemBuilder;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.Skill;
 import com.minecave.pickaxes.skill.Skills;
@@ -117,19 +116,21 @@ public class PItemCreator {
     }
 
     public static boolean isSword(ItemStack item) {
-        return item.getType() != Material.DIAMOND_SWORD &&
-                item.getType() != Material.IRON_SWORD &&
-                item.getType() != Material.GOLD_SWORD &&
-                item.getType() != Material.STONE_SWORD &&
-                item.getType() != Material.WOOD_SWORD;
+        return item != null &&
+                (item.getType() == Material.DIAMOND_SWORD ||
+                item.getType() == Material.IRON_SWORD ||
+                item.getType() == Material.GOLD_SWORD ||
+                item.getType() == Material.STONE_SWORD ||
+                item.getType() == Material.WOOD_SWORD);
     }
 
     public static boolean isPick(ItemStack item) {
-        return item.getType() != Material.DIAMOND_PICKAXE &&
-                item.getType() != Material.IRON_PICKAXE &&
-                item.getType() != Material.GOLD_PICKAXE &&
-                item.getType() != Material.STONE_PICKAXE &&
-                item.getType() != Material.WOOD_PICKAXE;
+        return item != null &&
+                (item.getType() == Material.DIAMOND_PICKAXE ||
+                item.getType() == Material.IRON_PICKAXE ||
+                item.getType() == Material.GOLD_PICKAXE ||
+                item.getType() == Material.STONE_PICKAXE ||
+                item.getType() == Material.WOOD_PICKAXE);
     }
 
     @Getter
@@ -164,21 +165,23 @@ public class PItemCreator {
         }
 
         //TODO: Generate
-        public <P extends PItem> P generate(Class<P> clazz) {
+        public <P extends PItem> P generate(ItemStack stack, Class<P> clazz) {
             PItem pItem = null;
             Level level = Level.getLevels().get(this.startLevel);
-            if(level == null) level = Level.ONE;
-            switch(type) {
+            if (level == null) level = Level.ONE;
+            switch (type) {
                 case PICK:
-                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
-                    pItem = new Pickaxe(builder.build(), level, this.startXp, this.name, null);
+//                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
+                    pItem = new Pickaxe(stack, level, this.startXp, this.name, null);
+                    System.out.println("generate " + pItem.getName());
                     break;
                 case SWORD:
-                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
-                    pItem = new Sword(builder.build(), level, this.startXp, this.name, null);
+//                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
+                    pItem = new Sword(stack, level, this.startXp, this.name, null);
                     break;
             }
             this.enchantList.forEach(pItem::addEnchant);
+            this.skillList.forEach(pItem::addSkill);
             pItem.setPSettings(this.key);
             return clazz.cast(pItem);
         }

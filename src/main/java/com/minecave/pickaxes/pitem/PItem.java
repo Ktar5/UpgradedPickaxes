@@ -25,9 +25,11 @@ public abstract class PItem {
     @Getter
     private Map<String, PEnchant> enchants;
     protected ItemStack itemStack;
-    protected String name;
+    protected final String name;
     @Getter
     private Set<Skill> purchasedSkills = new HashSet<>();
+    @Getter
+    private List<Skill> availableSkills = new ArrayList<>();
     protected Skill skill;
     @Getter
     @Setter
@@ -74,7 +76,7 @@ public abstract class PItem {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            if (rep.isSimilar(itemStack)) {
+            if (rep.isSimilar(itemStack) || rep.equals(itemStack)) {
                 item = itemStack;
                 slot = i;
                 break;
@@ -83,11 +85,6 @@ public abstract class PItem {
         if (item == null || slot == -1) {
 //            Message.FAILURE.sendMessage(player, "I couldn't find the Item in your inventory! Please contact an Admin!");
             return;
-        }
-        if (Pickaxe.pickaxeMap.get(item) != null) {
-            Pickaxe.pickaxeMap.remove(item);
-        } else if (Sword.swordMap.get(item) != null) {
-            Sword.swordMap.remove(item);
         }
         ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
@@ -106,11 +103,6 @@ public abstract class PItem {
         item.setItemMeta(meta);
 //        player.getInventory().setItem(slot, item);
         player.updateInventory();
-        if (this instanceof Pickaxe) {
-            Pickaxe.pickaxeMap.put(item, (Pickaxe) this);
-        } else if (this instanceof Sword) {
-            Sword.swordMap.put(item, (Sword) this);
-        }
     }
 
     public String buildName() {
@@ -133,15 +125,17 @@ public abstract class PItem {
     public int incrementXp(int xp, Player player) {
         this.xp += xp;
         Level next = level.getNext();
-        Level lvl = next.getPrevious();
+        Level lvl = next != null ? next.getPrevious() : level;
         int total = 0;
         while (lvl != null && lvl.getId() >= 1) {
             total += lvl.getXp();
             lvl = lvl.getPrevious();
         }
         if (total <= this.xp) {
-            this.level = next;
-            level.levelUp(player, this);
+            if(level.getNext() != null) {
+                this.level = next;
+                level.levelUp(player, this);
+            }
             this.points++;
         }
         update(player);
@@ -184,5 +178,9 @@ public abstract class PItem {
         for (int i = 1; i < level; i++) {
             this.level = this.level.getNext();
         }
+    }
+
+    public void addSkill(Skill skill) {
+        this.availableSkills.add(skill);
     }
 }

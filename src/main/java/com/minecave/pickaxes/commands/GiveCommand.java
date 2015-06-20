@@ -9,15 +9,18 @@
 package com.minecave.pickaxes.commands;
 
 import com.minecave.pickaxes.PickaxesRevamped;
+import com.minecave.pickaxes.items.ItemBuilder;
 import com.minecave.pickaxes.pitem.PItemCreator;
 import com.minecave.pickaxes.pitem.Pickaxe;
 import com.minecave.pickaxes.pitem.Sword;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class GiveCommand implements CommandExecutor {
 
@@ -54,12 +57,14 @@ public class GiveCommand implements CommandExecutor {
             player = (Player) sender;
             switch(type) {
                 case PICK:
-                    Pickaxe pickaxe = pItemSettings.generate(Pickaxe.class);
+                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
+                    Pickaxe pickaxe = pItemSettings.generate(builder.build(), Pickaxe.class);
                     player.getInventory().addItem(pickaxe.getItemStack());
                     pickaxe.update(player);
                     break;
                 case SWORD:
-                    Sword sword = pItemSettings.generate(Sword.class);
+                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
+                    Sword sword = pItemSettings.generate(builder.build(), Sword.class);
                     player.getInventory().addItem(sword.getItemStack());
                     sword.update(player);
                     break;
@@ -74,12 +79,14 @@ public class GiveCommand implements CommandExecutor {
             }
             switch(type) {
                 case PICK:
-                    Pickaxe pickaxe = pItemSettings.generate(Pickaxe.class);
+                    ItemBuilder builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE));
+                    Pickaxe pickaxe = pItemSettings.generate(builder.build(), Pickaxe.class);
                     player.getInventory().addItem(pickaxe.getItemStack());
                     pickaxe.update(player);
                     break;
                 case SWORD:
-                    Sword sword = pItemSettings.generate(Sword.class);
+                    builder = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD));
+                    Sword sword = pItemSettings.generate(builder.build(), Sword.class);
                     player.getInventory().addItem(sword.getItemStack());
                     sword.update(player);
                     break;
