@@ -10,16 +10,21 @@
  */
 package com.minecave.pickaxes.enchant;
 
+import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.util.config.CustomConfig;
 import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
-public class PEnchant {
+public abstract class PEnchant {
 
     private int level;
     private int maxLevel;
@@ -51,6 +56,10 @@ public class PEnchant {
         return 1;
     }
 
+    public abstract void activate(BlockBreakEvent event);
+
+    public abstract void activate(EntityDamageByEntityEvent event);
+
     public void increaseLevel(Player player, PItem pItem) {
         if (level == maxLevel) {
             player.sendMessage(ChatColor.RED + "That enchantment is already at maxLevel.");
@@ -61,12 +70,34 @@ public class PEnchant {
         pItem.update(player);
     }
 
+    public void decreaseLevel(Player player, PItem pItem) {
+        if (level == 0) {
+            player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
+            return;
+        }
+        this.setLevel(getLevel() - 1);
+        pItem.setPoints(pItem.getPoints() + getLevelCost(level + 1));
+        pItem.update(player);
+    }
+
     @Override
     public String toString() {
         return ChatColor.YELLOW + displayName + " " + level;
     }
 
-    public PEnchant cloneEnchant() {
-        return new PEnchant(this);
+    public void loadConfig(String key) {
+        CustomConfig config = EnhancedPicks.getInstance().getConfig("enchants");
+        if (config.getConfig().contains(key + ".maxLevel")) {
+            maxLevel = config.getConfig().getInt("tnt.maxLevel");
+        }
+        if (config.getConfig().contains(key + ".levelCosts")) {
+            List<Integer> list = config.getConfig().getIntegerList(key + ".levelCosts");
+            int index = 0;
+            for (int i : list) {
+                this.getCostMap().put(index++, i);
+            }
+        }
     }
+
+    public abstract PEnchant cloneEnchant();
 }

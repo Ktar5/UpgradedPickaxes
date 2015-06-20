@@ -6,19 +6,19 @@
  * minecave can not be copied and/or distributed without the express
  * permission of the aforementioned owner.
  */
-package com.minecave.pickaxes.item;
+package com.minecave.pickaxes.enchant;
 
 import lombok.Getter;
-import org.bukkit.Material;
 
-@Getter
-public enum PItemType {
-    PICK(Material.DIAMOND_PICKAXE),
-    SWORD(Material.DIAMOND_SWORD);
+import java.util.HashMap;
+import java.util.Map;
 
-    private Material type;
+public class PEnchantManager {
 
-    PItemType(Material type) {
-        this.type = type;
+    @Getter
+    private Map<String, PEnchant> enchantMap;
+
+    public PEnchantManager() {
+        enchantMap = new HashMap<>();
     }
 }

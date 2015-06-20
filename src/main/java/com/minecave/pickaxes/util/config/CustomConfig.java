@@ -12,8 +12,10 @@ import com.minecave.pickaxes.EnhancedPicks;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +32,28 @@ public class CustomConfig {
         this.fileName = fileName;
         configFile = new File(folder, fileName);
         reloadConfig();
+    }
+
+    public CustomConfig(Player player) {
+        File dir = new File(EnhancedPicks.getInstance().getDataFolder(), "players");
+        dir.mkdirs();
+        this.fileName = player.getUniqueId().toString();
+        if(!fileName.endsWith(".yml")) {
+            fileName += ".yml";
+        }
+        configFile = new File(dir, fileName);
+        reloadConfigPlayer();
+    }
+
+    public void reloadConfigPlayer() {
+        if(!configFile.exists()) {
+            try {
+                configFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        config = YamlConfiguration.loadConfiguration(configFile);
     }
 
     public String getFileName() {

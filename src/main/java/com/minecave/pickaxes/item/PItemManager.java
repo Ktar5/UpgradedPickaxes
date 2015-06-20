@@ -9,6 +9,8 @@
 package com.minecave.pickaxes.item;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.drops.BlockValue;
+import com.minecave.pickaxes.drops.MobValue;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
@@ -16,7 +18,10 @@ import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ItemBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -28,7 +33,7 @@ public class PItemManager {
 
     private final EnhancedPicks plugin;
     @Getter
-    private Map<ItemStack, PItem> pItemMap;
+    private Map<ItemStack, PItem<?>> pItemMap;
     @Getter
     private Map<String, PItemSettings> settingsMap;
 
@@ -45,7 +50,7 @@ public class PItemManager {
             settings.setStartXp(pickConfig.get(concat(n, "startXp"), Integer.class, 0));
             settings.setStartLevel(pickConfig.get(concat(n, "startLevel"), Integer.class, 1));
             for (String e : pickConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
-                PEnchant enchant = PItem.getEnchantMap().get(e);
+                PEnchant enchant = plugin.getPEnchantManager().getEnchantMap().get(e);
                 if (enchant == null) {
                     EnhancedPicks.getInstance().getLogger().warning(n + " enchant does not exist.");
                     continue;
@@ -63,7 +68,7 @@ public class PItemManager {
                 settings.addEnchant(pEnchant);
             }
             for (String s : pickConfig.getConfig().getStringList(concat(n, "skills"))) {
-                Skill skill = Skills.getSkill(s);
+                PSkill skill = plugin.getPSkillManager().getSkill(s);
                 if (skill == null) {
                     EnhancedPicks.getInstance().getLogger().warning(s + " skill does not exist.");
                     continue;
@@ -79,7 +84,7 @@ public class PItemManager {
             settings.setStartXp(swordConfig.get(concat(n, "startXp"), Integer.class, 0));
             settings.setStartLevel(swordConfig.get(concat(n, "startLevel"), Integer.class, 1));
             for (String e : swordConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
-                PEnchant enchant = PItem.getEnchantMap().get(e);
+                PEnchant enchant = plugin.getPEnchantManager().getEnchantMap().get(e);
                 if (enchant == null) {
                     EnhancedPicks.getInstance().getLogger().warning(n + " enchant does not exist.");
                     continue;
@@ -110,9 +115,22 @@ public class PItemManager {
 
     public void createPItem(ItemStack itemStack, String label, PItemType type) {
         PItemSettings settings = settingsMap.get(label);
-        if(settings == null) {
-
+        if (settings == null) {
+            //TODO:
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack inhand) {
+        PItem<?> pItem = this.pItemMap.get(inhand);
+        if(pItem == null) {
+            plugin.getLogger().warning(inhand + " is not a PItem.");
+            return null;
+        }
+        if(!pClass.equals(pItem.getEClass())) {
+            return null;
+        }
+        return (PItem<P>) pItem;
     }
 
     @Getter
@@ -146,14 +164,36 @@ public class PItemManager {
                 enchantList.add(enchant);
         }
 
-        public PItem generate() {
-            PItem pItem;
+        public PItem<?> generate() {
             Level level = EnhancedPicks.getInstance().getLevelManager().getLevel(this.startLevel);
             if (level == null) {
                 level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
             }
             ItemBuilder builder = ItemBuilder.wrap(new ItemStack(type.getType()));
-            pItem = new PItem(this.name, type, builder.build());
+            PItem<?> pItem = null;
+            switch (type) {
+                case PICK:
+                    pItem = new PItem<>(BlockBreakEvent.class, this.name, type, builder.build());
+                    pItem.setAction((p, e) -> {
+                        BlockBreakEvent blockBreakEvent = (BlockBreakEvent) e;
+                        p.setBlocksBroken(p.getBlocksBroken() + 1);
+                        int xp = BlockValue.getXp(blockBreakEvent.getBlock());
+                        p.incrementXp(xp, blockBreakEvent.getPlayer());
+                        p.activateEnchants(blockBreakEvent);
+                        p.update(blockBreakEvent.getPlayer());
+                    });
+                    break;
+                case SWORD:
+                    pItem = new PItem<>(EntityDamageByEntityEvent.class, this.name, type, builder.build());
+                    pItem.setAction((p, e) -> {
+                        EntityDamageByEntityEvent attackEvent = (EntityDamageByEntityEvent) e;
+                        int xp = MobValue.getXp(attackEvent.getEntityType());
+                        p.incrementXp(xp, (Player) attackEvent.getDamager());
+                        p.activateEnchants(attackEvent);
+                        p.update((Player) attackEvent.getDamager());
+                    });
+                    break;
+            }
             pItem.setLevel(level);
             this.enchantList.forEach(pItem::addEnchant);
             this.skillList.forEach(pItem::addAvailableSkill);
