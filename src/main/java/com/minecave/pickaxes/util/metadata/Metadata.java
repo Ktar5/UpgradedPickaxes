@@ -8,17 +8,16 @@
  */
 package com.minecave.pickaxes.util.metadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
-
 import java.util.*;
 
-@Value
-@AllArgsConstructor
 public class Metadata<P> {
 
     private final P parent;
     private Map<String, Object> metadataMap = new HashMap<>();
+
+    public Metadata(P parent) {
+        this.parent = parent;
+    }
 
     public <T> T set(String key, T object) {
         metadataMap.put(key, object);
@@ -95,5 +94,13 @@ public class Metadata<P> {
         }
         List<T> list = objects != null ? objects : new ArrayList<>();
         return set(key, list);
+    }
+
+    public P getParent() {
+        return this.parent;
+    }
+
+    public Map<String, Object> getMetadataMap() {
+        return this.metadataMap;
     }
 }

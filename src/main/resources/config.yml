@@ -3,7 +3,7 @@
 #                                                        #
 #   $player$ - The players name                          #
 #   $nextLevel$ - Next Level                             #
-#   $skill$# - The Skill (Pickaxe / Sword) leveled up    #
+#   $name$ - The (Pickaxe / Sword) leveled up            #
 #   $newLevel (currentLevel)$ - The players level        #
 #   $nextXP$ - The XP required for the next level        #
 #   $currentXp (xp)$ - The players current XP            #
@@ -12,17 +12,12 @@
 
 level-up-message:
 - '&e&l&n-----------[ &a&lLevel Up &e&l&n ]----------'
-- '&e&l$player$! You have leveled up to $newLevel$ in $skill$.'
+- '&e&l$player$! You have leveled up to $newLevel$ in $name$.'
 - '&e&lNext Level: $nextLevel$'
 - '  &a&lXP needed: $nextXP$'
 - '&e&l&n-----------[ &a&lLevel Up &e&l&n ]----------'
-level-up-title:
-  line1: '&a&lYou leveled up!'
-  line2: '&eNext Level: $nextLevel$ ($nextXP$ XP)'
 cosmetics:
   firework:
-    #Launch a Firework(s) when a player levels up
-    enabled: true
     #Does each level control the firework effect? Set to true for in-depth management
     determinePerLevel: false
     #The maximim amount of Fireworks that can be launched

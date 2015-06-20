@@ -9,12 +9,14 @@
 package com.minecave.pickaxes.util.config;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Ktar5, not2excel
@@ -44,7 +46,7 @@ public class CustomConfig {
 
     public void reloadConfig() {
         if (!configFile.exists())
-            EnhancedPicks.get().saveResource(fileName, true);
+            EnhancedPicks.getInstance().saveResource(fileName, true);
         config = YamlConfiguration.loadConfiguration(configFile);
     }
 
@@ -53,7 +55,7 @@ public class CustomConfig {
             config.save(configFile);
         }
         catch (Exception e) {
-            EnhancedPicks.get().getLogger().severe(String.format("Couldn't save '%s', because: '%s'", fileName,
+            EnhancedPicks.getInstance().getLogger().severe(String.format("Couldn't save '%s', because: '%s'", fileName,
                                                                  e.getMessage()));
         }
     }
@@ -67,6 +69,14 @@ public class CustomConfig {
 
     public void set(String path, Object value) {
         set(path, value, false);
+    }
+
+    public Set<String> getKeys(boolean deep) {
+        return this.config.getKeys(deep);
+    }
+
+    public ConfigurationSection getConfigurationSection(String path) {
+        return this.config.getConfigurationSection(path);
     }
 
     public boolean has(String path) {

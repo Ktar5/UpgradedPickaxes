@@ -1,5 +1,6 @@
 package com.minecave.pickaxes;
 
+import com.minecave.pickaxes.level.LevelManager;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,14 +13,12 @@ import java.util.Map;
  */
 public class EnhancedPicks extends JavaPlugin {
 
+    @Getter
     private static EnhancedPicks instance;
-
-    public static EnhancedPicks get() {
-        return instance;
-    }
-
     @Getter
     private Map<String, CustomConfig> configMap;
+    @Getter
+    private LevelManager levelManager;
 
     @Override
     public void onEnable() {
@@ -27,22 +26,27 @@ public class EnhancedPicks extends JavaPlugin {
         configMap = new HashMap<>();
         saveDefaultConfig();
 
-        attemptSaveResource("drops");
-        attemptSaveResource("levels");
-        attemptSaveResource("xp");
-        attemptSaveResource("menus");
-        attemptSaveResource("skills");
-        attemptSaveResource("enchants");
+        saveDefaultConfig("config");
+        saveDefaultConfig("drops");
+        saveDefaultConfig("levels");
+        saveDefaultConfig("xp");
+        saveDefaultConfig("menus");
+        saveDefaultConfig("skills");
+        saveDefaultConfig("enchants");
 
-
+        levelManager = new LevelManager();
     }
 
     @Override
     public void onDisable() {
     }
 
-    public void attemptSaveResource(String name) {
+    public void saveDefaultConfig(String name) {
         String fileName = name + ".yml";
         configMap.put(name, new CustomConfig(getDataFolder(), fileName));
+    }
+
+    public CustomConfig getConfig(String name) {
+        return configMap.get(name);
     }
 }
