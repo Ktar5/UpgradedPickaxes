@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Ktar5
@@ -73,10 +74,32 @@ public class CustomConfig {
         if (!config.contains(path)) {
             throw new IllegalArgumentException(path + " does not exist.");
         }
+        if(tClass.isPrimitive()) {
+            throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
+        }
         Object object = config.get(path);
         if (!tClass.isInstance(object)) {
             throw new IllegalArgumentException(path + " is not of type " + tClass.getSimpleName());
         }
         return tClass.cast(object);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getList(String path, Class<T> tClass) {
+        if (!config.contains(path)) {
+            throw new IllegalArgumentException(path + " does not exist.");
+        }
+        if(tClass.isPrimitive()) {
+            throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
+        }
+        List<?> list = config.getList(path);
+        if(list == null || list.isEmpty()) {
+            throw new IllegalArgumentException(path + " returns a null/empty list.");
+        }
+        Object first = list.stream().findFirst();
+        if(!tClass.isInstance(first)) {
+            throw new IllegalArgumentException(path + " is not a list of type " + tClass.getSimpleName());
+        }
+        return (List<T>) list;
     }
 }
