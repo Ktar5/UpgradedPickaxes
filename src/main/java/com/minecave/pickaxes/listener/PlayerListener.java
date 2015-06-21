@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
         if (event.getEntity() instanceof EnderPearl) {
             EnderPearl entity = (EnderPearl) event.getEntity();
             if (entity.getCustomName().equals("acid")) {
-                int radius = plugin.getPSkillManager().getSkill(Acid.class).getRadius();
+                int radius = plugin.getPSkillManager().getPSkill(Acid.class).getRadius();
                 entity.getNearbyEntities(radius, radius, radius).stream()
                         .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
                         .forEach(e -> {

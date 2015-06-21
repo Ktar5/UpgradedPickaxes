@@ -40,19 +40,20 @@ public class PlayerInfo {
         this.config = new CustomConfig(player);
     }
 
+    @SuppressWarnings("unchecked")
     public void load() {
         //load items in player's inventory
         for (int i = 0; i < this.player.getInventory().getContents().length; i++) {
             ItemStack item = this.player.getInventory().getItem(i);
             if (item != null) {
                 if (item.getType() == Material.DIAMOND_PICKAXE) {
-                    PItem<BlockBreakEvent> pItem = PItemSerializer.deserializePItem(item);
+                    PItem<BlockBreakEvent> pItem = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(item);
                     if (pItem != null) {
                         this.player.getInventory().setItem(i, pItem.getItem());
                         this.player.updateInventory();
                     }
                 } else if (item.getType() == Material.DIAMOND_SWORD) {
-                    PItem<EntityDamageByEntityEvent> pItem = PItemSerializer.deserializePItem(item);
+                    PItem<EntityDamageByEntityEvent> pItem = (PItem<EntityDamageByEntityEvent>) PItemSerializer.deserializePItem(item);
                     if (pItem != null) {
                         this.player.getInventory().setItem(i, pItem.getItem());
                         this.player.updateInventory();
@@ -69,20 +70,20 @@ public class PlayerInfo {
                 if (stack == null) {
                     continue;
                 }
-                PItem<BlockBreakEvent> pick = PItemSerializer.deserializePItem(stack);
+                PItem<BlockBreakEvent> pick = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(stack);
                 pickList.add(pick);
             }
             pickList.forEach(this::addPickaxe);
         }
         if (config.has("swordData")) {
-            byte[] swordData = ItemSerialization.toBytes(config.get("swordData", String.class));
+            byte[] swordData = ItemSerialization.fromBase64(config.get("swordData", String.class));
             Inventory swords = PItemSerializer.deserializeInventory(swordData);
             List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
             for (ItemStack stack : swords.getContents()) {
                 if (stack == null) {
                     continue;
                 }
-                PItem<EntityDamageByEntityEvent> sword = PItemSerializer.deserializePItem(stack);
+                PItem<EntityDamageByEntityEvent> sword = (PItem<EntityDamageByEntityEvent>) PItemSerializer.deserializePItem(stack);
                 swordList.add(sword);
             }
             swordList.forEach(this::addSword);

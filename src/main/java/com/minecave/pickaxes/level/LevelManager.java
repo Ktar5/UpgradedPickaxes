@@ -53,6 +53,7 @@ public class LevelManager {
         CustomConfig levelConfig = plugin.getConfig("levels");
         for (String levelKey : levelConfig.getConfigurationSection("levels").getKeys(false)) {
             int level = Integer.parseInt(levelKey);
+            levelKey = "levels." + levelKey;
             int xp = levelConfig.get(levelKey + ".xp", Integer.class);
             List<String> commands = levelConfig.getConfig().getStringList(levelKey + ".commands");
             ConfigurationSection fireworkSection = levelConfig.getConfigurationSection(levelKey + ".cosmetics.firework");

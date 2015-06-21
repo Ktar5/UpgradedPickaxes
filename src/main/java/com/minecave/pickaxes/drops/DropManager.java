@@ -40,7 +40,7 @@ public class DropManager {
             BlockValue value = new BlockValue(xp, material);
             blockValues.put(material, value);
         }
-        section = config.getConfigurationSection("mobs");
+        section = config.getConfigurationSection("mob");
         for (String s : section.getKeys(false)) {
             EntityType entity = EntityType.valueOf(s);
             int xp = section.getInt(s);

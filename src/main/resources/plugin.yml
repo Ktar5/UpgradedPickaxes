@@ -1,6 +1,7 @@
 name: ${plugin.name}
 version: ${version}
 main: ${plugin.mainClass}
+depend: [WorldGuard]
 commands:
   pick:
     description: Opens up your pick UI.
@@ -12,7 +13,7 @@ commands:
     description: Give a new enhanced pick or sword to a player.
     usage: /<command> [pick/sword] [config name] [player]
     permission: pickaxes.admin
-    aliases: [givepick, givesword]
+    aliases: [givepick, givesword, pitem]
 permissions:
   pickaxes.*:
     description: Gives access to all enhanced pickaxes commands.

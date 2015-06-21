@@ -22,7 +22,6 @@ import java.util.List;
 
 public class Level {
 
-    private final LevelManager manager;
     @Getter
     private int id;
     @Getter
@@ -33,7 +32,6 @@ public class Level {
     private FireworkBuilder fireworkBuilder;
 
     public Level(int id, int xp, List<String> commands, FireworkBuilder fireworkBuilder) {
-        manager = EnhancedPicks.getInstance().getLevelManager();
         this.id = id;
         this.xp = xp;
         this.commands = commands;
@@ -43,7 +41,7 @@ public class Level {
     public void levelUp(Player player, PItem pItem) {
         Level next = getNext();
         List<String> messages = new ArrayList<>();
-        for (String s : manager.getLevelUpMessage()) {
+        for (String s : EnhancedPicks.getInstance().getLevelManager().getLevelUpMessage()) {
             MessageBuilder builder = new MessageBuilder(s);
             builder.replace(player)
                     .replace(id, MessageBuilder.IntegerType.PLAYER_LEVEL);
@@ -61,7 +59,7 @@ public class Level {
         for (String s : this.commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
         }
-        if (!manager.getBlackList().contains(this.id)) {
+        if (!EnhancedPicks.getInstance().getLevelManager().getBlackList().contains(this.id)) {
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0F, 1.0F);
             if (fireworkBuilder != null) {
                 fireworkBuilder.play(player);
@@ -71,10 +69,10 @@ public class Level {
     }
 
     public Level getPrevious() {
-        return manager.getLevel(id - 1);
+        return EnhancedPicks.getInstance().getLevelManager().getLevel(id - 1);
     }
 
     public Level getNext() {
-        return manager.getLevel(id + 1);
+        return EnhancedPicks.getInstance().getLevelManager().getLevel(id + 1);
     }
 }

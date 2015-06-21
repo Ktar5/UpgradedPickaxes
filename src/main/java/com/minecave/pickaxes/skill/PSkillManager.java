@@ -32,9 +32,19 @@ public class PSkillManager {
     public PSkillManager() {
         this.plugin = EnhancedPicks.getInstance();
         skillMap = new HashMap<>();
+        loadPSkills();
     }
 
-    public void loadSkills() {
+    public String getPSkillKey(PSkill skill) {
+        for(Map.Entry<String, PSkill> entry : skillMap.entrySet()) {
+            if(entry.getValue().equals(skill)) {
+                return entry.getKey();
+            }
+        }
+        return "null";
+    }
+
+    public void loadPSkills() {
         CustomConfig config = plugin.getConfig("skills");
 
         ConfigurationSection eq = config.getConfigurationSection("earthquake");
@@ -115,14 +125,14 @@ public class PSkillManager {
         skillMap.put("fireball", fireball);
     }
 
-    public PSkill getSkill(String name) {
+    public PSkill getPSkill(String name) {
         if (!skillMap.containsKey(name)) {
             throw new IllegalArgumentException(name + " skill does not exist.");
         }
         return skillMap.get(name);
     }
 
-    public <P extends PSkill> P getSkill(Class<P> pClass) {
+    public <P extends PSkill> P getPSkill(Class<P> pClass) {
         for(PSkill pSkill : skillMap.values()) {
             if(pClass.isInstance(pSkill)) {
                 return pClass.cast(pSkill);

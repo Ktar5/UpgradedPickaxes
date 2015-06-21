@@ -31,11 +31,6 @@ import java.util.stream.Collectors;
 @Data
 public class PItem<E extends Event> {
 
-    //region CONSTANTS
-
-    public static final String BLOCKS_BROKEN = "blocks_broken";
-    //endregion
-
     private final EnhancedPicks plugin;
 
     private final String name;
@@ -67,6 +62,7 @@ public class PItem<E extends Event> {
         this.enchants = new ArrayList<>();
         this.purchasedSkills = new ArrayList<>();
         this.availableSkills = new ArrayList<>();
+        this.level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
     }
 
     public void update(Player player) {
@@ -122,7 +118,7 @@ public class PItem<E extends Event> {
         StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.AQUA).append(name)
                 .append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
-                .append("Level: ").append(level)
+                .append("Level: ").append(level.getId())
                 .append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
                 .append("Xp: ").append(xp);
         if (type == PItemType.PICK) {

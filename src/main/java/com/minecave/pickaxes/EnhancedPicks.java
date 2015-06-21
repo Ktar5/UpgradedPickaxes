@@ -55,6 +55,8 @@ public class EnhancedPicks extends JavaPlugin {
         saveDefaultConfig("menus");
         saveDefaultConfig("skills");
         saveDefaultConfig("enchants");
+        saveDefaultConfig("picks");
+        saveDefaultConfig("swords");
 
         levelManager = new LevelManager();
         pSkillManager = new PSkillManager();

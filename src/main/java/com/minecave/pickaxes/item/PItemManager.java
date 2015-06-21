@@ -40,6 +40,7 @@ public class PItemManager {
     public PItemManager() {
         plugin = EnhancedPicks.getInstance();
         pItemMap = new HashMap<>();
+        settingsMap = new HashMap<>();
         CustomConfig pickConfig = plugin.getConfig("picks");
         CustomConfig swordConfig = plugin.getConfig("swords");
 
@@ -68,7 +69,7 @@ public class PItemManager {
                 settings.addEnchant(pEnchant);
             }
             for (String s : pickConfig.getConfig().getStringList(concat(n, "skills"))) {
-                PSkill skill = plugin.getPSkillManager().getSkill(s);
+                PSkill skill = plugin.getPSkillManager().getPSkill(s);
                 if (skill == null) {
                     EnhancedPicks.getInstance().getLogger().warning(s + " skill does not exist.");
                     continue;
@@ -102,7 +103,7 @@ public class PItemManager {
                 settings.addEnchant(pEnchant);
             }
             for (String s : swordConfig.getConfig().getStringList(concat(n, "skills"))) {
-                PSkill skill = plugin.getPSkillManager().getSkill(s);
+                PSkill skill = plugin.getPSkillManager().getPSkill(s);
                 if (skill == null) {
                     EnhancedPicks.getInstance().getLogger().warning(s + " skill does not exist.");
                     continue;
@@ -149,6 +150,10 @@ public class PItemManager {
 
     public void addPItem(PItem<?> pItem) {
         this.pItemMap.put(pItem.getItem(), pItem);
+    }
+
+    public PItemSettings getSettings(String key) {
+        return this.settingsMap.get(key);
     }
 
     @Getter

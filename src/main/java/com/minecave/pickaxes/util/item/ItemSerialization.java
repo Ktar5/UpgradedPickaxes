@@ -75,7 +75,7 @@ public class ItemSerialization {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
-    public static byte[] toBytes(String base64) {
+    public static byte[] fromBase64(String base64) {
         return Base64.getDecoder().decode(base64);
     }
 }
