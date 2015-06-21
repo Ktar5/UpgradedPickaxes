@@ -56,6 +56,10 @@ public abstract class PEnchant {
         return 1;
     }
 
+    public int getCost() {
+        return getLevelCost(this.level);
+    }
+
     public abstract void activate(BlockBreakEvent event);
 
     public abstract void activate(EntityDamageByEntityEvent event);

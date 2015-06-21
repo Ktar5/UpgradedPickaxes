@@ -11,8 +11,6 @@ package com.minecave.pickaxes.item;
 import com.minecave.pickaxes.util.item.ItemSerialization;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -30,25 +28,13 @@ public class PItemSerializer {
         return Bukkit.createInventory(null, 9);
     }
 
-    public static byte[] serialPicks(List<PItem<BlockBreakEvent>> inventory) {
-        if (inventory.isEmpty()) {
+    public static <E extends Event> byte[] serialPItems(List<PItem<E>> list) {
+        if (list.isEmpty()) {
             return null;
         }
-        ItemStack[] items = new ItemStack[inventory.size()];
+        ItemStack[] items = new ItemStack[list.size()];
         int i = 0;
-        for (PItem<BlockBreakEvent> p : inventory) {
-            items[i++] = PItemSerializer.serializePItem(p);
-        }
-        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
-    }
-
-    public static byte[] serialSwords(List<PItem<EntityDamageByEntityEvent>> inventory) {
-        if (inventory.isEmpty()) {
-            return null;
-        }
-        ItemStack[] items = new ItemStack[inventory.size()];
-        int i = 0;
-        for (PItem<EntityDamageByEntityEvent> p : inventory) {
+        for (PItem<?> p : list) {
             items[i++] = PItemSerializer.serializePItem(p);
         }
         return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));

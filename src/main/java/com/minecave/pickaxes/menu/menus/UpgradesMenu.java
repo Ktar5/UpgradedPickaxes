@@ -1,11 +1,10 @@
 package com.minecave.pickaxes.menu.menus;
 
+import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
-import com.minecave.pickaxes.pitem.PItem;
-import com.minecave.pickaxes.pitem.Pickaxe;
-import com.minecave.pickaxes.pitem.Sword;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -33,10 +32,8 @@ public class UpgradesMenu extends Menu {
             return new Button[0];
         }
         ItemStack item = player.getItemInHand();
-        PItem pItem = Pickaxe.tryFromItem(item);
-        if (pItem == null) {
-            pItem = Sword.tryFromItem(item);
-        }
+        PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(item);
+
         if(pItem == null) {
             return new Button[0];
         }
@@ -45,7 +42,7 @@ public class UpgradesMenu extends Menu {
         Button[] buttons = new Button[(int) (Math.ceil((double)enchantCount / 2D) * 9)];
         fillPanes(buttons, PaneType.ALL, new FillerButton(new ItemStack(Material.AIR)));
         int c = 0;
-        for (PEnchant enchant : pItem.getEnchants().values()) {
+        for (PEnchant enchant : pItem.getEnchants()) {
             int redWoolIndex = c + 1;
             int bookIndex = c + 2;
             int greenWoolIndex = c + 3;

@@ -47,7 +47,7 @@ public class Level {
             MessageBuilder builder = new MessageBuilder(s);
             builder.replace(player)
                     .replace(id, MessageBuilder.IntegerType.PLAYER_LEVEL);
-            if(next.id < pItem.getMaxLevel()) {
+            if(next.id < pItem.getMaxLevel().getId()) {
                 builder.replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
                         .replace(next.id, MessageBuilder.IntegerType.NEXT_LEVEL);
             } else {
@@ -58,17 +58,16 @@ public class Level {
                     .replace(pItem);
             messages.add(builder.build());
         }
-        if (!manager.getBlackList().contains(this.id)) {
-
-        }
         for (String s : this.commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
         }
-        player.sendMessage(messages.toArray(new String[messages.size()]));
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0F, 1.0F);
-        if (fireworkBuilder != null) {
-            fireworkBuilder.play(player);
+        if (!manager.getBlackList().contains(this.id)) {
+            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0F, 1.0F);
+            if (fireworkBuilder != null) {
+                fireworkBuilder.play(player);
+            }
         }
+        player.sendMessage(messages.toArray(new String[messages.size()]));
     }
 
     public Level getPrevious() {

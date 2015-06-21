@@ -71,11 +71,13 @@ public class GiveCommand implements CommandExecutor {
                 PItem<BlockBreakEvent> pItem = pItemSettings.generate(BlockBreakEvent.class);
                 player.getInventory().addItem(pItem.getItem());
                 pItem.update(player);
+                plugin.getPItemManager().addPItem(pItem);
                 break;
             case SWORD:
                 PItem<EntityDamageByEntityEvent> eItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
                 player.getInventory().addItem(eItem.getItem());
                 eItem.update(player);
+                plugin.getPItemManager().addPItem(eItem);
                 break;
         }
         return true;

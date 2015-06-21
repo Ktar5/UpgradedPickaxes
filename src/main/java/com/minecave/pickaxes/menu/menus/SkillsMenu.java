@@ -1,22 +1,17 @@
 package com.minecave.pickaxes.menu.menus;
 
 import com.minecave.pickaxes.EnhancedPicks;
-import com.minecave.pickaxes.config.ConfigValues;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
-import com.minecave.pickaxes.pitem.PItem;
-import com.minecave.pickaxes.pitem.Pickaxe;
-import com.minecave.pickaxes.pitem.Sword;
-import com.minecave.pickaxes.skill.Skill;
+import com.minecave.pickaxes.skill.PSkill;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Timothy Andis
@@ -31,24 +26,19 @@ public class SkillsMenu extends Menu {
     public Button[] fill(Player player) {
         Button[] buttons = new Button[9];
 
-        List<Skill> skills = getSkills(player.getItemInHand());
+        PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
+        if(pItem == null) {
+            return new Button[9];
+        }
         int i = 0;
-        for (Skill skill : skills) {
+        for (PSkill skill : pItem.getAvailableSkills()) {
             if (!player.hasPermission(skill.getPerm())) {
                 continue;
             }
-            PItem pItem = Pickaxe.tryFromItem(player.getItemInHand());
-            if (pItem == null) {
-                pItem = Sword.tryFromItem(player.getItemInHand());
-                if (pItem == null) {
-                    continue;
-                }
-            }
-            PItem fItem = pItem;
             boolean purchased = pItem.getPurchasedSkills().contains(skill);
             boolean isHighEnough = skill.highEnough(pItem);
             ItemStack item = new ItemStack(purchased ?
-                    pItem.getSkill() != null && pItem.getSkill().equals(skill) ?
+                    pItem.getCurrentSkill() != null && pItem.getCurrentSkill().equals(skill) ?
                             Material.REDSTONE : Material.SULPHUR :
                     Material.STAINED_GLASS_PANE, 1);
             ItemMeta meta = item.getItemMeta();
@@ -58,17 +48,16 @@ public class SkillsMenu extends Menu {
                     isHighEnough ? ChatColor.DARK_RED + "Click to purchase." :
                             ChatColor.DARK_RED + "You need level " + skill.getLevel() + "."));
             item.setItemMeta(meta);
-            Menu menu = this;
             buttons[i] = new Button(item, (p, clickType) -> {
                 if (!isHighEnough) {
                     p.sendMessage(ChatColor.RED + "You need level " + skill.getLevel());
                     return;
                 }
                 if (!purchased) {
-                    fItem.getPurchasedSkills().add(skill);
-                    fItem.setPoints(fItem.getPoints() - skill.getCost());
+                    pItem.getPurchasedSkills().add(skill);
+                    pItem.setPoints(pItem.getPoints() - skill.getCost());
                 }
-                fItem.setSkill(skill);
+                pItem.setCurrentSkill(skill);
                 p.sendMessage(ChatColor.GOLD + "You activated " + skill.getName() + ".");
                 this.display(p);
             });
@@ -76,34 +65,5 @@ public class SkillsMenu extends Menu {
         }
 
         return buttons;
-    }
-
-    public List<Skill> getSkills(ItemStack item) {
-        if (Pickaxe.tryFromItem(item) != null) {
-            return getPickaxeSkills();
-        } else if(Sword.tryFromItem(item) != null){
-            return getSwordSkills();
-        }
-        return Collections.emptyList();
-    }
-
-    public List<Skill> getPickaxeSkills() {
-        List<Skill> skills = new ArrayList<>();
-        ConfigValues cv = EnhancedPicks.getInstance().getConfigValues();
-        skills.add(cv.getBomber());
-        skills.add(cv.getEarthquake());
-        skills.add(cv.getIce());
-        skills.add(cv.getLightning());
-        return skills;
-    }
-
-    public List<Skill> getSwordSkills() {
-        List<Skill> skills = new ArrayList<>();
-        ConfigValues cv = EnhancedPicks.getInstance().getConfigValues();
-        skills.add(cv.getAcid());
-        skills.add(cv.getFireball());
-        skills.add(cv.getRain());
-        skills.add(cv.getShotgun());
-        return skills;
     }
 }

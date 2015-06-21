@@ -113,24 +113,42 @@ public class PItemManager {
         }
     }
 
-    public void createPItem(ItemStack itemStack, String label, PItemType type) {
-        PItemSettings settings = settingsMap.get(label);
-        if (settings == null) {
-            //TODO:
+    public PItem<?> getPItem(ItemStack item) {
+        PItem<?> pItem = this.pItemMap.get(item);
+        if(pItem == null) {
+            for(PItem<?> pItem1 : pItemMap.values()) {
+                if(pItem1.getItem().isSimilar(item)) {
+                    return pItem1;
+                }
+            }
+            plugin.getLogger().warning(item + " is not a PItem.");
         }
+        return pItem;
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack inhand) {
-        PItem<?> pItem = this.pItemMap.get(inhand);
+    public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack item) {
+        PItem<?> pItem = this.pItemMap.get(item);
         if(pItem == null) {
-            plugin.getLogger().warning(inhand + " is not a PItem.");
+            for(PItem<?> pItem1 : pItemMap.values()) {
+                if(pItem1.getItem().isSimilar(item)) {
+                    if(!pClass.equals(pItem1.getEClass())) {
+                        return null;
+                    }
+                    return (PItem<P>) pItem1;
+                }
+            }
+            plugin.getLogger().warning(item + " is not a PItem.");
             return null;
         }
         if(!pClass.equals(pItem.getEClass())) {
             return null;
         }
         return (PItem<P>) pItem;
+    }
+
+    public void addPItem(PItem<?> pItem) {
+        this.pItemMap.put(pItem.getItem(), pItem);
     }
 
     @Getter

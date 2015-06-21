@@ -8,10 +8,13 @@
  */
 package com.minecave.pickaxes.player;
 
+import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemSerializer;
 import com.minecave.pickaxes.util.config.CustomConfig;
+import com.minecave.pickaxes.util.item.ItemSerialization;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -38,19 +41,26 @@ public class PlayerInfo {
     }
 
     public void load() {
-        if (config.has("swordData")) {
-            byte[] swordData = Base64.getDecoder().decode(config.get("swordData", String.class));
-            Inventory swords = PItemSerializer.deserializeInventory(swordData);
-            List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
-            for (ItemStack stack : swords.getContents()) {
-                if (stack == null) {
-                    continue;
+        //load items in player's inventory
+        for (int i = 0; i < this.player.getInventory().getContents().length; i++) {
+            ItemStack item = this.player.getInventory().getItem(i);
+            if (item != null) {
+                if (item.getType() == Material.DIAMOND_PICKAXE) {
+                    PItem<BlockBreakEvent> pItem = PItemSerializer.deserializePItem(item);
+                    if (pItem != null) {
+                        this.player.getInventory().setItem(i, pItem.getItem());
+                        this.player.updateInventory();
+                    }
+                } else if (item.getType() == Material.DIAMOND_SWORD) {
+                    PItem<EntityDamageByEntityEvent> pItem = PItemSerializer.deserializePItem(item);
+                    if (pItem != null) {
+                        this.player.getInventory().setItem(i, pItem.getItem());
+                        this.player.updateInventory();
+                    }
                 }
-                PItem<EntityDamageByEntityEvent> sword = PItemSerializer.deserializePItem(stack);
-                swordList.add(sword);
             }
-            swordList.forEach(this::addSword);
         }
+        //load items in player's virtual chests
         if (config.has("pickData")) {
             byte[] pickData = Base64.getDecoder().decode(config.get("pickData", String.class));
             Inventory pickaxes = PItemSerializer.deserializeInventory(pickData);
@@ -64,10 +74,54 @@ public class PlayerInfo {
             }
             pickList.forEach(this::addPickaxe);
         }
+        if (config.has("swordData")) {
+            byte[] swordData = ItemSerialization.toBytes(config.get("swordData", String.class));
+            Inventory swords = PItemSerializer.deserializeInventory(swordData);
+            List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
+            for (ItemStack stack : swords.getContents()) {
+                if (stack == null) {
+                    continue;
+                }
+                PItem<EntityDamageByEntityEvent> sword = PItemSerializer.deserializePItem(stack);
+                swordList.add(sword);
+            }
+            swordList.forEach(this::addSword);
+        }
     }
 
     public void save() {
-
+        //save items in player's inventory
+        for (int i = 0; i < this.player.getInventory().getContents().length; i++) {
+            ItemStack item = this.player.getInventory().getItem(i);
+            if (item != null) {
+                if (item.getType() == Material.DIAMOND_PICKAXE) {
+                    PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
+                            .getPItem(BlockBreakEvent.class, item);
+                    if (pItem != null) {
+                        ItemStack newItem = PItemSerializer.serializePItem(pItem);
+                        this.player.getInventory().setItem(i, newItem);
+                        this.player.updateInventory();
+                    }
+                } else if (item.getType() == Material.DIAMOND_SWORD) {
+                    PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
+                            .getPItem(EntityDamageByEntityEvent.class, item);
+                    if (pItem != null) {
+                        ItemStack newItem = PItemSerializer.serializePItem(pItem);
+                        this.player.getInventory().setItem(i, newItem);
+                        this.player.updateInventory();
+                    }
+                }
+            }
+        }
+        //save items in player's virtual chests
+        byte[] pickData = PItemSerializer.serialPItems(this.pickaxes);
+        byte[] swordData = PItemSerializer.serialPItems(this.swords);
+        if (pickData != null) {
+            config.set("pickData", ItemSerialization.toBase64(pickData));
+        }
+        if (swordData != null) {
+            config.set("swordData", ItemSerialization.toBase64(swordData));
+        }
     }
 
     public void addSword(PItem<EntityDamageByEntityEvent> sword) {
