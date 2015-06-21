@@ -46,6 +46,10 @@ public class PickMenu extends InteractiveMenu {
                     break;
                 }
                 PItem<BlockBreakEvent> p = clone.remove(0);
+                if(p == null) {
+                    continue;
+                }
+                p.updateMeta();
                 buttons[j] = new PickaxeButton(p.getItem());
             }
             Page page = new Page(this, buttons, pageList.size() + 1);

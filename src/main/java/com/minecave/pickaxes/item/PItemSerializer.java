@@ -21,9 +21,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 public class PItemSerializer {
 
@@ -241,5 +240,123 @@ public class PItemSerializer {
         storage.setData(enchants.toString());
 
         return storage.getTarget();
+    }
+
+    public static <E extends Event> String base64PItems(List<PItem<E>> pItems) throws UnsupportedEncodingException {
+        if(pItems == null || pItems.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder("");
+        for (PItem<E> pItem : pItems) {
+            builder.append(pItem.toString());
+        }
+        return Base64.getEncoder().encodeToString(builder.toString().getBytes("utf-8"));
+    }
+
+    public static List<PItem<?>> pItemsBase64(String base64) throws UnsupportedEncodingException {
+        if(base64 == null || base64.equals("")) {
+            return Collections.emptyList();
+        }
+        EnhancedPicks plugin = EnhancedPicks.getInstance();
+        List<PItem<?>> pItemList = new ArrayList<>();
+        String decoded = new String(Base64.getDecoder().decode(base64), "utf-8");
+        String[] items = decoded.split(";");
+        for(String item : items) {
+            String[] data = item.split(",");
+            if(data.length != 12) {
+                throw new IllegalArgumentException("Base64 String contains invalid serialized PItem.");
+            }
+            String type = data[0];
+            String pItemSettingsKey = data[1];
+            String durability = data[2];
+            String xp = data[3];
+            String points = data[4];
+            String curLevel = data[5];
+            String maxLevel = data[6];
+            String availSkills = data[7];
+            String purSkills = data[8];
+            String curSkill = data[9];
+            String blocksBroken = data[10];
+            String aEnchants = data[11];
+
+            PItemType pItemType = PItemType.valueOf(type);
+            if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                return null;
+            }
+            PItemManager.PItemSettings pItemSettings = plugin.getPItemManager().getSettings(pItemSettingsKey);
+
+            PItem<?> pItem = null;
+            switch (pItemType) {
+                case PICK:
+                    pItem = pItemSettings.generate(BlockBreakEvent.class);
+                    break;
+                case SWORD:
+                    pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                    break;
+            }
+            if (pItem == null) {
+                return null;
+            }
+            plugin.getPItemManager().addPItem(pItem);
+            pItem.getItem().setDurability(Short.parseShort(durability));
+
+            pItem.setXp(Integer.parseInt(xp));
+            pItem.setPoints(Integer.parseInt(points));
+            pItem.setLevel(plugin.getLevelManager().getLevel(Integer.parseInt(curLevel)));
+            pItem.setMaxLevel(plugin.getLevelManager().getLevel(Integer.parseInt(maxLevel)));
+
+            if (availSkills != null && !availSkills.equals("")) {
+                String[] skillSplit = availSkills.split("-");
+                for (String key : skillSplit) {
+                    pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                }
+            }
+
+            if (purSkills != null && !purSkills.equals("")) {
+                String[] skillSplit = purSkills.split("-");
+                for (String key : skillSplit) {
+                    pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                }
+            }
+
+            if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                pItem.setCurrentSkill(null);
+            } else {
+                pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+            }
+
+            pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+            if (aEnchants != null && !aEnchants.equals("")) {
+                String[] aEnchantSplit = aEnchants.split("-");
+                for (String enchant : aEnchantSplit) {
+                    String[] enchantSplit = enchant.split(":");
+                    if (enchantSplit.length != 3) {
+                        continue;
+                    }
+                    PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                    if (pEnchant != null) {
+                        if (!pItem.hasEnchant(pEnchant.getName())) {
+                            pEnchant = pEnchant.cloneEnchant();
+                            pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                            pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                            pItem.addEnchant(pEnchant);
+                        } else {
+                            pEnchant = pItem.getEnchant(pEnchant.getName());
+                            pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                            pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                        }
+                    }
+                }
+            }
+            ItemStack temp = pItem.getItem();
+            ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
+            clone.setData(temp.getData());
+            clone.setDurability(temp.getDurability());
+            pItem.setItem(clone);
+
+            pItemList.add(pItem);
+        }
+        return pItemList;
     }
 }

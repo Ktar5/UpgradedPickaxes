@@ -51,8 +51,6 @@ public class PEnchantManager {
                                 enchantMap.put(s.replace("_", ""), base);
                                 enchantMap.put(pick.getEnchantment().getName().replace("_", ""), base);
                             }
-                            System.out.println(s);
-                            System.out.println(pick.name());
                         }
                     } else if (NormalEnchant.VanillaSword.has(s)) {
                         NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.get(s);

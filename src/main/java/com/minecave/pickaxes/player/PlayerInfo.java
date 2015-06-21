@@ -12,15 +12,14 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemSerializer;
 import com.minecave.pickaxes.util.config.CustomConfig;
-import com.minecave.pickaxes.util.nbt.NBTSerialization;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,31 +63,41 @@ public class PlayerInfo {
         }
         //load items in player's virtual chests
         if (config.has("pickData")) {
-            Inventory pickaxes = NBTSerialization.fromBase64(config.get("pickData", String.class));
-            List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
-            for (ItemStack stack : pickaxes.getContents()) {
-                if (stack == null) {
-                    continue;
+            try {
+                List<PItem<?>> pickaxes = PItemSerializer.pItemsBase64(config.get("pickData", String.class));
+                if(pickaxes != null) {
+                    List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
+                    for (PItem<?> pItem : pickaxes) {
+                        if (pItem == null) {
+                            continue;
+                        }
+                        PItem<BlockBreakEvent> pick = (PItem<BlockBreakEvent>) pItem;
+                        pickList.add(pick);
+                    }
+                    pickList.forEach(this::addPickaxe);
                 }
-                System.out.println(stack.getType());
-                PItem<BlockBreakEvent> pick = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(stack);
-                pickList.add(pick);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
-            pickList.forEach(this::addPickaxe);
         }
         if (config.has("swordData")) {
-//            byte[] swordData = ItemSerialization.fromBase64(config.get("swordData", String.class));
-//            Inventory swords = PItemSerializer.deserializeInventory(swordData);
-            Inventory swords = NBTSerialization.fromBase64(config.get("swordData", String.class));
-            List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
-            for (ItemStack stack : swords.getContents()) {
-                if (stack == null) {
-                    continue;
+            try {
+                List<PItem<?>> swords = PItemSerializer.pItemsBase64(config.get("swordData", String.class));
+                if(swords != null) {
+                    List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
+                    for (PItem<?> pItem : swords) {
+                        if (pItem == null) {
+                            continue;
+                        }
+                        PItem<EntityDamageByEntityEvent> sword = (PItem<EntityDamageByEntityEvent>) pItem;
+                        swordList.add(sword);
+                    }
+                    swordList.forEach(this::addSword);
                 }
-                PItem<EntityDamageByEntityEvent> sword = (PItem<EntityDamageByEntityEvent>) PItemSerializer.deserializePItem(stack);
-                swordList.add(sword);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
-            swordList.forEach(this::addSword);
         }
     }
 
@@ -116,22 +125,18 @@ public class PlayerInfo {
                 }
             }
         }
-        //save items in player's virtual chests
-//        byte[] pickData = PItemSerializer.serialPItems(this.pickaxes);
-//        byte[] swordData = PItemSerializer.serialPItems(this.swords);
-//        if (pickData != null) {
-//            config.set("pickData", ItemSerialization.toBase64(pickData));
-//        }
-//        if (swordData != null) {
-//            config.set("swordData", ItemSerialization.toBase64(swordData));
-//        }
-        config.set("pickData", NBTSerialization.toBase64(NBTSerialization.getInventoryFromArray(this.pickaxes)));
-        config.set("pickData", NBTSerialization.toBase64(NBTSerialization.getInventoryFromArray(this.swords)));
+        try {
+            config.set("pickData", PItemSerializer.base64PItems(this.pickaxes));
+            config.set("swordData", PItemSerializer.base64PItems(this.swords));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         config.saveConfig();
     }
 
     public void addSword(PItem<EntityDamageByEntityEvent> sword) {
         this.swords.add(sword);
+        sword.updateMeta();
     }
 
     public void removeSword(PItem<EntityDamageByEntityEvent> sword) {
@@ -140,6 +145,7 @@ public class PlayerInfo {
 
     public void addPickaxe(PItem<BlockBreakEvent> pickaxe) {
         this.pickaxes.add(pickaxe);
+        pickaxe.updateMeta();
     }
 
     public void removePickaxe(PItem<BlockBreakEvent> pickaxe) {

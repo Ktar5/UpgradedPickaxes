@@ -1,6 +1,7 @@
 package com.minecave.pickaxes.menu.buttons;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
 import com.minecave.pickaxes.player.PlayerInfo;
@@ -21,10 +22,12 @@ public class PickaxeButton extends Button {
     public void click(Player player, ClickType type, int slot, Menu menu) {
         PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
         if (info != null) {
-            info.removePickaxe(EnhancedPicks.getInstance().getPItemManager()
-                    .getPItem(BlockBreakEvent.class, this.getItem()));
+            PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
+                    .getPItem(BlockBreakEvent.class, this.getItem());
+            info.removePickaxe(pItem);
             player.getInventory().addItem(this.getItem());
             menu.remove(slot, player);
+            pItem.update(player);
         }
     }
 }

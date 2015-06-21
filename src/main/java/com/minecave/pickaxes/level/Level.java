@@ -13,6 +13,7 @@ import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.util.firework.FireworkBuilder;
 import com.minecave.pickaxes.util.message.MessageBuilder;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -66,6 +67,7 @@ public class Level {
             }
         }
         player.sendMessage(messages.toArray(new String[messages.size()]));
+        player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
     }
 
     public Level getPrevious() {

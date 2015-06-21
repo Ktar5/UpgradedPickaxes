@@ -79,7 +79,6 @@ public class PItemListener implements Listener {
             return;
         }
         Player player = (Player) damager;
-        player.sendMessage(String.valueOf(event.getDamage()));
         ItemStack inhand = player.getItemInHand();
         if (inhand == null || inhand.getType() == Material.AIR) {
             return;

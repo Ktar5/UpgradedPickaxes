@@ -1,6 +1,7 @@
 package com.minecave.pickaxes.menu.buttons;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.menu.Button;
 import com.minecave.pickaxes.menu.Menu;
 import com.minecave.pickaxes.player.PlayerInfo;
@@ -21,10 +22,12 @@ public class SwordButton extends Button {
     public void click(Player player, ClickType type, int slot, Menu menu) {
         PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
         if (info != null) {
-            info.removeSword(EnhancedPicks.getInstance().getPItemManager()
-                    .getPItem(EntityDamageByEntityEvent.class, this.getItem()));
+            PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
+                    .getPItem(EntityDamageByEntityEvent.class, this.getItem());
+            info.removeSword(pItem);
             player.getInventory().addItem(this.getItem());
             menu.remove(slot, player);
+            pItem.update(player);
         }
     }
 }

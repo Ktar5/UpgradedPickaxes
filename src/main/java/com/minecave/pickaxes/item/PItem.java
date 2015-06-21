@@ -40,7 +40,7 @@ public class PItem<E extends Event> {
     private       String    pItemSettings;
 
     private int   xp;
-    private int   points;
+    private int   points = 1;
     private Level level;
     private Level maxLevel;
 
@@ -83,7 +83,7 @@ public class PItem<E extends Event> {
             }
         }
         if (item == null || slot == -1) { //item == null
-            player.sendMessage(ChatColor.RED + "Could not find that item in your inventory.");
+//          player.sendMessage(ChatColor.RED + "Could not find that item in your inventory.");
             return;
         }
         if (plugin.getPItemManager().getPItemMap().containsKey(item)) {
@@ -96,22 +96,7 @@ public class PItem<E extends Event> {
                 }
             }
         }
-        ItemMeta meta = Bukkit.getItemFactory().getItemMeta(item.getType());
-        List<String> lore = new ArrayList<>();
-        lore.add("Custom Enchants: ");
-        List<String> list = this.enchants.stream()
-                .filter(enchant -> enchant.getLevel() > 0)
-                .map(enchant -> ChatColor.AQUA + enchant.toString())
-                .collect(Collectors.toList());
-        if (list.isEmpty()) {
-            lore.add("None");
-        } else {
-            lore.addAll(list);
-        }
-        meta.setLore(lore);
-        meta.setDisplayName(buildName());
-        item.setItemMeta(meta);
-        this.setItem(item);
+        updateMeta();
         player.updateInventory();
         player.getInventory().setItem(slot, this.getItem());
     }
@@ -142,7 +127,9 @@ public class PItem<E extends Event> {
 
     public void addEnchant(PEnchant pEnchant) {
         if (!enchants.contains(pEnchant) && !hasEnchant(pEnchant)) {
-            enchants.add(pEnchant.cloneEnchant());
+            PEnchant clone = pEnchant.cloneEnchant();
+            enchants.add(clone);
+            clone.apply(this);
         }
     }
 
@@ -220,5 +207,66 @@ public class PItem<E extends Event> {
             }
         }
         return null;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("");
+        String type = this.getType().name();
+        String pItemSettings = this.getPItemSettings();
+        String xp = String.valueOf(this.getXp());
+        String points = String.valueOf(this.getPoints());
+        String curLevel = String.valueOf(this.getLevel().getId());
+        String maxLevel = String.valueOf(this.getMaxLevel().getId());
+        StringBuilder availSkills = new StringBuilder("");
+        for (PSkill pSkill : this.getAvailableSkills()) {
+            availSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append("-");
+        }
+        StringBuilder purSkills = new StringBuilder("");
+        for (PSkill pSkill : this.getPurchasedSkills()) {
+            purSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append("-");
+        }
+        String curSkill = this.getCurrentSkill() == null ? "null" :
+                plugin.getPSkillManager().getPSkillKey(this.getCurrentSkill());
+        String blocksBroken = String.valueOf(this.getBlocksBroken());
+        StringBuilder enchants = new StringBuilder("");
+        for (PEnchant pEnchant : this.getEnchants()) {
+            enchants.append(pEnchant.getName().toLowerCase()).append(":")
+                    .append(pEnchant.getLevel()).append(":")
+                    .append(pEnchant.getMaxLevel()).append("-");
+        }
+        return builder.append(type).append(",")
+                .append(pItemSettings).append(",")
+                .append(item.getDurability()).append(",")
+                .append(xp).append(",")
+                .append(points).append(",")
+                .append(curLevel).append(",")
+                .append(maxLevel).append(",")
+                .append(availSkills.toString()).append(",")
+                .append(purSkills.toString()).append(",")
+                .append(curSkill).append(",")
+                .append(blocksBroken).append(",")
+                .append(enchants.toString()).append(";")
+                .toString();
+
+    }
+
+    public void updateMeta() {
+        ItemMeta meta = Bukkit.getItemFactory().getItemMeta(item.getType());
+        List<String> lore = new ArrayList<>();
+        lore.add("Custom Enchants: ");
+        List<String> list = this.enchants.stream()
+                .filter(enchant -> enchant.getLevel() > 0)
+                .map(enchant -> ChatColor.AQUA + enchant.toString())
+                .collect(Collectors.toList());
+        if (list.isEmpty()) {
+            lore.add("None");
+        } else {
+            lore.addAll(list);
+        }
+        meta.setLore(lore);
+        meta.setDisplayName(buildName());
+        item.setItemMeta(meta);
+        this.setItem(item);
     }
 }

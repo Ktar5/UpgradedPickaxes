@@ -72,6 +72,8 @@ public abstract class PEnchant {
         this.setLevel(getLevel() + 1);
         pItem.setPoints(pItem.getPoints() - getLevelCost(level - 1));
         pItem.update(player);
+        player.sendMessage(ChatColor.RED + "You spent " + getLevelCost(level - 1) + " points.");
+        player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
     }
 
     public void decreaseLevel(Player player, PItem pItem) {
@@ -82,6 +84,8 @@ public abstract class PEnchant {
         this.setLevel(getLevel() - 1);
         pItem.setPoints(pItem.getPoints() + getLevelCost(level + 1));
         pItem.update(player);
+        player.sendMessage(ChatColor.GREEN + "You received " + getLevelCost(level + 1) + " points back.");
+        player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
     }
 
     @Override

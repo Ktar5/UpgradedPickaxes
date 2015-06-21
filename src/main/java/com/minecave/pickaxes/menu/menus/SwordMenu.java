@@ -32,26 +32,38 @@ public class SwordMenu extends InteractiveMenu {
     @Override
     public Button[] fill(Player player) {
         PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
-        List<PItem<EntityDamageByEntityEvent>> swords = info.getSwords();
-        List<PItem<EntityDamageByEntityEvent>> copy = new ArrayList<>(swords);
-        Button[] buttons = new Button[27];
-        buttons[26] = PREV_PAGE;
-        buttons[25] = NEXT_PAGE;
-        for (int i = 0; i < swords.size(); i++) {
-            if (i != 25) {
-                buttons[i] = new SwordButton(swords.get(i).getItem());
-                copy.remove(swords.get(i));
-                continue;
+        List<PItem<EntityDamageByEntityEvent>> picks = info.getSwords();
+        List<PItem<EntityDamageByEntityEvent>> clone = new ArrayList<>(picks);
+
+        double pageCount = Math.ceil(picks.size() / 25);
+        if (pageCount == 0) pageCount = 1;
+        List<Page> pageList = new ArrayList<>();
+        for (int i = 1; i <= pageCount; i++) {
+            Button[] buttons = new Button[27];
+            buttons[25] = PREV_PAGE;
+            buttons[26] = NEXT_PAGE;
+            for (int j = 0; j < 25; j++) {
+                if (clone.isEmpty()) {
+                    break;
+                }
+                PItem<EntityDamageByEntityEvent> p = clone.remove(0);
+                if(p == null) {
+                    continue;
+                }
+                p.updateMeta();
+                buttons[j] = new SwordButton(p.getItem());
             }
-            int size = copy.size();
-            Button[] newButtons = new Button[27];
-            for (int r = 0; r < size; r++) {
-                newButtons[r] = new SwordButton(copy.get(r).getItem());
-            }
-            Page page = new Page(this, newButtons, lastId);
-            lastId++;
-            currentPages.put(player.getUniqueId(), page);
+            Page page = new Page(this, buttons, pageList.size() + 1);
+            pageList.add(page);
         }
-        return buttons;
+        for (int i = 1; i < pageList.size(); i++) {
+            Page page = pageList.get(i);
+            pages.put(page.getId(), page);
+        }
+        if (this.getCurrentPage(player) == null) {
+            this.currentPages.put(player.getUniqueId(), pageList.get(0));
+        }
+
+        return getCurrentPage(player).fill(player);
     }
 }
