@@ -21,7 +21,7 @@ public class TnTEnchant extends PEnchant {
 
     @Override
     public void activate(BlockBreakEvent event) {
-        if(this.getLevel() <= 0) {
+        if (this.getLevel() <= 0) {
             return;
         }
         Block block = event.getBlock();
@@ -32,18 +32,18 @@ public class TnTEnchant extends PEnchant {
 
     @Override
     public void activate(EntityDamageByEntityEvent event) {
-        if(this.getLevel() <= 0) {
+        if (this.getLevel() <= 0) {
             return;
         }
         Player player = (Player) event.getDamager();
         int radius = this.getLevel() * 2;
         player.getNearbyEntities(radius, radius, radius).stream()
-          .filter(ent -> ent instanceof LivingEntity)
-          .forEach(ent -> ((LivingEntity) ent).damage(0.5D * this.getLevel()));
+                .filter(ent -> ent instanceof LivingEntity)
+                .forEach(ent -> ((LivingEntity) ent).damage(0.5D * this.getLevel()));
     }
 
     @Override
-    public TnTEnchant cloneEnchant(){
+    public TnTEnchant cloneEnchant() {
         return new TnTEnchant();
     }
 }

@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class MenuManager {
 
-    private EnhancedPicks plugin;
+    private EnhancedPicks     plugin;
     @Getter
     private Map<String, Menu> menuMap;
 
@@ -37,15 +37,15 @@ public class MenuManager {
 
     public <M extends Menu> M get(Class<M> mClass, String key) {
         Menu menu = menuMap.get(key);
-        if(menu == null || !mClass.isInstance(menu)) {
+        if (menu == null || !mClass.isInstance(menu)) {
             return null;
         }
         return mClass.cast(menu);
     }
 
     public <M extends Menu> M get(Class<M> mClass) {
-        for(Menu m : menuMap.values()) {
-            if(mClass.isInstance(m)) {
+        for (Menu m : menuMap.values()) {
+            if (mClass.isInstance(m)) {
                 return mClass.cast(m);
             }
         }

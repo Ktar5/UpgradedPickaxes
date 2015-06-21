@@ -20,10 +20,10 @@ import java.util.Arrays;
  */
 public class ItemBuilder {
 
-    private ItemStack item;
-    private String name;
-    private String[] lore;
-    private Color color;
+    private ItemStack            item;
+    private String               name;
+    private String[]             lore;
+    private Color                color;
     private WrappedEnchantment[] enchantments;
 
     /**
@@ -87,7 +87,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder glow(boolean glow) {
-        if(glow) {
+        if (glow) {
             enchant(new WrappedEnchantment(GlowEnchant.getGlowEnchant()));
         }
         return this;

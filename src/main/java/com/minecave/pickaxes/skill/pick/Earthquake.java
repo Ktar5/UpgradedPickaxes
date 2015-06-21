@@ -18,7 +18,7 @@ import java.util.Random;
 public class Earthquake extends PSkill {
 
     private int radius;
-    private  Random random = new Random();
+    private Random random = new Random();
 
     public Earthquake(int radius, String name, long cooldown, int level, int cost, String perm) {
         super(name, cooldown, level, cost, perm);
@@ -32,10 +32,10 @@ public class Earthquake extends PSkill {
         int playerX = location.getBlockX();
         int playerZ = location.getBlockZ();
         int y = location.getBlockY();
-        for(int x = playerX - radius; x <= (playerX + radius); x++) {
-            for(int z = playerZ - radius; z <= (playerZ + radius); z++) {
+        for (int x = playerX - radius; x <= (playerX + radius); x++) {
+            for (int z = playerZ - radius; z <= (playerZ + radius); z++) {
                 Location block = new Location(location.getWorld(), x, y, z);
-                if(!this.wg.canBuild(event.getPlayer(), block)){
+                if (!this.wg.canBuild(event.getPlayer(), block)) {
                     continue;
                 }
                 Material type = block.getBlock().getType();

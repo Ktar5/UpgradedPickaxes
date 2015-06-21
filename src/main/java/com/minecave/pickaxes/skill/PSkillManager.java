@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class PSkillManager {
 
-    private EnhancedPicks plugin;
+    private EnhancedPicks       plugin;
     private Map<String, PSkill> skillMap;
 
     public PSkillManager() {
@@ -36,8 +36,8 @@ public class PSkillManager {
     }
 
     public String getPSkillKey(PSkill skill) {
-        for(Map.Entry<String, PSkill> entry : skillMap.entrySet()) {
-            if(entry.getValue().equals(skill)) {
+        for (Map.Entry<String, PSkill> entry : skillMap.entrySet()) {
+            if (entry.getValue().equals(skill)) {
                 return entry.getKey();
             }
         }
@@ -133,8 +133,8 @@ public class PSkillManager {
     }
 
     public <P extends PSkill> P getPSkill(Class<P> pClass) {
-        for(PSkill pSkill : skillMap.values()) {
-            if(pClass.isInstance(pSkill)) {
+        for (PSkill pSkill : skillMap.values()) {
+            if (pClass.isInstance(pSkill)) {
                 return pClass.cast(pSkill);
             }
         }

@@ -20,39 +20,62 @@ import java.lang.reflect.Field;
  */
 public class GlowEnchant extends Enchantment {
 
-    static boolean registered = false;
-    public static final int ID = 112;
-    public static final Enchantment instance = new GlowEnchant();
+    public static final int         ID         = 112;
+    public static final Enchantment instance   = new GlowEnchant();
+    static              boolean     registered = false;
+
+    public GlowEnchant() {
+        super(ID);
+    }
 
     public static boolean isRegistered() {
         return registered;
     }
 
-    public static GlowEnchant getGlowEnchant(){
+    public static GlowEnchant getGlowEnchant() {
         return (GlowEnchant) instance;
     }
 
     /**
      * Apply the glowing enchantment to the item.
+     *
      * @param itemStack The itemstack to enchant
      * @return If the enchantment was successful
      */
     public static boolean apply(final ItemStack itemStack) {
-        if(itemStack == null || !registered) {
+        if (itemStack == null || !registered) {
             System.out.println("Cannot enchant because: " + (itemStack == null ? " NULL ITEM" : itemStack.getType().name() + " enchantment not registered"));
             return false;
         }
         ItemMeta meta = itemStack.getItemMeta();
-        if(meta.hasEnchant(instance)) {
+        if (meta.hasEnchant(instance)) {
             return true;
         }
-        meta.addEnchant(instance, 1 ,true);
+        meta.addEnchant(instance, 1, true);
         itemStack.setItemMeta(meta);
         return true;
     }
 
-    public GlowEnchant() {
-        super(ID);
+    /**
+     * Called onEnable()
+     * Don't touch this plz
+     */
+    public static void register() {
+        try {
+            final Enchantment e = Enchantment.getByName("GLOW");
+            if (e != null && e.getClass() == GlowEnchant.class) {
+                GlowEnchant.registered = true;
+                return;
+            }
+            final Field f = Enchantment.class.getDeclaredField("acceptingNew");
+            f.setAccessible(true);
+            f.set(null, true);
+            Enchantment.registerEnchantment(GlowEnchant.instance);
+            GlowEnchant.registered = true;
+            f.set(null, false);
+        } catch (final Exception ex) {
+            GlowEnchant.registered = true;
+        }
     }
 
     @Override
@@ -83,27 +106,5 @@ public class GlowEnchant extends Enchantment {
     @Override
     public int getStartLevel() {
         return 1;
-    }
-
-    /**
-     * Called onEnable()
-     * Don't touch this plz
-     */
-    public static void register() {
-        try {
-            final Enchantment e = Enchantment.getByName("GLOW");
-            if(e != null && e.getClass() == GlowEnchant.class) {
-                GlowEnchant.registered = true;
-                return;
-            }
-            final Field f = Enchantment.class.getDeclaredField("acceptingNew");
-            f.setAccessible(true);
-            f.set(null, true);
-            Enchantment.registerEnchantment(GlowEnchant.instance);
-            GlowEnchant.registered = true;
-            f.set(null, false);
-        } catch (final Exception ex) {
-            GlowEnchant.registered = true;
-        }
     }
 }

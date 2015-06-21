@@ -29,12 +29,12 @@ import java.util.stream.Collectors;
  */
 public class FireworkBuilder {
 
+    private static final Random RANDOM = new Random();
     private boolean playerOnly, trail, flicker, mainTooBig, fadeTooBig;
-    private Type type;
-    private int range;
+    private Type        type;
+    private int         range;
     private List<Color> mainColors, fadeColors;
     private int amount;
-    private static final Random RANDOM = new Random();
 
     public FireworkBuilder() {
         this.mainColors = new ArrayList<>();

@@ -13,7 +13,7 @@ import org.bukkit.block.Block;
 public class BlockValue {
 
     @Getter
-    private int xp;
+    private int      xp;
     @Getter
     private Material type;
 

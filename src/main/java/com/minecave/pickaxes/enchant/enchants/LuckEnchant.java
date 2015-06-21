@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class LuckEnchant extends PEnchant {
 
     public LuckEnchant() {
-        super("lucky", "LuckyDrop");
+        super("lucky", "Lucky Drop");
         super.loadConfig(getName());
     }
 

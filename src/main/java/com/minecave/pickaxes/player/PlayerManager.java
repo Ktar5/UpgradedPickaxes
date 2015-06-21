@@ -26,7 +26,7 @@ public class PlayerManager {
     }
 
     public PlayerInfo add(Player player) {
-        if(playerInfoMap.containsKey(player)) {
+        if (playerInfoMap.containsKey(player)) {
             return playerInfoMap.get(player);
         }
         PlayerInfo info = new PlayerInfo(player);

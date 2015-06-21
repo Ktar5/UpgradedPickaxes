@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 public class Page extends InteractiveMenu {
 
     private InteractiveMenu menu;
-    private Button[] buttons;
-    private int id;
+    private Button[]        buttons;
+    private int             id;
 
     public Page(InteractiveMenu name, Button[] buttons, int id) {
         super(name.getTitle());

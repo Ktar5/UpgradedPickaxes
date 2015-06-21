@@ -25,15 +25,15 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class PSkill {
 
-    private String name;
-    private long cooldown;
-    private int level;
-    @Getter
-    private int cost;
-    @Getter
-    private String perm;
-    private Map<UUID, Long> cooldowns;
     protected final WorldGuardPlugin wg;
+    private         String           name;
+    private         long             cooldown;
+    private         int              level;
+    @Getter
+    private         int              cost;
+    @Getter
+    private         String           perm;
+    private         Map<UUID, Long>  cooldowns;
 
     public PSkill(String name, long cooldown, int level, int cost, String perm) {
         wg = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");

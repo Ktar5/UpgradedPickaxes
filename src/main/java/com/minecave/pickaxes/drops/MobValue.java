@@ -18,7 +18,7 @@ public class MobValue {
 
 
     @Getter
-    private int xp;
+    private int        xp;
     @Getter
     private EntityType type;
 

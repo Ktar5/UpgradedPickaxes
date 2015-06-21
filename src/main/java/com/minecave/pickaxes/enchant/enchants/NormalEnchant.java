@@ -10,6 +10,7 @@ package com.minecave.pickaxes.enchant.enchants;
 
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.util.message.Strings;
 import lombok.Getter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,7 +22,7 @@ public class NormalEnchant extends PEnchant {
     private Enchantment enchantment;
 
     public NormalEnchant(Enchantment enchantment) {
-        super(enchantment.toString(), enchantment.getName());
+        super(enchantment.toString(), Strings.fixEnchantment(enchantment));
         this.enchantment = enchantment;
     }
 
@@ -54,6 +55,11 @@ public class NormalEnchant extends PEnchant {
     @Override
     public int getMaxLevel() {
         return enchantment.getMaxLevel();
+    }
+
+    @Override
+    public NormalEnchant cloneEnchant() {
+        return new NormalEnchant(this);
     }
 
     public enum VanillaSword {
@@ -103,10 +109,5 @@ public class NormalEnchant extends PEnchant {
             }
             return false;
         }
-    }
-
-    @Override
-    public NormalEnchant cloneEnchant() {
-        return new NormalEnchant(this);
     }
 }

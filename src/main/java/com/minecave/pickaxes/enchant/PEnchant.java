@@ -26,8 +26,8 @@ import java.util.Map;
 @Data
 public abstract class PEnchant {
 
-    private int level;
-    private int maxLevel;
+    private int    level;
+    private int    maxLevel;
     private String name;
     private String displayName;
     private Map<Integer, Integer> costMap = new HashMap<>();
@@ -50,7 +50,7 @@ public abstract class PEnchant {
     }
 
     public int getLevelCost(int level) {
-        if(costMap.containsKey(level)) {
+        if (costMap.containsKey(level)) {
             return costMap.get(level);
         }
         return 1;

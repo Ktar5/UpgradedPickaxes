@@ -25,9 +25,9 @@ public class LevelManager {
     private Level exampleLevel = null;
     private FireworkBuilder defaultBuilder;
     @Getter
-    private List<Integer> blackList = new ArrayList<>();
+    private List<Integer> blackList      = new ArrayList<>();
     @Getter
-    private List<String> levelUpMessage = new ArrayList<>();
+    private List<String>  levelUpMessage = new ArrayList<>();
 
     public LevelManager() {
         plugin = EnhancedPicks.getInstance();
@@ -77,8 +77,8 @@ public class LevelManager {
                 exampleLevel = levelObject;
             }
             this.levelMap.put(level, levelObject);
-            for(int i = 1; i <= maxLevel; i++) {
-                if(!levelMap.containsKey(i)) {
+            for (int i = 1; i <= maxLevel; i++) {
+                if (!levelMap.containsKey(i)) {
                     if (exampleLevel != null) {
                         levelMap.put(i, new Level(i, exampleLevel.getXp(), exampleLevel.getCommands(), exampleLevel.getFireworkBuilder()));
                     } else {

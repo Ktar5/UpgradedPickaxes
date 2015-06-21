@@ -42,7 +42,7 @@ public class ItemSerialization {
     }
 
     public static Inventory fromBlob(byte[] data) throws IOException {
-        if(data == null || data.length == 0) {
+        if (data == null || data.length == 0) {
             return Bukkit.createInventory(null, 9);
         }
         try {

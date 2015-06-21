@@ -50,16 +50,16 @@ public class PItemListener implements Listener {
             return;
         }
         PItem<?> pItem = null;
-        if(inhand.getType() == PItemType.PICK.getType()) {
+        if (inhand.getType() == PItemType.PICK.getType()) {
             pItem = EnhancedPicks.getInstance().getPItemManager()
                     .getPItem(BlockBreakEvent.class, player.getItemInHand());
-        } else if(inhand.getType() == PItemType.SWORD.getType()) {
+        } else if (inhand.getType() == PItemType.SWORD.getType()) {
             pItem = EnhancedPicks.getInstance().getPItemManager()
                     .getPItem(EntityDamageByEntityEvent.class, player.getItemInHand());
         }
-        if(pItem != null && pItem.getCurrentSkill() != null) {
+        if (pItem != null && pItem.getCurrentSkill() != null) {
             PSkill skill = pItem.getCurrentSkill();
-            if(!skill.canUse(player, pItem)) {
+            if (!skill.canUse(player, pItem)) {
                 player.sendMessage(ChatColor.RED + "You cannot use " + skill.getName() +
                         " for another " + skill.getTimeLeft(player) + "s.");
             } else {
@@ -86,7 +86,7 @@ public class PItemListener implements Listener {
         }
         PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
                 .getPItem(EntityDamageByEntityEvent.class, player.getItemInHand());
-        if(pItem != null) {
+        if (pItem != null) {
             pItem.onAction(event);
         }
     }

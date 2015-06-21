@@ -9,11 +9,11 @@ import java.util.*;
  */
 public abstract class Drop {
 
-    protected String command;
-    protected int weight;
-    protected Random random = new Random();
-    protected static Map<Integer, List<MobDrop>> mobDrops = new HashMap<>();
+    protected static Map<Integer, List<MobDrop>>   mobDrops   = new HashMap<>();
     protected static Map<Integer, List<BlockDrop>> blockDrops = new HashMap<>();
+    protected String command;
+    protected int    weight;
+    protected        Random                        random     = new Random();
 
     public Drop(int weight, String command, int level) {
         this.weight = weight;
@@ -28,15 +28,15 @@ public abstract class Drop {
     }
 
     public void add(int level) {
-        if(this instanceof MobDrop) {
+        if (this instanceof MobDrop) {
             List<MobDrop> drops = new ArrayList<>();
-            if(mobDrops.get(level) != null) {
+            if (mobDrops.get(level) != null) {
                 drops = mobDrops.get(level);
             }
             drops.add((MobDrop) this);
         } else {
             List<BlockDrop> drops = new ArrayList<>();
-            if(blockDrops.get(level) != null) {
+            if (blockDrops.get(level) != null) {
                 drops = blockDrops.get(level);
             }
             drops.add((BlockDrop) this);

@@ -13,9 +13,13 @@ public class BlockDrop extends Drop {
         super(weight, command, level);
     }
 
+    public static BlockDrop random(int level) {
+        return EnhancedPicks.getInstance().getDropManager().getBlockDrops().get(0);
+    }
+
     @Override
     public void give(Player player) {
-        if(!doGive(player)) {
+        if (!doGive(player)) {
             return;
         }
         BlockDrop[] drops = EnhancedPicks.getInstance().getDropManager().getBlockDrops()
@@ -26,9 +30,9 @@ public class BlockDrop extends Drop {
         }
         int index = -1;
         double random = Math.random() * totalWeight;
-        for(int i = 0; i < drops.length; ++i) {
+        for (int i = 0; i < drops.length; ++i) {
             random -= drops[i].weight;
-            if(random <= 0) {
+            if (random <= 0) {
                 index = i;
             }
         }
@@ -38,14 +42,10 @@ public class BlockDrop extends Drop {
         } catch (IndexOutOfBoundsException e) {
             return;
         }
-        if(drop == null) {
+        if (drop == null) {
             return;
         }
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), drop.command);
     }
 
-    public static BlockDrop random(int level) {
-        return EnhancedPicks.getInstance().getDropManager().getBlockDrops().get(0);
-    }
-    
 }

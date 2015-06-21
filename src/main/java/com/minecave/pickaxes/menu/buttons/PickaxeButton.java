@@ -20,7 +20,7 @@ public class PickaxeButton extends Button {
 
     public void click(Player player, ClickType type, int slot, Menu menu) {
         PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
-        if(info != null) {
+        if (info != null) {
             info.removePickaxe(EnhancedPicks.getInstance().getPItemManager()
                     .getPItem(BlockBreakEvent.class, this.getItem()));
             player.getInventory().addItem(this.getItem());

@@ -25,9 +25,9 @@ public class DropManager {
 
     private EnhancedPicks plugin;
     private Map<Material, BlockValue> blockValues = new HashMap<>();
-    private Map<EntityType, MobValue> mobValues = new HashMap<>();
-    private List<BlockDrop> blockDrops = new ArrayList<>();
-    private List<MobDrop> mobDrops = new ArrayList<>();
+    private Map<EntityType, MobValue> mobValues   = new HashMap<>();
+    private List<BlockDrop>           blockDrops  = new ArrayList<>();
+    private List<MobDrop>             mobDrops    = new ArrayList<>();
 
     public DropManager() {
         this.plugin = EnhancedPicks.getInstance();

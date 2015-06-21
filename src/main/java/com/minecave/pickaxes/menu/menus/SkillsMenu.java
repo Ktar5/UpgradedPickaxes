@@ -27,7 +27,7 @@ public class SkillsMenu extends Menu {
         Button[] buttons = new Button[9];
 
         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
-        if(pItem == null) {
+        if (pItem == null) {
             return new Button[9];
         }
         int i = 0;

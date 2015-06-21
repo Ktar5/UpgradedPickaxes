@@ -35,14 +35,14 @@ public class PickMenu extends InteractiveMenu {
         List<PItem<BlockBreakEvent>> clone = new ArrayList<>(picks);
 
         double pageCount = Math.ceil(picks.size() / 25);
-        if(pageCount == 0) pageCount = 1;
+        if (pageCount == 0) pageCount = 1;
         List<Page> pageList = new ArrayList<>();
-        for(int i = 1; i <= pageCount; i++) {
+        for (int i = 1; i <= pageCount; i++) {
             Button[] buttons = new Button[27];
             buttons[25] = PREV_PAGE;
             buttons[26] = NEXT_PAGE;
-            for(int j = 0; j < 25; j++) {
-                if(clone.isEmpty()) {
+            for (int j = 0; j < 25; j++) {
+                if (clone.isEmpty()) {
                     break;
                 }
                 PItem<BlockBreakEvent> p = clone.remove(0);
@@ -51,11 +51,11 @@ public class PickMenu extends InteractiveMenu {
             Page page = new Page(this, buttons, pageList.size() + 1);
             pageList.add(page);
         }
-        for(int i = 1; i < pageList.size(); i++) {
+        for (int i = 1; i < pageList.size(); i++) {
             Page page = pageList.get(i);
             pages.put(page.getId(), page);
         }
-        if(this.getCurrentPage(player) == null) {
+        if (this.getCurrentPage(player) == null) {
             this.currentPages.put(player.getUniqueId(), pageList.get(0));
         }
 

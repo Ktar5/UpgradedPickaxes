@@ -22,6 +22,7 @@ public abstract class Menu {
     public static FillerButton GREEN;
     public static FillerButton BLUE;
     public static FillerButton DENY;
+    private static  Map<String, Menu> menus = new HashMap<>();
 
     static {
         BLACK = new FillerButton(ItemBuilder.wrap(new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.BLACK.getWoolData())).name(" ").build());
@@ -31,26 +32,15 @@ public abstract class Menu {
         DENY = new FillerButton(ItemBuilder.wrap(new ItemStack(Material.REDSTONE_BLOCK, 1)).name(ChatColor.DARK_RED + "You cannot afford this!").build());
     }
 
-    private String name;
+    protected final Button[]          EMPTY = new Button[45];
     protected Button[] buttons;
-    protected final Button[] EMPTY = new Button[45];
-    private static Map<String, Menu> menus = new HashMap<>();
+    private   String   name;
 
     public Menu(String name) {
         this.name = name;
         this.buttons = EMPTY;
         menus.put(name, this);
     }
-
-    public Button getButton(int slot) {
-        try {
-            return buttons[slot];
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        }
-    }
-
-    public abstract Button[] fill(Player player);
 
     public static Menu get(String name) {
         Menu menu = menus.get(name);
@@ -63,6 +53,16 @@ public abstract class Menu {
         }
         return menu;
     }
+
+    public Button getButton(int slot) {
+        try {
+            return buttons[slot];
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public abstract Button[] fill(Player player);
 
     public void close(Player player) {
         player.closeInventory();

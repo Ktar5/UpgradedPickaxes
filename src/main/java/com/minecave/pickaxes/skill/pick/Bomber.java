@@ -20,9 +20,9 @@ import java.util.Random;
  */
 public class Bomber extends PSkill {
 
+    protected Random random = new Random();
     private int boomblocks;
     private int ticks;
-    protected Random random = new Random();
 
     public Bomber(String name, long cooldown, int level, int cost, String perm, int boomblocks, int ticks, boolean seconds) {
         super(name, cooldown, level, cost, perm);

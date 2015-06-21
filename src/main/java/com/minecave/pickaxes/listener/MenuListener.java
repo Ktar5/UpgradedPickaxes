@@ -44,7 +44,7 @@ public class MenuListener implements Listener {
         if (info == null) {
             throw new RuntimeException(player.getName() + " doesn't have PlayerInfo.");
         }
-        if(menu instanceof Page) {
+        if (menu instanceof Page) {
             menu = ((Page) menu).getMenu();
         }
 

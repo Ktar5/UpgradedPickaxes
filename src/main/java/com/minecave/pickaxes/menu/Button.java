@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Button {
 
-    private ItemStack itemStack;
+    private ItemStack     itemStack;
     private ClickExecutor clickExecutor;
 
     public Button(ItemStack itemStack, ClickExecutor clickExecutor) {

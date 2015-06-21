@@ -28,10 +28,10 @@ import java.util.List;
 @Getter
 public class PlayerInfo {
 
-    private List<PItem<BlockBreakEvent>> pickaxes;
+    private List<PItem<BlockBreakEvent>>           pickaxes;
     private List<PItem<EntityDamageByEntityEvent>> swords;
-    private Player player;
-    private CustomConfig config;
+    private Player                                 player;
+    private CustomConfig                           config;
 
     public PlayerInfo(Player player) {
         this.player = player;
@@ -50,12 +50,14 @@ public class PlayerInfo {
                     PItem<BlockBreakEvent> pItem = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(item);
                     if (pItem != null) {
                         this.player.getInventory().setItem(i, pItem.getItem());
+                        pItem.update(player);
                         this.player.updateInventory();
                     }
                 } else if (item.getType() == Material.DIAMOND_SWORD) {
                     PItem<EntityDamageByEntityEvent> pItem = (PItem<EntityDamageByEntityEvent>) PItemSerializer.deserializePItem(item);
                     if (pItem != null) {
                         this.player.getInventory().setItem(i, pItem.getItem());
+                        pItem.update(player);
                         this.player.updateInventory();
                     }
                 }

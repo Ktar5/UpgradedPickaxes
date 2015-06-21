@@ -43,7 +43,7 @@ public class PEnchantManager {
                         if (pick != null) {
                             NormalEnchant base = new NormalEnchant(pick.getEnchantment());
                             enchantMap.put(s, base);
-                            if(s.contains("_")) {
+                            if (s.contains("_")) {
                                 enchantMap.put(s.replace("_", " "), base);
                                 enchantMap.put(s.replace("_", ""), base);
                             }
@@ -53,7 +53,7 @@ public class PEnchantManager {
                         if (sword != null) {
                             NormalEnchant base = new NormalEnchant(sword.getEnchantment());
                             enchantMap.put(s, base);
-                            if(s.contains("_")) {
+                            if (s.contains("_")) {
                                 enchantMap.put(s.replace("_", " "), base);
                                 enchantMap.put(s.replace("_", ""), base);
                             }

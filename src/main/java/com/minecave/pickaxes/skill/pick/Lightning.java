@@ -35,16 +35,16 @@ public class Lightning extends PSkill {
         World world = location.getWorld();
         world.strikeLightningEffect(target);
         int targetBlockY = target.getBlockY();
-        for(int y = targetBlockY; y < (targetBlockY + depth); y++) {
+        for (int y = targetBlockY; y < (targetBlockY + depth); y++) {
             Location loc = target.clone().subtract(0, y, 0);
-            if(!this.wg.canBuild(event.getPlayer(), loc)){
+            if (!this.wg.canBuild(event.getPlayer(), loc)) {
                 continue;
             }
             List<ItemStack> drops = new ArrayList<>();
             drops.addAll(loc.getBlock().getDrops());
-            for(int i = 0; i < drops.size(); i++) {
+            for (int i = 0; i < drops.size(); i++) {
                 ItemStack itemStack = drops.get(i);
-                if(itemStack.getType() == Material.AIR ||
+                if (itemStack.getType() == Material.AIR ||
                         itemStack.getType() == Material.BEDROCK) {
                     drops.remove(i);
                 } else {

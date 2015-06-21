@@ -80,12 +80,12 @@ public class MessageBuilder {
         }
 
         public String replace(String s, String s1) {
-            if(s == null) {
+            if (s == null) {
                 return null;
             }
             String string = s;
-            for(String a : all) {
-                if(s.contains(a)) {
+            for (String a : all) {
+                if (s.contains(a)) {
                     string = string.replace(a, s1);
                 }
             }

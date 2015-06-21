@@ -31,11 +31,11 @@ import java.util.Map;
 
 public class PItemManager {
 
-    private final EnhancedPicks plugin;
+    private final EnhancedPicks              plugin;
     @Getter
-    private Map<ItemStack, PItem<?>> pItemMap;
+    private       Map<ItemStack, PItem<?>>   pItemMap;
     @Getter
-    private Map<String, PItemSettings> settingsMap;
+    private       Map<String, PItemSettings> settingsMap;
 
     public PItemManager() {
         plugin = EnhancedPicks.getInstance();
@@ -116,13 +116,13 @@ public class PItemManager {
 
     public PItem<?> getPItem(ItemStack item) {
         PItem<?> pItem = this.pItemMap.get(item);
-        if(pItem == null) {
-            for(PItem<?> pItem1 : pItemMap.values()) {
-                if(pItem1.getItem().isSimilar(item)) {
+        if (pItem == null) {
+            for (PItem<?> pItem1 : pItemMap.values()) {
+                if (pItem1.getItem().isSimilar(item)) {
                     return pItem1;
                 }
             }
-            plugin.getLogger().warning(item + " is not a PItem.");
+//            plugin.getLogger().warning(item + " is not a PItem.");
         }
         return pItem;
     }
@@ -130,19 +130,19 @@ public class PItemManager {
     @SuppressWarnings("unchecked")
     public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack item) {
         PItem<?> pItem = this.pItemMap.get(item);
-        if(pItem == null) {
-            for(PItem<?> pItem1 : pItemMap.values()) {
-                if(pItem1.getItem().isSimilar(item)) {
-                    if(!pClass.equals(pItem1.getEClass())) {
+        if (pItem == null) {
+            for (PItem<?> pItem1 : pItemMap.values()) {
+                if (pItem1.getItem().isSimilar(item)) {
+                    if (!pClass.equals(pItem1.getEClass())) {
                         return null;
                     }
                     return (PItem<P>) pItem1;
                 }
             }
-            plugin.getLogger().warning(item + " is not a PItem.");
+//            plugin.getLogger().warning(item + " is not a PItem.");
             return null;
         }
-        if(!pClass.equals(pItem.getEClass())) {
+        if (!pClass.equals(pItem.getEClass())) {
             return null;
         }
         return (PItem<P>) pItem;
@@ -156,17 +156,21 @@ public class PItemManager {
         return this.settingsMap.get(key);
     }
 
+    private String concat(String s, String s1) {
+        return s + "." + s1;
+    }
+
     @Getter
     @Setter
     public static class PItemSettings {
 
-        private String key;
-        private String name;
-        private final PItemType type;
-        private final List<PSkill> skillList;
+        private final PItemType      type;
+        private final List<PSkill>   skillList;
         private final List<PEnchant> enchantList;
-        private int startXp;
-        private int startLevel;
+        private       String         key;
+        private       String         name;
+        private       int            startXp;
+        private       int            startLevel;
 
         public PItemSettings(String name, PItemType type) {
             this.name = name;
@@ -197,7 +201,7 @@ public class PItemManager {
             PItem<P> pItem = null;
             switch (type) {
                 case PICK:
-                    if(!pClass.equals(BlockBreakEvent.class)) {
+                    if (!pClass.equals(BlockBreakEvent.class)) {
                         return null;
                     }
                     pItem = new PItem<>(pClass, this.name, type, builder.build());
@@ -211,7 +215,7 @@ public class PItemManager {
                     });
                     break;
                 case SWORD:
-                    if(!pClass.equals(EntityDamageByEntityEvent.class)) {
+                    if (!pClass.equals(EntityDamageByEntityEvent.class)) {
                         return null;
                     }
                     pItem = new PItem<>(pClass, this.name, type, builder.build());
@@ -230,9 +234,5 @@ public class PItemManager {
             pItem.setPItemSettings(this.key);
             return pItem;
         }
-    }
-
-    private String concat(String s, String s1) {
-        return s + "." + s1;
     }
 }

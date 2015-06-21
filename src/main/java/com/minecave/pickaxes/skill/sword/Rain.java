@@ -39,12 +39,13 @@ public class Rain extends PSkill {
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Location lookingAt = player.getEyeLocation();
-        if(!this.wg.canBuild(event.getPlayer(), lookingAt)){
+        if (!this.wg.canBuild(event.getPlayer(), lookingAt)) {
             return;
         }
         lookingAt.add(0, arrowHeight, 0);
         new BukkitRunnable() {
             int count = 0;
+
             @Override
             public void run() {
                 if (count >= seconds) {
@@ -53,7 +54,7 @@ public class Rain extends PSkill {
                 for (int i = -(arrowCount / 2); i < (arrowCount / 2); i++) {
                     for (int j = -(arrowCount / 2); j < (arrowCount / 2); j++) {
                         Location spawnLocation = lookingAt.clone().add(i, 0, j);
-                        if(!wg.canBuild(event.getPlayer(), spawnLocation)){
+                        if (!wg.canBuild(event.getPlayer(), spawnLocation)) {
                             continue;
                         }
                         Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, 1, 0), 1f, 12);

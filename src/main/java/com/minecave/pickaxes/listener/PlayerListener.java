@@ -67,9 +67,9 @@ public class PlayerListener implements Listener {
                         });
             }
         }
-        if(event.getEntity() instanceof Fireball) {
+        if (event.getEntity() instanceof Fireball) {
             Fireball entity = (Fireball) event.getEntity();
-            if(entity.getCustomName().equals("fireball")) {
+            if (entity.getCustomName().equals("fireball")) {
                 entity.getWorld().createExplosion(entity.getLocation(), 2.0f, false);
             }
         }

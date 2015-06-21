@@ -144,13 +144,13 @@ public class PItemSerializer {
         String aEnchants = storage.getData("");
         if (aEnchants != null && !aEnchants.equals("")) {
             String[] aEnchantSplit = aEnchants.split(";");
-            for(String enchant : aEnchantSplit) {
+            for (String enchant : aEnchantSplit) {
                 String[] enchantSplit = enchant.split(":");
-                if(enchantSplit.length != 3) {
+                if (enchantSplit.length != 3) {
                     continue;
                 }
                 PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0]);
-                if(pEnchant != null) {
+                if (pEnchant != null) {
                     pEnchant = pEnchant.cloneEnchant();
                     pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
                     pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
@@ -162,7 +162,7 @@ public class PItemSerializer {
         ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
         clone.setData(temp.getData());
         clone.setDurability(temp.getDurability());
-        pItem.setItem(temp);
+        pItem.setItem(clone);
 
         return pItem;
     }

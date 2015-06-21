@@ -26,12 +26,12 @@ public class GiveCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         EnhancedPicks plugin = EnhancedPicks.getInstance();
-        if(strings.length < 2) {
+        if (strings.length < 2) {
             return false;
         }
         String typeStr = strings[0];
         String configStr = strings[1];
-        if(!plugin.getPItemManager().getSettingsMap().containsKey(configStr)) {
+        if (!plugin.getPItemManager().getSettingsMap().containsKey(configStr)) {
             sender.sendMessage(ChatColor.RED + configStr + " does not exist in the config.");
             return true;
         }
@@ -44,7 +44,7 @@ public class GiveCommand implements CommandExecutor {
             return false;
         }
         PItemManager.PItemSettings pItemSettings = plugin.getPItemManager().getSettingsMap().get(configStr);
-        if(type != pItemSettings.getType()) {
+        if (type != pItemSettings.getType()) {
             sender.sendMessage(configStr + " is not of type " + type.name());
             return true;
         }
@@ -58,15 +58,15 @@ public class GiveCommand implements CommandExecutor {
         } else if (strings.length >= 3) {
             String playerStr = strings[2];
             player = Bukkit.getPlayer(playerStr);
-            if(player == null || !player.isOnline()) {
+            if (player == null || !player.isOnline()) {
                 sender.sendMessage(ChatColor.RED + playerStr + " is not online.");
                 return true;
             }
         }
-        if(player == null) {
+        if (player == null) {
             return true;
         }
-        switch(type) {
+        switch (type) {
             case PICK:
                 PItem<BlockBreakEvent> pItem = pItemSettings.generate(BlockBreakEvent.class);
                 player.getInventory().addItem(pItem.getItem());

@@ -29,34 +29,34 @@ public class MainPickMenu extends Menu {
                 .getPItem(BlockBreakEvent.class, player.getItemInHand());
 
         ItemStack chest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
-          .name(ChatColor.YELLOW + "Pick Chest")
-          .lore(" ",
-            ChatColor.GRAY + "Click to view all your current pickaxes.")
-          .build();
+                .name(ChatColor.YELLOW + "Pick Chest")
+                .lore(" ",
+                        ChatColor.GRAY + "Click to view all your current pickaxes.")
+                .build();
         buttons[2] = new Button(chest, (player1, clickType) -> {
             Menu menu = EnhancedPicks.getInstance().getMenuManager().get(PickMenu.class);
             menu.display(player);
         });
 
         ItemStack upgrades = ItemBuilder.wrap(new ItemStack(Material.ENCHANTED_BOOK))
-          .name(ChatColor.YELLOW + "Upgrades")
-          .lore(" ",
-            ChatColor.GRAY + "Click to manage your Pick's upgrades.")
-          .build();
+                .name(ChatColor.YELLOW + "Upgrades")
+                .lore(" ",
+                        ChatColor.GRAY + "Click to manage your Pick's upgrades.")
+                .build();
         buttons[4] = new Button(upgrades, (player1, clickType) -> {
-            if(pItem != null) {
+            if (pItem != null) {
                 Menu menu = EnhancedPicks.getInstance().getMenuManager().get(UpgradesMenu.class);
                 menu.display(player);
             }
         });
 
         ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
-          .name(ChatColor.YELLOW + "Skills")
-          .lore(" ",
-            ChatColor.GRAY + "Click to manage your Pick's skills.")
-          .build();
+                .name(ChatColor.YELLOW + "Skills")
+                .lore(" ",
+                        ChatColor.GRAY + "Click to manage your Pick's skills.")
+                .build();
         buttons[6] = new Button(skills, (player1, clickType) -> {
-            if(pItem != null) {
+            if (pItem != null) {
                 Menu menu = EnhancedPicks.getInstance().getMenuManager().get(SkillsMenu.class);
                 menu.display(player);
             }

@@ -33,6 +33,22 @@ public class InstantFirework extends EntityFireworks {
         this.a(0.25F, 0.25F);
     }
 
+    public static void spawn(Location location, FireworkEffect effect, Player... players) {
+        try {
+            InstantFirework firework = new InstantFirework(((CraftWorld) location.getWorld()).getHandle(), players);
+            FireworkMeta meta = ((Firework) firework.getBukkitEntity()).getFireworkMeta();
+            meta.addEffect(effect);
+            ((Firework) firework.getBukkitEntity()).setFireworkMeta(meta);
+            firework.setPosition(location.getX(), location.getY(), location.getZ());
+
+            if ((((CraftWorld) location.getWorld()).getHandle()).addEntity(firework)) {
+                firework.setInvisible(true);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public boolean s_() {
@@ -54,22 +70,5 @@ public class InstantFirework extends EntityFireworks {
             }
         }
         return false;
-    }
-
-    public static void spawn(Location location, FireworkEffect effect, Player... players) {
-        try {
-            InstantFirework firework = new InstantFirework(((CraftWorld) location.getWorld()).getHandle(), players);
-            FireworkMeta meta = ((Firework) firework.getBukkitEntity()).getFireworkMeta();
-            meta.addEffect(effect);
-            ((Firework) firework.getBukkitEntity()).setFireworkMeta(meta);
-            firework.setPosition(location.getX(), location.getY(), location.getZ());
-
-            if ((((CraftWorld) location.getWorld()).getHandle()).addEntity(firework)) {
-                firework.setInvisible(true);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

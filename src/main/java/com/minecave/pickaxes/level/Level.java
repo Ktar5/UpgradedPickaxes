@@ -23,11 +23,11 @@ import java.util.List;
 public class Level {
 
     @Getter
-    private int id;
+    private int             id;
     @Getter
-    private int xp;
+    private int             xp;
     @Getter
-    private List<String> commands;
+    private List<String>    commands;
     @Getter
     private FireworkBuilder fireworkBuilder;
 
@@ -45,7 +45,7 @@ public class Level {
             MessageBuilder builder = new MessageBuilder(s);
             builder.replace(player)
                     .replace(id, MessageBuilder.IntegerType.PLAYER_LEVEL);
-            if(next.id < pItem.getMaxLevel().getId()) {
+            if (next.id < pItem.getMaxLevel().getId()) {
                 builder.replace(next.xp, MessageBuilder.IntegerType.NEXT_XP)
                         .replace(next.id, MessageBuilder.IntegerType.NEXT_LEVEL);
             } else {
@@ -69,7 +69,7 @@ public class Level {
     }
 
     public Level getPrevious() {
-        if(id == 1) {
+        if (id == 1) {
             return null;
         }
         return EnhancedPicks.getInstance().getLevelManager().getLevel(id - 1);

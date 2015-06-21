@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class SwordMenu extends InteractiveMenu {
 
-    private int lastId = 1;
+    private int             lastId       = 1;
     private Map<UUID, Page> currentPages = new HashMap<>();
 
     public SwordMenu(String name) {
@@ -37,15 +37,15 @@ public class SwordMenu extends InteractiveMenu {
         Button[] buttons = new Button[27];
         buttons[26] = PREV_PAGE;
         buttons[25] = NEXT_PAGE;
-        for(int i = 0; i < swords.size(); i++) {
-            if(i != 25) {
+        for (int i = 0; i < swords.size(); i++) {
+            if (i != 25) {
                 buttons[i] = new SwordButton(swords.get(i).getItem());
                 copy.remove(swords.get(i));
                 continue;
             }
             int size = copy.size();
             Button[] newButtons = new Button[27];
-            for(int r = 0; r < size; r++) {
+            for (int r = 0; r < size; r++) {
                 newButtons[r] = new SwordButton(copy.get(r).getItem());
             }
             Page page = new Page(this, newButtons, lastId);

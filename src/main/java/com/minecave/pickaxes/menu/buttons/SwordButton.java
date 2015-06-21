@@ -20,7 +20,7 @@ public class SwordButton extends Button {
 
     public void click(Player player, ClickType type, int slot, Menu menu) {
         PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
-        if(info != null) {
+        if (info != null) {
             info.removeSword(EnhancedPicks.getInstance().getPItemManager()
                     .getPItem(EntityDamageByEntityEvent.class, this.getItem()));
             player.getInventory().addItem(this.getItem());

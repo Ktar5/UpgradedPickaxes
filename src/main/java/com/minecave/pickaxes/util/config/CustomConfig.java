@@ -38,7 +38,7 @@ public class CustomConfig {
         File dir = new File(EnhancedPicks.getInstance().getDataFolder(), "players");
         dir.mkdirs();
         this.fileName = player.getUniqueId().toString();
-        if(!fileName.endsWith(".yml")) {
+        if (!fileName.endsWith(".yml")) {
             fileName += ".yml";
         }
         configFile = new File(dir, fileName);
@@ -46,7 +46,7 @@ public class CustomConfig {
     }
 
     public void reloadConfigPlayer() {
-        if(!configFile.exists()) {
+        if (!configFile.exists()) {
             try {
                 configFile.createNewFile();
             } catch (IOException e) {
@@ -77,10 +77,9 @@ public class CustomConfig {
     public void saveConfig() {
         try {
             config.save(configFile);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             EnhancedPicks.getInstance().getLogger().severe(String.format("Couldn't save '%s', because: '%s'", fileName,
-                                                                 e.getMessage()));
+                    e.getMessage()));
         }
     }
 
@@ -152,8 +151,7 @@ public class CustomConfig {
         List<?> list = config.getList(path);
         if (list == null) {
             return null;
-        }
-        else if (list.isEmpty()) {
+        } else if (list.isEmpty()) {
             return Collections.emptyList();
         }
         Object first = list.stream().findFirst();

@@ -14,6 +14,7 @@ import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
 import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -22,9 +23,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -43,10 +42,10 @@ public class PItem<E extends Event> {
     private Level level;
     private Level maxLevel;
 
-    private List<PEnchant> enchants;
-    private List<PSkill>   purchasedSkills;
-    private List<PSkill>   availableSkills;
-    private PSkill         currentSkill;
+    private Set<PEnchant> enchants;
+    private Set<PSkill>   purchasedSkills;
+    private Set<PSkill>   availableSkills;
+    private PSkill        currentSkill;
 
     private int blocksBroken;
 
@@ -59,9 +58,9 @@ public class PItem<E extends Event> {
         this.name = name;
         this.type = type;
         this.item = item;
-        this.enchants = new ArrayList<>();
-        this.purchasedSkills = new ArrayList<>();
-        this.availableSkills = new ArrayList<>();
+        this.enchants = new HashSet<>();
+        this.purchasedSkills = new HashSet<>();
+        this.availableSkills = new HashSet<>();
         this.level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
         this.maxLevel = EnhancedPicks.getInstance().getLevelManager().getMaxLevel();
     }
@@ -76,17 +75,17 @@ public class PItem<E extends Event> {
                 continue;
             }
             if (clone.isSimilar(itemStack)) {
-                item = itemStack;
+                item = clone;
                 slot = i;
                 break;
             }
         }
-        if (item == null || slot == -1) {
+        if (item == null || slot == -1) { //item == null
             player.sendMessage(ChatColor.RED + "Could not find that item in your inventory.");
             return;
         }
-        if (plugin.getPItemManager().getPItemMap().containsKey(this.item)) {
-            plugin.getPItemManager().getPItemMap().remove(this.item);
+        if (plugin.getPItemManager().getPItemMap().containsKey(item)) {
+            plugin.getPItemManager().getPItemMap().remove(item);
         } else {
             for (Map.Entry<ItemStack, PItem<?>> entry : plugin.getPItemManager().getPItemMap().entrySet()) {
                 if (entry.getValue().equals(this)) {
@@ -95,7 +94,7 @@ public class PItem<E extends Event> {
                 }
             }
         }
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = Bukkit.getItemFactory().getItemMeta(item.getType());
         List<String> lore = new ArrayList<>();
         lore.add("Custom Enchants: ");
         List<String> list = this.enchants.stream()
@@ -111,8 +110,8 @@ public class PItem<E extends Event> {
         meta.setDisplayName(buildName());
         item.setItemMeta(meta);
         this.setItem(item);
-        plugin.getPItemManager().getPItemMap().put(item, this);
         player.updateInventory();
+        player.getInventory().setItem(slot, this.getItem());
     }
 
     public String buildName() {
@@ -182,6 +181,6 @@ public class PItem<E extends Event> {
             EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(this.item);
         }
         this.item = item;
-        EnhancedPicks.getInstance().getPItemManager().addPItem(this);
+        EnhancedPicks.getInstance().getPItemManager().getPItemMap().put(item, this);
     }
 }

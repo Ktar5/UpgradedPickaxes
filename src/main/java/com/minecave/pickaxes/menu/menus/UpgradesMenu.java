@@ -20,11 +20,12 @@ import java.util.Collections;
  */
 public class UpgradesMenu extends Menu {
 
+    boolean start = true;
+
     public UpgradesMenu(String name) {
         super(name);
     }
 
-    boolean start = true;
     @Override
     public Button[] fill(Player player) {
         ItemStack handPick = player.getItemInHand();
@@ -34,12 +35,12 @@ public class UpgradesMenu extends Menu {
         ItemStack item = player.getItemInHand();
         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(item);
 
-        if(pItem == null) {
+        if (pItem == null) {
             return new Button[0];
         }
         final PItem fItem = pItem;
         int enchantCount = pItem.getEnchants().size();
-        Button[] buttons = new Button[(int) (Math.ceil((double)enchantCount / 2D) * 9)];
+        Button[] buttons = new Button[(int) (Math.ceil((double) enchantCount / 2D) * 9)];
         fillPanes(buttons, PaneType.ALL, new FillerButton(new ItemStack(Material.AIR)));
         int c = 0;
         for (PEnchant enchant : pItem.getEnchants()) {
@@ -66,7 +67,7 @@ public class UpgradesMenu extends Menu {
 
             ItemStack book = new ItemStack(Material.ENCHANTED_BOOK, enchant.getLevel());
             meta = book.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + enchant.getName() + " Level: " + enchant.getLevel());
+            meta.setDisplayName(ChatColor.GOLD + enchant.getDisplayName() + " Level: " + enchant.getLevel());
             book.setItemMeta(meta);
             buttons[bookIndex] = new FillerButton(book);
 
@@ -85,7 +86,7 @@ public class UpgradesMenu extends Menu {
                             this.display(p);
                             return;
                         }
-                        if(enchant.getCost() > fItem.getPoints()) {
+                        if (enchant.getCost() > fItem.getPoints()) {
                             player.sendMessage(ChatColor.RED + "You don't have enough points on this item.");
                             player.sendMessage(ChatColor.GOLD + "Current Item Points: " + fItem.getPoints());
                         }

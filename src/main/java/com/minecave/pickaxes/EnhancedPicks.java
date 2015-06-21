@@ -25,23 +25,23 @@ import java.util.Map;
 public class EnhancedPicks extends JavaPlugin {
 
     @Getter
-    private static EnhancedPicks instance;
+    private static EnhancedPicks             instance;
     @Getter
-    private Map<String, CustomConfig> configMap;
+    private        Map<String, CustomConfig> configMap;
     @Getter
-    private LevelManager levelManager;
+    private        LevelManager              levelManager;
     @Getter
-    private PSkillManager pSkillManager;
+    private        PSkillManager             pSkillManager;
     @Getter
-    private DropManager dropManager;
+    private        DropManager               dropManager;
     @Getter
-    private PEnchantManager pEnchantManager;
+    private        PEnchantManager           pEnchantManager;
     @Getter
-    private MenuManager menuManager;
+    private        MenuManager               menuManager;
     @Getter
-    private PItemManager pItemManager;
+    private        PItemManager              pItemManager;
     @Getter
-    private PlayerManager playerManager;
+    private        PlayerManager             playerManager;
 
     @Override
     public void onEnable() {
