@@ -58,12 +58,12 @@ public class PItemSerializer {
         return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
     }
 
-    public static PItem<?> deserializePItem(ItemStack stack) {
+    public static PItem<?> deserializePItem(ItemStack item) {
         EnhancedPicks plugin = EnhancedPicks.getInstance();
         AttributeStorage storage;
 
         //TYPE
-        storage = AttributeStorage.newTarget(stack, TYPE);
+        storage = AttributeStorage.newTarget(item, TYPE);
         PItemType pItemType = PItemType.valueOf(storage.getData("PICK"));
 
         //PITEM_SETTINGS
@@ -158,7 +158,11 @@ public class PItemSerializer {
                 }
             }
         }
-        pItem.setItem(storage.getTarget());
+        ItemStack temp = storage.getTarget();
+        ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
+        clone.setData(temp.getData());
+        clone.setDurability(temp.getDurability());
+        pItem.setItem(temp);
 
         return pItem;
     }

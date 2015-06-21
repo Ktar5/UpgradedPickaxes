@@ -69,6 +69,9 @@ public class Level {
     }
 
     public Level getPrevious() {
+        if(id == 1) {
+            return null;
+        }
         return EnhancedPicks.getInstance().getLevelManager().getLevel(id - 1);
     }
 

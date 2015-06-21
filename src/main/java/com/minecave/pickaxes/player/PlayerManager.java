@@ -37,4 +37,13 @@ public class PlayerManager {
     public void remove(Player player) {
         this.playerInfoMap.remove(player);
     }
+
+    public void load(Player player) {
+        add(player).load();
+    }
+
+    public void save(Player player) {
+        get(player).save();
+        remove(player);
+    }
 }

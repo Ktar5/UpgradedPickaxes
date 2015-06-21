@@ -19,6 +19,7 @@ import java.util.*;
 public class LevelManager {
 
     private final EnhancedPicks plugin;
+    private int maxLevel = 10;
     @Getter
     private Map<Integer, Level> levelMap;
     private Level exampleLevel = null;
@@ -51,6 +52,7 @@ public class LevelManager {
         levelUpMessage.addAll(pluginConfig.getConfig().getStringList("level-up-message"));
 
         CustomConfig levelConfig = plugin.getConfig("levels");
+        maxLevel = levelConfig.get("max-level", Integer.class, 10);
         for (String levelKey : levelConfig.getConfigurationSection("levels").getKeys(false)) {
             int level = Integer.parseInt(levelKey);
             levelKey = "levels." + levelKey;
@@ -67,25 +69,31 @@ public class LevelManager {
                 fireworkSection.getStringList("fade-colors").forEach(fireworkBuilder::addFadeColor);
                 fireworkBuilder.trail(fireworkSection.getBoolean("trail"));
                 fireworkBuilder.flicker(fireworkSection.getBoolean("flicker"));
-                levelObject = new Level(xp, level, commands, fireworkBuilder);
+                levelObject = new Level(level, xp, commands, fireworkBuilder);
             } else {
-                levelObject = new Level(xp, level, commands, defaultBuilder);
+                levelObject = new Level(level, xp, commands, defaultBuilder);
             }
             if (exampleLevel == null) {
                 exampleLevel = levelObject;
             }
             this.levelMap.put(level, levelObject);
+            for(int i = 1; i <= maxLevel; i++) {
+                if(!levelMap.containsKey(i)) {
+                    if (exampleLevel != null) {
+                        levelMap.put(i, new Level(i, exampleLevel.getXp(), exampleLevel.getCommands(), exampleLevel.getFireworkBuilder()));
+                    } else {
+                        levelMap.put(i, new Level(i, 100, Collections.singletonList("give $player$ diamond 1"), defaultBuilder));
+                    }
+                }
+            }
         }
     }
 
     public Level getLevel(int id) {
-        if (!levelMap.containsKey(id)) {
-            if (exampleLevel != null) {
-                levelMap.put(id, new Level(id, exampleLevel.getXp(), exampleLevel.getCommands(), exampleLevel.getFireworkBuilder()));
-            } else {
-                levelMap.put(id, new Level(100, id, Collections.singletonList("give $player$ diamond 1"), defaultBuilder));
-            }
-        }
-        return levelMap.get(id);
+        return levelMap.get(maxLevel < id ? maxLevel : (id > 0 ? id : 1));
+    }
+
+    public Level getMaxLevel() {
+        return getLevel(maxLevel);
     }
 }

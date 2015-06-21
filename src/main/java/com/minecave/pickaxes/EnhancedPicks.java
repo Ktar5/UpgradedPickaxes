@@ -15,6 +15,7 @@ import com.minecave.pickaxes.player.PlayerManager;
 import com.minecave.pickaxes.skill.PSkillManager;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -74,10 +75,13 @@ public class EnhancedPicks extends JavaPlugin {
         getCommand("pgive").setExecutor(new GiveCommand());
         getCommand("pick").setExecutor(new PickCommand());
         getCommand("sword").setExecutor(new SwordCommand());
+
+        Bukkit.getOnlinePlayers().forEach(playerManager::load);
     }
 
     @Override
     public void onDisable() {
+        Bukkit.getOnlinePlayers().forEach(playerManager::save);
     }
 
     public void saveDefaultConfig(String name) {

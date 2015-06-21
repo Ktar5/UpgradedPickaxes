@@ -8,6 +8,7 @@
 #   $currentXp$ - The players current XP                 #
 #                                                        #
 ##########################################################
+max-level: 10
 levels:
   '1':
     xp: 100

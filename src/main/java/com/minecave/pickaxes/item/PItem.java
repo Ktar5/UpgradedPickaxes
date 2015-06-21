@@ -33,25 +33,25 @@ public class PItem<E extends Event> {
 
     private final EnhancedPicks plugin;
 
-    private final String name;
+    private final String    name;
     private final PItemType type;
-    private ItemStack item;
-    private String pItemSettings;
+    private       ItemStack item;
+    private       String    pItemSettings;
 
-    private int xp;
-    private int points;
+    private int   xp;
+    private int   points;
     private Level level;
     private Level maxLevel;
 
     private List<PEnchant> enchants;
-    private List<PSkill> purchasedSkills;
-    private List<PSkill> availableSkills;
-    private PSkill currentSkill;
+    private List<PSkill>   purchasedSkills;
+    private List<PSkill>   availableSkills;
+    private PSkill         currentSkill;
 
     private int blocksBroken;
 
     private BiConsumer<PItem, E> action;
-    private Class<E> eClass;
+    private Class<E>             eClass;
 
     public PItem(Class<E> eClass, String name, PItemType type, ItemStack item) {
         this.plugin = EnhancedPicks.getInstance();
@@ -63,10 +63,11 @@ public class PItem<E extends Event> {
         this.purchasedSkills = new ArrayList<>();
         this.availableSkills = new ArrayList<>();
         this.level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
+        this.maxLevel = EnhancedPicks.getInstance().getLevelManager().getMaxLevel();
     }
 
     public void update(Player player) {
-       ItemStack clone = this.item;
+        ItemStack clone = this.item;
         ItemStack item = null;
         int slot = -1;
         for (int i = 0; i < player.getInventory().getContents().length; i++) {
@@ -84,11 +85,11 @@ public class PItem<E extends Event> {
             player.sendMessage(ChatColor.RED + "Could not find that item in your inventory.");
             return;
         }
-        if(plugin.getPItemManager().getPItemMap().containsKey(this.item)) {
+        if (plugin.getPItemManager().getPItemMap().containsKey(this.item)) {
             plugin.getPItemManager().getPItemMap().remove(this.item);
         } else {
             for (Map.Entry<ItemStack, PItem<?>> entry : plugin.getPItemManager().getPItemMap().entrySet()) {
-                if(entry.getValue().equals(this)) {
+                if (entry.getValue().equals(this)) {
                     plugin.getPItemManager().getPItemMap().remove(entry.getKey());
                     break;
                 }
@@ -151,9 +152,9 @@ public class PItem<E extends Event> {
         enchants.stream()
                 .filter(enchant -> enchant != null && enchant.getLevel() > 0)
                 .forEach(enchant -> {
-                    if(type == PItemType.PICK) {
+                    if (type == PItemType.PICK) {
                         enchant.activate((BlockBreakEvent) event);
-                    } else if(type == PItemType.SWORD) {
+                    } else if (type == PItemType.SWORD) {
                         enchant.activate((EntityDamageByEntityEvent) event);
                     }
                 });
@@ -162,9 +163,9 @@ public class PItem<E extends Event> {
     public void incrementXp(int xp, Player player) {
         this.xp += xp;
         Level next = level.getNext();
-        Level lvl = next.getPrevious();
+        Level lvl = level;
         int total = 0;
-        while (lvl != null && lvl.getId() >= 1) {
+        for (int i = level.getId(); i > 0 && lvl != null; i--) {
             total += lvl.getXp();
             lvl = lvl.getPrevious();
         }
@@ -174,5 +175,13 @@ public class PItem<E extends Event> {
             this.points++;
         }
         update(player);
+    }
+
+    public void setItem(ItemStack item) {
+        if (EnhancedPicks.getInstance().getPItemManager().getPItemMap().containsKey(this.item)) {
+            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(this.item);
+        }
+        this.item = item;
+        EnhancedPicks.getInstance().getPItemManager().addPItem(this);
     }
 }

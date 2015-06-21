@@ -188,7 +188,8 @@ public class PItemManager {
         }
 
         public <P extends Event> PItem<P> generate(Class<P> pClass) {
-            Level level = EnhancedPicks.getInstance().getLevelManager().getLevel(this.startLevel);
+            EnhancedPicks plugin = EnhancedPicks.getInstance();
+            Level level = plugin.getLevelManager().getLevel(this.startLevel);
             if (level == null) {
                 level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
             }
