@@ -21,7 +21,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PItemSerializer {
 
@@ -149,12 +151,18 @@ public class PItemSerializer {
                 if (enchantSplit.length != 3) {
                     continue;
                 }
-                PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0]);
+                PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
                 if (pEnchant != null) {
-                    pEnchant = pEnchant.cloneEnchant();
-                    pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
-                    pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
-                    pItem.addEnchant(pEnchant);
+                    if (!pItem.hasEnchant(pEnchant.getName())) {
+                        pEnchant = pEnchant.cloneEnchant();
+                        pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                        pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                        pItem.addEnchant(pEnchant);
+                    } else {
+                        pEnchant = pItem.getEnchant(pEnchant.getName());
+                        pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                        pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                    }
                 }
             }
         }
@@ -170,6 +178,7 @@ public class PItemSerializer {
     public static <T extends Event> ItemStack serializePItem(PItem<T> pItem) {
         EnhancedPicks plugin = EnhancedPicks.getInstance();
         AttributeStorage storage;
+        Map<String, String> tagMap = new HashMap<>();
 
         //TYPE
         storage = AttributeStorage.newTarget(pItem.getItem(), TYPE);
@@ -185,6 +194,7 @@ public class PItemSerializer {
 
         //POINTS
         storage = AttributeStorage.newTarget(storage.getTarget(), POINTS);
+        String points = String.valueOf(pItem.getPoints());
         storage.setData(String.valueOf(pItem.getPoints()));
 
         //CUR_LEVEL
@@ -224,7 +234,7 @@ public class PItemSerializer {
         storage = AttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
         StringBuilder enchants = new StringBuilder("");
         for (PEnchant pEnchant : pItem.getEnchants()) {
-            enchants.append(pEnchant.getName()).append(":")
+            enchants.append(pEnchant.getName().toLowerCase()).append(":")
                     .append(pEnchant.getLevel()).append(":")
                     .append(pEnchant.getMaxLevel()).append(";");
         }

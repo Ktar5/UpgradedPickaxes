@@ -10,6 +10,7 @@
  */
 package com.minecave.pickaxes.skill;
 
+import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import lombok.Getter;
@@ -68,7 +69,11 @@ public abstract class PSkill {
     }
 
     public void use(Player player, PlayerInteractEvent event) {
-        player.sendMessage(ChatColor.GOLD + "You used " + this.getName() + ". Cooldown: " + cooldown + "s");
+        player.sendMessage(ChatColor.GOLD + "You used " + this.getName() + ". Cooldown: " + cooldown + "s.");
+        EnhancedPicks.getInstance().getServer().getScheduler()
+                .runTaskLater(EnhancedPicks.getInstance(), () -> {
+                    player.sendMessage(ChatColor.GREEN + this.getName() + " is off cooldown.");
+                }, cooldown * 20);
         this.use(event);
     }
 

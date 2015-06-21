@@ -22,7 +22,7 @@ public class NormalEnchant extends PEnchant {
     private Enchantment enchantment;
 
     public NormalEnchant(Enchantment enchantment) {
-        super(enchantment.toString(), Strings.fixEnchantment(enchantment));
+        super(enchantment.getName(), Strings.fixEnchantment(enchantment));
         this.enchantment = enchantment;
     }
 
@@ -78,13 +78,24 @@ public class NormalEnchant extends PEnchant {
             this.enchantment = enchantment;
         }
 
-        public static boolean has(String name) {
+        public static boolean has(String s) {
             for (VanillaSword vanilla : values()) {
-                if (vanilla.toString().equalsIgnoreCase(name)) {
+                if (vanilla.toString().equalsIgnoreCase(s) ||
+                        vanilla.getEnchantment().getName().equalsIgnoreCase(s)) {
                     return true;
                 }
             }
             return false;
+        }
+
+        public static VanillaSword get(String s) {
+            for (VanillaSword vanilla : values()) {
+                if (vanilla.toString().equalsIgnoreCase(s) ||
+                        vanilla.getEnchantment().getName().equalsIgnoreCase(s)) {
+                    return vanilla;
+                }
+            }
+            return null;
         }
     }
 
@@ -101,13 +112,24 @@ public class NormalEnchant extends PEnchant {
             this.enchantment = enchantment;
         }
 
-        public static boolean has(String name) {
+        public static boolean has(String s) {
             for (VanillaPick vanilla : values()) {
-                if (vanilla.toString().equalsIgnoreCase(name)) {
+                if (vanilla.toString().equalsIgnoreCase(s) ||
+                        vanilla.getEnchantment().getName().equalsIgnoreCase(s)) {
                     return true;
                 }
             }
             return false;
+        }
+
+        public static VanillaPick get(String s) {
+            for (VanillaPick vanilla : values()) {
+                if (vanilla.toString().equalsIgnoreCase(s) ||
+                        vanilla.getEnchantment().getName().equalsIgnoreCase(s)) {
+                    return vanilla;
+                }
+            }
+            return null;
         }
     }
 }

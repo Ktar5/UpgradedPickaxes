@@ -33,6 +33,7 @@ public class ItemSerialization {
                 dataOutput.writeObject(inventory.getItem(i));
             }
 
+
             // Serialize that array
             dataOutput.close();
             return outputStream.toByteArray();

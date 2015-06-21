@@ -8,6 +8,7 @@
  */
 package com.minecave.pickaxes.util.message;
 
+import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 
@@ -17,8 +18,14 @@ public class Strings {
         return ChatColor.translateAlternateColorCodes('&', input);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static String fixEnchantment(Enchantment enchantment) {
         String name = enchantment.getName();
+        if(NormalEnchant.VanillaPick.has(name)) {
+            name = NormalEnchant.VanillaPick.get(name).name();
+        } else if(NormalEnchant.VanillaSword.has(name)) {
+            name = NormalEnchant.VanillaSword.get(name).name();
+        }
         String[] split = name.toLowerCase().split("_");
         String retVal = "";
         for (String s : split) {

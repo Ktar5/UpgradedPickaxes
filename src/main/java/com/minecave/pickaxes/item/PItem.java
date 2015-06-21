@@ -23,7 +23,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -42,10 +44,10 @@ public class PItem<E extends Event> {
     private Level level;
     private Level maxLevel;
 
-    private Set<PEnchant> enchants;
-    private Set<PSkill>   purchasedSkills;
-    private Set<PSkill>   availableSkills;
-    private PSkill        currentSkill;
+    private List<PEnchant> enchants;
+    private List<PSkill>   purchasedSkills;
+    private List<PSkill>   availableSkills;
+    private PSkill         currentSkill;
 
     private int blocksBroken;
 
@@ -58,9 +60,9 @@ public class PItem<E extends Event> {
         this.name = name;
         this.type = type;
         this.item = item;
-        this.enchants = new HashSet<>();
-        this.purchasedSkills = new HashSet<>();
-        this.availableSkills = new HashSet<>();
+        this.enchants = new ArrayList<>();
+        this.purchasedSkills = new ArrayList<>();
+        this.availableSkills = new ArrayList<>();
         this.level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
         this.maxLevel = EnhancedPicks.getInstance().getLevelManager().getMaxLevel();
     }
@@ -129,16 +131,31 @@ public class PItem<E extends Event> {
         return builder.toString();
     }
 
+    public boolean hasEnchant(PEnchant pEnchant) {
+        for(PEnchant enchant : enchants) {
+            if(enchant.getName().equalsIgnoreCase(pEnchant.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addEnchant(PEnchant pEnchant) {
-        enchants.add(pEnchant);
+        if (!enchants.contains(pEnchant) && !hasEnchant(pEnchant)) {
+            enchants.add(pEnchant.cloneEnchant());
+        }
     }
 
     public void addAvailableSkill(PSkill pSkill) {
-        availableSkills.add(pSkill);
+        if (!availableSkills.contains(pSkill)) {
+            availableSkills.add(pSkill);
+        }
     }
 
     public void addPurchasedSkill(PSkill pSkill) {
-        purchasedSkills.add(pSkill);
+        if (!purchasedSkills.contains(pSkill)) {
+            purchasedSkills.add(pSkill);
+        }
     }
 
     public void onAction(E event) {
@@ -161,19 +178,22 @@ public class PItem<E extends Event> {
 
     public void incrementXp(int xp, Player player) {
         this.xp += xp;
-        Level next = level.getNext();
+        while (getTotalXp() <= this.xp && level.getId() != maxLevel.getId()) {
+            this.level = level.getNext();
+            level.levelUp(player, this);
+            this.points++;
+        }
+        update(player);
+    }
+
+    private int getTotalXp() {
         Level lvl = level;
         int total = 0;
         for (int i = level.getId(); i > 0 && lvl != null; i--) {
             total += lvl.getXp();
             lvl = lvl.getPrevious();
         }
-        if (total <= this.xp && level.getId() != maxLevel.getId()) {
-            this.level = next;
-            level.levelUp(player, this);
-            this.points++;
-        }
-        update(player);
+        return total;
     }
 
     public void setItem(ItemStack item) {
@@ -182,5 +202,23 @@ public class PItem<E extends Event> {
         }
         this.item = item;
         EnhancedPicks.getInstance().getPItemManager().getPItemMap().put(item, this);
+    }
+
+    public boolean hasEnchant(String name) {
+        for (PEnchant pEnchant : enchants) {
+            if (pEnchant.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public PEnchant getEnchant(String name) {
+        for (PEnchant pEnchant : enchants) {
+            if (pEnchant.getName().equalsIgnoreCase(name)) {
+                return pEnchant;
+            }
+        }
+        return null;
     }
 }

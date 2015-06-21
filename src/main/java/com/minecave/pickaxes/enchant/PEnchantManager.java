@@ -30,6 +30,7 @@ public class PEnchantManager {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("enchants");
         List<String> enchants = config.getConfig().getStringList("availableEnchants");
         for (String s : enchants) {
+            s = s.toLowerCase();
             switch (s) {
                 case "tnt":
                     enchantMap.put(s, new TnTEnchant());
@@ -39,23 +40,31 @@ public class PEnchantManager {
                     break;
                 default:
                     if (NormalEnchant.VanillaPick.has(s)) {
-                        NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.valueOf(s.toUpperCase());
+                        NormalEnchant.VanillaPick pick = NormalEnchant.VanillaPick.get(s);
                         if (pick != null) {
                             NormalEnchant base = new NormalEnchant(pick.getEnchantment());
                             enchantMap.put(s, base);
+                            enchantMap.put(pick.getEnchantment().getName(), base);
                             if (s.contains("_")) {
                                 enchantMap.put(s.replace("_", " "), base);
+                                enchantMap.put(pick.getEnchantment().getName().replace("_", " "), base);
                                 enchantMap.put(s.replace("_", ""), base);
+                                enchantMap.put(pick.getEnchantment().getName().replace("_", ""), base);
                             }
+                            System.out.println(s);
+                            System.out.println(pick.name());
                         }
                     } else if (NormalEnchant.VanillaSword.has(s)) {
-                        NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.valueOf(s.toUpperCase());
+                        NormalEnchant.VanillaSword sword = NormalEnchant.VanillaSword.get(s);
                         if (sword != null) {
                             NormalEnchant base = new NormalEnchant(sword.getEnchantment());
                             enchantMap.put(s, base);
+                            enchantMap.put(sword.getEnchantment().getName(), base);
                             if (s.contains("_")) {
                                 enchantMap.put(s.replace("_", " "), base);
+                                enchantMap.put(sword.getEnchantment().getName().replace("_", " "), base);
                                 enchantMap.put(s.replace("_", ""), base);
+                                enchantMap.put(sword.getEnchantment().getName().replace("_", ""), base);
                             }
                         }
                     }
@@ -64,6 +73,17 @@ public class PEnchantManager {
     }
 
     public PEnchant getEnchant(String s) {
-        return enchantMap.get(s);
+        PEnchant pEnchant = enchantMap.get(s);
+        if(pEnchant == null) {
+            for(String key : enchantMap.keySet()) {
+                if(key.equalsIgnoreCase(s)) {
+                    pEnchant = enchantMap.get(key);
+                }
+            }
+        }
+        if(pEnchant != null) {
+            pEnchant = pEnchant.cloneEnchant();
+        }
+        return pEnchant;
     }
 }

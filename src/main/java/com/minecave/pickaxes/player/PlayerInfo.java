@@ -12,7 +12,7 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemSerializer;
 import com.minecave.pickaxes.util.config.CustomConfig;
-import com.minecave.pickaxes.util.item.ItemSerialization;
+import com.minecave.pickaxes.util.nbt.NBTSerialization;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,7 +22,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 @Getter
@@ -65,21 +64,22 @@ public class PlayerInfo {
         }
         //load items in player's virtual chests
         if (config.has("pickData")) {
-            byte[] pickData = Base64.getDecoder().decode(config.get("pickData", String.class));
-            Inventory pickaxes = PItemSerializer.deserializeInventory(pickData);
+            Inventory pickaxes = NBTSerialization.fromBase64(config.get("pickData", String.class));
             List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
             for (ItemStack stack : pickaxes.getContents()) {
                 if (stack == null) {
                     continue;
                 }
+                System.out.println(stack.getType());
                 PItem<BlockBreakEvent> pick = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(stack);
                 pickList.add(pick);
             }
             pickList.forEach(this::addPickaxe);
         }
         if (config.has("swordData")) {
-            byte[] swordData = ItemSerialization.fromBase64(config.get("swordData", String.class));
-            Inventory swords = PItemSerializer.deserializeInventory(swordData);
+//            byte[] swordData = ItemSerialization.fromBase64(config.get("swordData", String.class));
+//            Inventory swords = PItemSerializer.deserializeInventory(swordData);
+            Inventory swords = NBTSerialization.fromBase64(config.get("swordData", String.class));
             List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
             for (ItemStack stack : swords.getContents()) {
                 if (stack == null) {
@@ -117,14 +117,17 @@ public class PlayerInfo {
             }
         }
         //save items in player's virtual chests
-        byte[] pickData = PItemSerializer.serialPItems(this.pickaxes);
-        byte[] swordData = PItemSerializer.serialPItems(this.swords);
-        if (pickData != null) {
-            config.set("pickData", ItemSerialization.toBase64(pickData));
-        }
-        if (swordData != null) {
-            config.set("swordData", ItemSerialization.toBase64(swordData));
-        }
+//        byte[] pickData = PItemSerializer.serialPItems(this.pickaxes);
+//        byte[] swordData = PItemSerializer.serialPItems(this.swords);
+//        if (pickData != null) {
+//            config.set("pickData", ItemSerialization.toBase64(pickData));
+//        }
+//        if (swordData != null) {
+//            config.set("swordData", ItemSerialization.toBase64(swordData));
+//        }
+        config.set("pickData", NBTSerialization.toBase64(NBTSerialization.getInventoryFromArray(this.pickaxes)));
+        config.set("pickData", NBTSerialization.toBase64(NBTSerialization.getInventoryFromArray(this.swords)));
+        config.saveConfig();
     }
 
     public void addSword(PItem<EntityDamageByEntityEvent> sword) {
