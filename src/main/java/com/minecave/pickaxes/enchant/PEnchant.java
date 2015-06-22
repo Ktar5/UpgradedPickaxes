@@ -46,7 +46,7 @@ public abstract class PEnchant {
     }
 
     public void apply(PItem pItem) {
-        pItem.addEnchant(this);
+        pItem.updateMeta();
     }
 
     public int getLevelCost(int level) {

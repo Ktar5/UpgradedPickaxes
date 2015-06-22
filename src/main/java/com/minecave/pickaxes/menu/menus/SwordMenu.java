@@ -34,6 +34,7 @@ public class SwordMenu extends InteractiveMenu {
         PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
         List<PItem<EntityDamageByEntityEvent>> picks = info.getSwords();
         List<PItem<EntityDamageByEntityEvent>> clone = new ArrayList<>(picks);
+        this.pages.clear();
 
         double pageCount = Math.ceil(picks.size() / 25);
         if (pageCount == 0) pageCount = 1;

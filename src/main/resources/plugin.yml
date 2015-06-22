@@ -19,6 +19,10 @@ permissions:
     description: Gives access to all enhanced pickaxes commands.
     children:
       pickaxes.admin: true
+      pickaxes.multiplier: true
   pickaxes.admin:
     description: Allows to give enhanced item to player.
+    default: op
+  pickaxes.multiplier:
+    description: Multiplier permission
     default: op

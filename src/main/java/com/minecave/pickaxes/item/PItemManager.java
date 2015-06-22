@@ -46,22 +46,28 @@ public class PItemManager {
 
         for (String n : pickConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.PICK);
-            settings.setKey(n);
-            settings.setName(pickConfig.get(concat(n, "name"), String.class, n));
-            settings.setStartXp(pickConfig.get(concat(n, "startXp"), Integer.class, 0));
-            settings.setStartLevel(pickConfig.get(concat(n, "startLevel"), Integer.class, 1));
+            String name = pickConfig.get(concat(n, "name"), String.class, n);
+            int xp = pickConfig.get(concat(n, "startXp"), Integer.class, 0);
+            int level = pickConfig.get(concat(n, "startLevel"), Integer.class, 1);
+            int ppl = pickConfig.get(concat(n, "pointsPerLevel"), Integer.class, 1);
+            settings.setName(name);
+            settings.setStartXp(xp);
+            settings.setStartLevel(level);
+            settings.setPointsPerLevel(ppl);
             for (String e : pickConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
                 PEnchant enchant = plugin.getPEnchantManager().getEnchantMap().get(e);
                 if (enchant == null) {
                     EnhancedPicks.getInstance().getLogger().warning(n + " enchant does not exist.");
                     continue;
                 }
-                String ePath = concat(n, e);
+                String ePath = concat(n, "enchants");
+                ePath = concat(ePath, e);
                 String startLevel = concat(ePath, "startLevel");
                 String maxLevel = concat(ePath, "maxLevel");
                 PEnchant pEnchant = enchant.cloneEnchant();
                 if (pickConfig.has(maxLevel)) {
-                    pEnchant.setMaxLevel(pickConfig.get(maxLevel, Integer.class, enchant.getMaxLevel()));
+                    int maxLevelInt = pickConfig.get(maxLevel, Integer.class, enchant.getMaxLevel());
+                    pEnchant.setMaxLevel(maxLevelInt);
                 }
                 if (pickConfig.has(startLevel)) {
                     pEnchant.setLevel(pickConfig.get(startLevel, Integer.class, enchant.getLevel()));
@@ -77,20 +83,27 @@ public class PItemManager {
                 settings.addSkill(skill);
             }
             this.settingsMap.put(n, settings);
+            EnhancedPicks.getInstance().getLogger().info(settings.toString());
         }
 
         for (String n : swordConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.SWORD);
-            settings.setName(swordConfig.get(concat(n, "name"), String.class, n));
-            settings.setStartXp(swordConfig.get(concat(n, "startXp"), Integer.class, 0));
-            settings.setStartLevel(swordConfig.get(concat(n, "startLevel"), Integer.class, 1));
+            String name = swordConfig.get(concat(n, "name"), String.class, n);
+            int xp = swordConfig.get(concat(n, "startXp"), Integer.class, 0);
+            int level = swordConfig.get(concat(n, "startLevel"), Integer.class, 1);
+            int ppl = swordConfig.get(concat(n, "pointsPerLevel"), Integer.class, 1);
+            settings.setName(name);
+            settings.setStartXp(xp);
+            settings.setStartLevel(level);
+            settings.setPointsPerLevel(ppl);
             for (String e : swordConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
                 PEnchant enchant = plugin.getPEnchantManager().getEnchantMap().get(e);
                 if (enchant == null) {
                     EnhancedPicks.getInstance().getLogger().warning(n + " enchant does not exist.");
                     continue;
                 }
-                String ePath = concat(n, e);
+                String ePath = concat(n, "enchants");
+                ePath = concat(ePath, e);
                 String startLevel = concat(ePath, "startLevel");
                 String maxLevel = concat(ePath, "maxLevel");
                 PEnchant pEnchant = enchant.cloneEnchant();
@@ -111,6 +124,7 @@ public class PItemManager {
                 settings.addSkill(skill);
             }
             this.settingsMap.put(n, settings);
+            EnhancedPicks.getInstance().getLogger().info(settings.toString());
         }
     }
 
@@ -171,14 +185,17 @@ public class PItemManager {
         private       String         name;
         private       int            startXp;
         private       int            startLevel;
+        private       int            pointsPerLevel;
 
-        public PItemSettings(String name, PItemType type) {
-            this.name = name;
+        public PItemSettings(String key, PItemType type) {
+            this.key = key;
+            this.name = key;
             this.type = type;
             this.skillList = new ArrayList<>();
             this.enchantList = new ArrayList<>();
             this.startXp = 0;
             this.startLevel = 0;
+            this.pointsPerLevel = 1;
         }
 
         public void addSkill(PSkill skill) {
@@ -229,10 +246,44 @@ public class PItemManager {
                     break;
             }
             pItem.setLevel(level);
-            this.enchantList.forEach(pItem::addEnchant);
+            pItem.setPointsPerLevel(pointsPerLevel);
+            for (PEnchant pEnchant : this.enchantList) {
+                PEnchant clone = pEnchant.cloneEnchant();
+                clone.setLevel(pEnchant.getLevel());
+                clone.setMaxLevel(pEnchant.getMaxLevel());
+                pItem.addEnchant(clone);
+            }
             this.skillList.forEach(pItem::addAvailableSkill);
             pItem.setPItemSettings(this.key);
             return pItem;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder("\n");
+            builder.append("  =====PItemSettings=====").append("\n")
+                    .append("  Key: ").append(key).append("\n")
+                    .append("  Name: ").append(name).append("\n")
+                    .append("  Type: ").append(type.name()).append("\n")
+                    .append("  Start XP: ").append(startXp).append("\n")
+                    .append("  Start Level: ").append(startLevel).append("\n")
+                    .append("  Points per level: ").append(pointsPerLevel).append("\n")
+                    .append("  Skills: \n");
+            for (PSkill pSkill : this.skillList) {
+                builder.append("    Name: ").append(pSkill.getName()).append("\n")
+                        .append("    Level: ").append(pSkill.getLevel()).append("\n")
+                        .append("    Cost: ").append(pSkill.getCost()).append("\n")
+                        .append("    Permission: ").append(pSkill.getPerm()).append("\n");
+            }
+            builder.append("  Enchants: \n");
+            for(PEnchant pEnchant : this.enchantList) {
+                builder.append("    Name: ").append(pEnchant.getName()).append("\n")
+                        .append("    Display Name: ").append(pEnchant.getDisplayName()).append("\n")
+                        .append("    Level: ").append(pEnchant.getLevel()).append("\n")
+                        .append("    Max Level: ").append(pEnchant.getMaxLevel()).append("\n");
+            }
+            builder.append("  =====PItemSettings=====").append("\n");
+            return builder.toString();
         }
     }
 }

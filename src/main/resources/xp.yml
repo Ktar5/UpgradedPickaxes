@@ -12,4 +12,4 @@ multiplier-amount: 3
 #Permission required
 require-permission: true
 #The permission node
-permission: 'pr.double'
+permission: 'pickaxes.multiplier'

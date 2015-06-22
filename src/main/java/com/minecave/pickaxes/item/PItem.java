@@ -9,6 +9,7 @@
 package com.minecave.pickaxes.item;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
@@ -39,8 +40,9 @@ public class PItem<E extends Event> {
     private       ItemStack item;
     private       String    pItemSettings;
 
-    private int   xp;
-    private int   points = 1;
+    private int xp;
+    private int points         = 1;
+    private int pointsPerLevel = 1;
     private Level level;
     private Level maxLevel;
 
@@ -117,8 +119,11 @@ public class PItem<E extends Event> {
     }
 
     public boolean hasEnchant(PEnchant pEnchant) {
-        for(PEnchant enchant : enchants) {
-            if(enchant.getName().equalsIgnoreCase(pEnchant.getName())) {
+        if (enchants.isEmpty()) {
+            return false;
+        }
+        for (PEnchant enchant : enchants) {
+            if (enchant.getName().equalsIgnoreCase(pEnchant.getName())) {
                 return true;
             }
         }
@@ -127,9 +132,8 @@ public class PItem<E extends Event> {
 
     public void addEnchant(PEnchant pEnchant) {
         if (!enchants.contains(pEnchant) && !hasEnchant(pEnchant)) {
-            PEnchant clone = pEnchant.cloneEnchant();
-            enchants.add(clone);
-            clone.apply(this);
+            pEnchant.apply(this);
+            enchants.add(pEnchant);
         }
     }
 
@@ -164,11 +168,21 @@ public class PItem<E extends Event> {
     }
 
     public void incrementXp(int xp, Player player) {
+        DropManager.Multiplier multiplier = plugin.getDropManager().getMultiplier();
+        if (multiplier.isActive()) {
+            if (multiplier.isRequirePermission()) {
+                if (player.hasPermission(multiplier.getPermission())) {
+                    xp *= multiplier.getValue();
+                }
+            } else {
+                xp *= multiplier.getValue();
+            }
+        }
         this.xp += xp;
         while (getTotalXp() <= this.xp && level.getId() != maxLevel.getId()) {
             this.level = level.getNext();
             level.levelUp(player, this);
-            this.points++;
+            this.points += pointsPerLevel;
         }
         update(player);
     }
@@ -208,7 +222,7 @@ public class PItem<E extends Event> {
         }
         return null;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("");

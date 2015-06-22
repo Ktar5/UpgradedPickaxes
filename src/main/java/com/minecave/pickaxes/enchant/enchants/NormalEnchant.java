@@ -24,6 +24,7 @@ public class NormalEnchant extends PEnchant {
     public NormalEnchant(Enchantment enchantment) {
         super(enchantment.getName(), Strings.fixEnchantment(enchantment));
         this.enchantment = enchantment;
+        this.setMaxLevel(enchantment.getMaxLevel());
     }
 
     public NormalEnchant(NormalEnchant normalEnchant) {
@@ -50,11 +51,6 @@ public class NormalEnchant extends PEnchant {
                 pItem.getItem().addUnsafeEnchantment(enchantment, this.getLevel());
             }
         }
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return enchantment.getMaxLevel();
     }
 
     @Override

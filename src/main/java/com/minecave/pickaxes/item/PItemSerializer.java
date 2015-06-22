@@ -97,7 +97,7 @@ public class PItemSerializer {
 
         //POINTS
         storage = AttributeStorage.newTarget(storage.getTarget(), POINTS);
-        pItem.setPoints(Integer.parseInt(storage.getData("0")));
+        pItem.setPoints(Integer.parseInt(storage.getData("1")));
 
         //CUR_LEVEL
         storage = AttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
@@ -193,7 +193,6 @@ public class PItemSerializer {
 
         //POINTS
         storage = AttributeStorage.newTarget(storage.getTarget(), POINTS);
-        String points = String.valueOf(pItem.getPoints());
         storage.setData(String.valueOf(pItem.getPoints()));
 
         //CUR_LEVEL

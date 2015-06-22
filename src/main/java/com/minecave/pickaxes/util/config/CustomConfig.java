@@ -69,8 +69,10 @@ public class CustomConfig {
     }
 
     public void reloadConfig() {
-        if (!configFile.exists())
+        if (!configFile.exists()) {
+            EnhancedPicks.getInstance().getLogger().info("Attempting to save resource: " + configFile.getName());
             EnhancedPicks.getInstance().saveResource(fileName, true);
+        }
         config = YamlConfiguration.loadConfiguration(configFile);
     }
 

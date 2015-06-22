@@ -44,6 +44,9 @@ public class TnTEnchant extends PEnchant {
 
     @Override
     public TnTEnchant cloneEnchant() {
-        return new TnTEnchant();
+        TnTEnchant tnt = new TnTEnchant();
+        tnt.setLevel(this.getLevel());
+        tnt.setMaxLevel(this.getMaxLevel());
+        return tnt;
     }
 }

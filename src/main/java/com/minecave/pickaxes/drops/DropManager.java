@@ -10,7 +10,9 @@ package com.minecave.pickaxes.drops;
 
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.util.config.CustomConfig;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
@@ -28,11 +30,28 @@ public class DropManager {
     private Map<EntityType, MobValue> mobValues   = new HashMap<>();
     private List<BlockDrop>           blockDrops  = new ArrayList<>();
     private List<MobDrop>             mobDrops    = new ArrayList<>();
+    private Multiplier                multiplier;
 
     public DropManager() {
         this.plugin = EnhancedPicks.getInstance();
 
         CustomConfig config = plugin.getConfig("xp");
+
+         /*
+            multiplier: true
+            multiplier-amount: 3
+            #Permission required
+            require-permission: true
+            #The permission node
+            permission: 'pr.double'
+         */
+
+        boolean active = config.get("multiplier", Boolean.class, true);
+        int amount = config.get("multiplier-amount", Integer.class, 1);
+        boolean requirePermission = config.get("require-permission", Boolean.class, true);
+        String permission = config.get("permission", String.class, "enhancedpicks.double");
+        this.multiplier = new Multiplier(active, amount, requirePermission, permission);
+
         ConfigurationSection section = config.getConfigurationSection("blocks");
         for (String s : section.getKeys(false)) {
             Material material = Material.matchMaterial(s);
@@ -83,5 +102,14 @@ public class DropManager {
                 }
             }
         }
+    }
+
+    @Value
+    @AllArgsConstructor
+    public static class Multiplier {
+        private boolean active;
+        private int     value;
+        private boolean requirePermission;
+        private String  permission;
     }
 }

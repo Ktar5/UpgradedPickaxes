@@ -48,3 +48,5 @@ lapis:
   startXp: 0
   ##defaults to 1 if not added
   startLevel: 1
+  #defaults to 1 if not added
+  pointsPerLevel: 1

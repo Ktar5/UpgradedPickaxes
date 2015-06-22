@@ -72,20 +72,15 @@ public abstract class InteractiveMenu extends Menu {
         }
     }
 
-//    public void display(Player player) {
-//        this.buttons = fill(player);
-//        int size = (buttons.length + 8) / 9 * 9;
-//        Inventory inventory = Bukkit.createInventory(player, size, name);
-//        for (int i = 0; i < buttons.length; i++) {
-//            Button burton = buttons[i];
-//            inventory.setItem(i, burton.getItem());
-//        }
-//        player.openInventory(inventory);
-//    }
+    public void display(Player player) {
+        this.buttons = fill(player);
+        super.display(player);
+    }
 
     @Override
     public void update(Player player) {
         Button[] buttons = fill(player);
+        this.buttons = buttons;
         Inventory inventory = player.getOpenInventory().getTopInventory();
         for (int i = 0; i < buttons.length; i++) {
             Button button = buttons[i];
