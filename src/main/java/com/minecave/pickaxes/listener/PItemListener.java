@@ -4,6 +4,7 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemType;
 import com.minecave.pickaxes.skill.PSkill;
+import com.minecave.pickaxes.skill.pick.Earthquake;
 import com.minecave.pickaxes.skill.pick.Nuker;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
@@ -109,10 +110,13 @@ public class PItemListener implements Listener {
             //TODO: earthquake give players item
             Block block = event.getBlock();
             FallingBlock fallingBlock = (FallingBlock) event.getEntity();
-            if (fallingBlock.getCustomName() != null &&
-                    fallingBlock.getCustomName().contains("earthquake")) {
+            Earthquake earthquake = ((Earthquake)plugin.getPSkillManager().getPSkill("earthquake"));
+            if ((fallingBlock.getCustomName() != null &&
+                    fallingBlock.getCustomName().contains("earthquake")) ||
+                    earthquake.getFallingBlockList().contains(fallingBlock)) {
                 block.setType(Material.AIR);
                 event.setCancelled(true);
+                earthquake.getFallingBlockList().remove(fallingBlock);
             }
         }
     }

@@ -5,6 +5,7 @@ import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.item.OreConversion;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;
@@ -13,7 +14,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,7 +26,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Earthquake extends PSkill {
 
     private int radius;
-    private Random random = new Random();
+    private Random             random           = new Random();
+    @Getter
+    private List<FallingBlock> fallingBlockList = new ArrayList<>();
 
     public Earthquake(int radius, String name, long cooldown, int level, int cost, String perm) {
         super(name, cooldown, level, cost, perm);
@@ -34,7 +39,7 @@ public class Earthquake extends PSkill {
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
-        if(pItem == null) {
+        if (pItem == null) {
             return;
         }
         Location location = player.getLocation();
@@ -71,6 +76,7 @@ public class Earthquake extends PSkill {
                 fallingBlock.setVelocity(new Vector(Math.random() * 4.1, (random.nextInt(3) * Math.random()), Math.random() * 4.1));
                 fallingBlock.setDropItem(false);
                 fallingBlock.setCustomName("earthquake");
+                fallingBlockList.add(fallingBlock);
                 //not sure if they want this
                 loc.getBlock().setType(Material.AIR);
             }

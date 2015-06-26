@@ -72,10 +72,10 @@ public class TnTEnchant extends PEnchant {
             player.getInventory().addItem(array);
             player.updateInventory();
             loc.getBlock().setType(Material.AIR);
-        }
-        if (ThreadLocalRandom.current().nextInt(10) > 6) {
-            player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
-            player.playEffect(location, Effect.LARGE_SMOKE, 1);
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
+                player.playEffect(location, Effect.EXPLOSION_HUGE, 0);
+            }
         }
     }
 
@@ -101,10 +101,13 @@ public class TnTEnchant extends PEnchant {
 
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
-        for (double x = -radius; x <= radius; x++) {
-            for (double z = -radius; z <= radius; z++) {
-                for (double y = -radius / 2; y <= radius / 2; y++) {
-                    if (ThreadLocalRandom.current().nextInt(10) > (5 - this.getLevel())) {
+        for (double x = 0; x <= radius; x++) {
+            for (double z = 0; z <= radius; z++) {
+                for (double y = 0 / 2; y <= radius / 2; y++) {
+                    if(blocks.size() == this.getLevel()) {
+                        return blocks;
+                    }
+                    if (ThreadLocalRandom.current().nextInt(100) > (90 - this.getLevel() * 10)) {
                         Location l = loc1.clone().add(x, y, z);
                         if (!l.getChunk().isLoaded()) {
                             continue;

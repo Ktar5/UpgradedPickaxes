@@ -14,6 +14,10 @@ public class AttributeStorage {
     private final UUID      uniqueKey;
     private       ItemStack target;
 
+    static {
+        Attributes.Attribute.newBuilder();
+    }
+
     private AttributeStorage(ItemStack target, UUID uniqueKey) {
         this.target = Preconditions.checkNotNull(target, "target cannot be NULL");
         this.uniqueKey = Preconditions.checkNotNull(uniqueKey, "uniqueKey cannot be NULL");

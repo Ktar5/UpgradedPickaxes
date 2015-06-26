@@ -68,13 +68,13 @@ public class SkillsMenu extends Menu {
                     if (skill.getCost() > pItem.getPoints()) {
                         player.sendMessage(ChatColor.RED + "You don't have enough points on this item.");
                         player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
+                        pItem.setCurrentSkill(skill);
+                        p.sendMessage(ChatColor.GOLD + "You activated " + skill.getName() + ".");
                     } else {
                         pItem.getPurchasedSkills().add(skill);
                         pItem.setPoints(pItem.getPoints() - skill.getCost());
                     }
                 }
-                pItem.setCurrentSkill(skill);
-                p.sendMessage(ChatColor.GOLD + "You activated " + skill.getName() + ".");
                 this.display(p);
             });
             i++;
