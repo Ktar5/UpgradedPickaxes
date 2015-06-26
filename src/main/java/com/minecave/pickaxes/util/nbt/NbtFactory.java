@@ -294,11 +294,11 @@ public class NbtFactory {
     /**
      * Retrieve a CraftItemStack version of the stack.
      *
-     * @param stack - the stack to convert.
+     * @param stack - the stack to convertToItem.
      * @return The CraftItemStack version.
      */
     public static ItemStack getCraftItemStack(ItemStack stack) {
-        // Any need to convert?
+        // Any need to convertToItem?
         if (stack == null || get().CRAFT_STACK.isAssignableFrom(stack.getClass()))
             return stack;
         try {

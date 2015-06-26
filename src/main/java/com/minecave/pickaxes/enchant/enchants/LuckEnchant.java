@@ -20,7 +20,9 @@ public class LuckEnchant extends PEnchant {
     @Override
     public void activate(BlockBreakEvent event) {
         BlockDrop drop = BlockDrop.random(this.getLevel());
-        drop.give(event.getPlayer());
+        if(drop != null) {
+            drop.give(event.getPlayer());
+        }
     }
 
     @Override

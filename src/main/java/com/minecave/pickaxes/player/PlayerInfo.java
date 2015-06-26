@@ -47,16 +47,16 @@ public class PlayerInfo {
                 if (item.getType() == Material.DIAMOND_PICKAXE) {
                     PItem<BlockBreakEvent> pItem = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(item);
                     if (pItem != null) {
+                        EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
                         this.player.getInventory().setItem(i, pItem.getItem());
-                        pItem.update(player);
-                        this.player.updateInventory();
+                        pItem.updateManually(player, pItem.getItem());
                     }
                 } else if (item.getType() == Material.DIAMOND_SWORD) {
                     PItem<EntityDamageByEntityEvent> pItem = (PItem<EntityDamageByEntityEvent>) PItemSerializer.deserializePItem(item);
                     if (pItem != null) {
+                        EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
                         this.player.getInventory().setItem(i, pItem.getItem());
-                        pItem.update(player);
-                        this.player.updateInventory();
+                        pItem.updateManually(player, pItem.getItem());
                     }
                 }
             }
@@ -110,6 +110,7 @@ public class PlayerInfo {
                     PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
                             .getPItem(BlockBreakEvent.class, item);
                     if (pItem != null) {
+                        EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
                         ItemStack newItem = PItemSerializer.serializePItem(pItem);
                         this.player.getInventory().setItem(i, newItem);
                         this.player.updateInventory();
@@ -118,6 +119,7 @@ public class PlayerInfo {
                     PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
                             .getPItem(EntityDamageByEntityEvent.class, item);
                     if (pItem != null) {
+                        EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
                         ItemStack newItem = PItemSerializer.serializePItem(pItem);
                         this.player.getInventory().setItem(i, newItem);
                         this.player.updateInventory();

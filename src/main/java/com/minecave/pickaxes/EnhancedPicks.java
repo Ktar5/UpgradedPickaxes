@@ -5,6 +5,7 @@ import com.minecave.pickaxes.commands.PickCommand;
 import com.minecave.pickaxes.commands.SwordCommand;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchantManager;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemManager;
 import com.minecave.pickaxes.level.LevelManager;
 import com.minecave.pickaxes.listener.MenuListener;
@@ -14,6 +15,7 @@ import com.minecave.pickaxes.menu.MenuManager;
 import com.minecave.pickaxes.player.PlayerManager;
 import com.minecave.pickaxes.skill.PSkillManager;
 import com.minecave.pickaxes.util.config.CustomConfig;
+import com.minecave.pickaxes.util.item.ActionBar;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -77,6 +79,15 @@ public class EnhancedPicks extends JavaPlugin {
         getCommand("sword").setExecutor(new SwordCommand());
 
         Bukkit.getOnlinePlayers().forEach(playerManager::load);
+
+        getServer().getScheduler().runTaskTimer(this, () -> Bukkit.getOnlinePlayers().stream()
+                .filter(p -> p.getItemInHand() != null).forEach(p -> {
+                    PItem<?> pItem = pItemManager.getPItem(p.getItemInHand());
+                    if (pItem != null) {
+                        String displayName = pItem.buildName();
+                        ActionBar.sendActionBar(p, displayName);
+                    }
+                }), 20l, 20l);
     }
 
     @Override

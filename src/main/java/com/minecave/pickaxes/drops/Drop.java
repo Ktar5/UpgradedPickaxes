@@ -11,13 +11,13 @@ public abstract class Drop {
 
     protected static Map<Integer, List<MobDrop>>   mobDrops   = new HashMap<>();
     protected static Map<Integer, List<BlockDrop>> blockDrops = new HashMap<>();
-    protected String command;
+    protected String item;
     protected int    weight;
-    protected        Random                        random     = new Random();
+    protected Random random = new Random();
 
-    public Drop(int weight, String command, int level) {
+    public Drop(int weight, String item, int level) {
         this.weight = weight;
-        this.command = command;
+        this.item = item;
         add(level);
     }
 

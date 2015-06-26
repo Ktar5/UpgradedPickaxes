@@ -37,6 +37,7 @@ public class PItemSerializer {
     public static final String CUR_SKILL       = "23446350-9d62-4af1-b489-5ca1e0449460";
     public static final String BLOCKS          = "efb43eb1-5e71-48e2-aab2-f4d7ab653c28";
     public static final String ENCHANTS        = "22cbcd3e-4bcf-4333-9da4-f79a94cdf386";
+    public static final String DURABILITY      = "9cbc9c58-4984-423f-9cff-4666b25d8aa8";
 
     public static Inventory deserializeInventory(byte[] data) {
         try {
@@ -55,6 +56,7 @@ public class PItemSerializer {
         int i = 0;
         for (PItem<?> p : list) {
             items[i++] = PItemSerializer.serializePItem(p);
+            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(p.getUuid().toString());
         }
         return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
     }
@@ -165,11 +167,18 @@ public class PItemSerializer {
                 }
             }
         }
+
+        //DURABILITY
+        storage = AttributeStorage.newTarget(storage.getTarget(), DURABILITY);
+        short dura = Short.parseShort(storage.getData("0"));
+
         ItemStack temp = storage.getTarget();
+        temp.setDurability(dura);
         ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
         clone.setData(temp.getData());
         clone.setDurability(temp.getDurability());
         pItem.setItem(clone);
+        pItem.getItem().setDurability(dura);
 
         return pItem;
     }
@@ -238,31 +247,36 @@ public class PItemSerializer {
         }
         storage.setData(enchants.toString());
 
+        //DURABILITY
+        storage = AttributeStorage.newTarget(storage.getTarget(), DURABILITY);
+        storage.setData(String.valueOf(pItem.getItem().getDurability()));
+
         return storage.getTarget();
     }
 
     public static <E extends Event> String base64PItems(List<PItem<E>> pItems) throws UnsupportedEncodingException {
-        if(pItems == null || pItems.isEmpty()) {
+        if (pItems == null || pItems.isEmpty()) {
             return "";
         }
         StringBuilder builder = new StringBuilder("");
         for (PItem<E> pItem : pItems) {
             builder.append(pItem.toString());
+            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
         }
         return Base64.getEncoder().encodeToString(builder.toString().getBytes("utf-8"));
     }
 
     public static List<PItem<?>> pItemsBase64(String base64) throws UnsupportedEncodingException {
-        if(base64 == null || base64.equals("")) {
+        if (base64 == null || base64.equals("")) {
             return Collections.emptyList();
         }
         EnhancedPicks plugin = EnhancedPicks.getInstance();
         List<PItem<?>> pItemList = new ArrayList<>();
         String decoded = new String(Base64.getDecoder().decode(base64), "utf-8");
         String[] items = decoded.split(";");
-        for(String item : items) {
+        for (String item : items) {
             String[] data = item.split(",");
-            if(data.length != 12) {
+            if (data.length != 12) {
                 throw new IllegalArgumentException("Base64 String contains invalid serialized PItem.");
             }
             String type = data[0];
@@ -355,6 +369,7 @@ public class PItemSerializer {
             pItem.setItem(clone);
 
             pItemList.add(pItem);
+            EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
         }
         return pItemList;
     }

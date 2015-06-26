@@ -11,8 +11,11 @@ package com.minecave.pickaxes.item;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
+import com.minecave.pickaxes.util.config.CustomConfig;
+import com.minecave.pickaxes.util.message.Strings;
 import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -26,7 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -35,10 +38,12 @@ public class PItem<E extends Event> {
 
     private final EnhancedPicks plugin;
 
-    private final String    name;
-    private final PItemType type;
-    private       ItemStack item;
-    private       String    pItemSettings;
+    private final String       name;
+    private final PItemType    type;
+    private       ItemStack    item;
+    private final UUID         uuid;
+    private       String       pItemSettings;
+    private       List<String> nukerBlocks;
 
     private int xp;
     private int points         = 1;
@@ -65,57 +70,86 @@ public class PItem<E extends Event> {
         this.enchants = new ArrayList<>();
         this.purchasedSkills = new ArrayList<>();
         this.availableSkills = new ArrayList<>();
+        this.nukerBlocks = new ArrayList<>();
         this.level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
         this.maxLevel = EnhancedPicks.getInstance().getLevelManager().getMaxLevel();
+        UUID temp = UUID.randomUUID();
+        while (plugin.getPItemManager().getPItemMap().containsKey(temp.toString())) {
+            temp = UUID.randomUUID();
+        }
+        uuid = temp;
     }
 
-    public void update(Player player) {
-        ItemStack clone = this.item;
-        ItemStack item = null;
+    public void updateManually(Player player, ItemStack stack) {
         int slot = -1;
         for (int i = 0; i < player.getInventory().getContents().length; i++) {
             ItemStack itemStack = player.getInventory().getItem(i);
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            if (clone.isSimilar(itemStack)) {
-                item = clone;
+            if (itemStack.equals(stack)) {
+                slot = i;
+                break;
+            }
+        }
+        if (slot == -1) {
+            return;
+        }
+        this.item = stack;
+        updateMeta();
+        for (PEnchant pEnchant : enchants) {
+            pEnchant.apply(this);
+        }
+        player.getInventory().setItem(slot, this.getItem());
+        player.updateInventory();
+    }
+
+    public void update(Player player) {
+        ItemStack item = null;
+        int slot = -1;
+        for (int i = 0; i < player.getInventory().getContents().length; i++) {
+            ItemStack itemStack = player.getInventory().getItem(i);
+            if (itemStack == null || itemStack.getType() == Material.AIR || !itemStack.hasItemMeta()) {
+                continue;
+            }
+            ItemMeta stackMeta = itemStack.getItemMeta();
+            List<String> lore = stackMeta.getLore();
+            if (lore == null || lore.isEmpty()) {
+                continue;
+            }
+            if (lore.contains(this.uuid.toString())) {
+                item = itemStack;
                 slot = i;
                 break;
             }
         }
         if (item == null || slot == -1) { //item == null
-//          player.sendMessage(ChatColor.RED + "Could not find that item in your inventory.");
             return;
         }
-        if (plugin.getPItemManager().getPItemMap().containsKey(item)) {
-            plugin.getPItemManager().getPItemMap().remove(item);
-        } else {
-            for (Map.Entry<ItemStack, PItem<?>> entry : plugin.getPItemManager().getPItemMap().entrySet()) {
-                if (entry.getValue().equals(this)) {
-                    plugin.getPItemManager().getPItemMap().remove(entry.getKey());
-                    break;
-                }
-            }
-        }
+        this.item = item;
         updateMeta();
-        player.updateInventory();
+        for (PEnchant pEnchant : enchants) {
+            pEnchant.apply(this);
+        }
         player.getInventory().setItem(slot, this.getItem());
+        player.updateInventory();
     }
 
     public String buildName() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(ChatColor.AQUA).append(name)
-                .append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
-                .append("Level: ").append(level.getId())
-                .append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
-                .append("Xp: ").append(xp);
+        CustomConfig config = plugin.getConfig("config");
+        String displayName = "";
         if (type == PItemType.PICK) {
-            builder.append(ChatColor.GOLD).append(" | ").append(ChatColor.AQUA)
-                    .append("BlocksBroken: ")
-                    .append(blocksBroken);
+            displayName = config.get("pick-display-name", String.class);
+        } else if (type == PItemType.SWORD) {
+            displayName = config.get("sword-display-name", String.class);
         }
-        return builder.toString();
+        displayName = displayName.replace("{name}", name)
+                .replace("{level}", String.valueOf(level.getId()))
+                .replace("{xp}", String.valueOf(xp))
+                .replace("{nextLevelXpTotal}", String.valueOf(getTotalXp()))
+                .replace("{xpDiff}", String.valueOf(getXpToNextLevel()))
+                .replace("{blocks}", String.valueOf(blocksBroken));
+        return Strings.color(displayName);
     }
 
     public boolean hasEnchant(PEnchant pEnchant) {
@@ -181,10 +215,14 @@ public class PItem<E extends Event> {
         this.xp += xp;
         while (getTotalXp() <= this.xp && level.getId() != maxLevel.getId()) {
             this.level = level.getNext();
-            level.levelUp(player, this);
             this.points += pointsPerLevel;
+            level.levelUp(player, this);
         }
         update(player);
+    }
+
+    private int getXpToNextLevel() {
+        return getTotalXp() - this.xp;
     }
 
     private int getTotalXp() {
@@ -198,11 +236,11 @@ public class PItem<E extends Event> {
     }
 
     public void setItem(ItemStack item) {
-        if (EnhancedPicks.getInstance().getPItemManager().getPItemMap().containsKey(this.item)) {
-            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(this.item);
-        }
-        this.item = item;
-        EnhancedPicks.getInstance().getPItemManager().getPItemMap().put(item, this);
+//        if (EnhancedPicks.getInstance().getPItemManager().getPItemMap().containsKey(this.item)) {
+//            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(this.item);
+//        }
+//        this.item = item;
+//        EnhancedPicks.getInstance().getPItemManager().getPItemMap().put(item, this);
     }
 
     public boolean hasEnchant(String name) {
@@ -268,9 +306,14 @@ public class PItem<E extends Event> {
     public void updateMeta() {
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(item.getType());
         List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GREEN + "Points: " + ChatColor.GOLD + points);
+        lore.add(ChatColor.GREEN + "Points/Level: " + ChatColor.GOLD + pointsPerLevel);
+        if (currentSkill != null) {
+            lore.add(ChatColor.LIGHT_PURPLE + "Skill: " + ChatColor.GOLD + currentSkill.getName());
+        }
         lore.add("Custom Enchants: ");
         List<String> list = this.enchants.stream()
-                .filter(enchant -> enchant.getLevel() > 0)
+                .filter(enchant -> !(enchant instanceof NormalEnchant) && enchant.getLevel() > 0)
                 .map(enchant -> ChatColor.AQUA + enchant.toString())
                 .collect(Collectors.toList());
         if (list.isEmpty()) {
@@ -278,9 +321,17 @@ public class PItem<E extends Event> {
         } else {
             lore.addAll(list);
         }
+        lore.add(this.uuid.toString());
         meta.setLore(lore);
         meta.setDisplayName(buildName());
         item.setItemMeta(meta);
-        this.setItem(item);
+    }
+
+    public void addBlockBroken() {
+        this.blocksBroken++;
+    }
+
+    public void addNukerBlocks(String s) {
+        this.nukerBlocks.add(s);
     }
 }

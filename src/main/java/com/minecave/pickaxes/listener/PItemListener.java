@@ -4,14 +4,19 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemType;
 import com.minecave.pickaxes.skill.PSkill;
+import com.minecave.pickaxes.skill.pick.Nuker;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +28,7 @@ public class PItemListener implements Listener {
 
     private EnhancedPicks plugin = EnhancedPicks.getInstance();
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         ItemStack inhand = player.getItemInHand();
@@ -33,12 +38,17 @@ public class PItemListener implements Listener {
         PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
                 .getPItem(BlockBreakEvent.class, player.getItemInHand());
         if (pItem != null) {
+            pItem.setItem(inhand);
             pItem.onAction(event);
+            if (pItem.getCurrentSkill() != null &&
+                    pItem.getCurrentSkill() instanceof Nuker) {
+                pItem.getCurrentSkill().onBreak(event);
+            }
         }
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onRightClick(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR &&
                 event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -68,7 +78,7 @@ public class PItemListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onDamaage(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
@@ -87,6 +97,23 @@ public class PItemListener implements Listener {
                 .getPItem(EntityDamageByEntityEvent.class, player.getItemInHand());
         if (pItem != null) {
             pItem.onAction(event);
+        }
+    }
+
+    @EventHandler
+    public void onEarthquake(EntityChangeBlockEvent event) {
+        if (event.getEntity() == null) {
+            return;
+        }
+        if (event.getEntity() instanceof FallingBlock) {
+            //TODO: earthquake give players item
+            Block block = event.getBlock();
+            FallingBlock fallingBlock = (FallingBlock) event.getEntity();
+            if (fallingBlock.getCustomName() != null &&
+                    fallingBlock.getCustomName().contains("earthquake")) {
+                block.setType(Material.AIR);
+                event.setCancelled(true);
+            }
         }
     }
 }

@@ -109,11 +109,11 @@ public class CustomConfig {
     }
 
     public <T> T get(String path, Class<T> tClass) {
-        if (!has(path)) {
-            throw new IllegalArgumentException(path + " does not exist.");
-        }
         if (tClass.isPrimitive()) {
             throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
+        }
+        if (!has(path)) {
+            throw new IllegalArgumentException(path + " does not exist.");
         }
         Object object = config.get(path);
         if (object == null) {
@@ -126,11 +126,11 @@ public class CustomConfig {
     }
 
     public <T> T get(String path, Class<T> tClass, T tDefault) {
-        if (!has(path)) {
-            throw new IllegalArgumentException(path + " does not exist.");
-        }
         if (tClass.isPrimitive()) {
             throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
+        }
+        if (!has(path)) {
+            return tDefault;
         }
         Object object = config.get(path);
         if (object == null) {
@@ -144,11 +144,11 @@ public class CustomConfig {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> getList(String path, Class<T> tClass) {
-        if (!has(path)) {
-            throw new IllegalArgumentException(path + " does not exist.");
-        }
         if (tClass.isPrimitive()) {
             throw new IllegalArgumentException(tClass + " is of a primitive type. Disallowed type.");
+        }
+        if (!has(path)) {
+            throw new IllegalArgumentException(path + " does not exist.");
         }
         List<?> list = config.getList(path);
         if (list == null) {

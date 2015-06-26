@@ -9,10 +9,7 @@
 package com.minecave.pickaxes.skill;
 
 import com.minecave.pickaxes.EnhancedPicks;
-import com.minecave.pickaxes.skill.pick.Bomber;
-import com.minecave.pickaxes.skill.pick.Earthquake;
-import com.minecave.pickaxes.skill.pick.Ice;
-import com.minecave.pickaxes.skill.pick.Lightning;
+import com.minecave.pickaxes.skill.pick.*;
 import com.minecave.pickaxes.skill.sword.Acid;
 import com.minecave.pickaxes.skill.sword.FireballSkill;
 import com.minecave.pickaxes.skill.sword.Rain;
@@ -75,6 +72,7 @@ public class PSkillManager {
                 tnt.getInt("fuse"),
                 tnt.getBoolean("toSeconds"));
         skillMap.put("bomber", bomber);
+        skillMap.put("tnt", bomber);
 
         ConfigurationSection light = config.getConfigurationSection("lightning");
         Lightning lightning = new Lightning(color(light.getString("name")),
@@ -123,6 +121,13 @@ public class PSkillManager {
                 fire.getInt("cost"),
                 fire.getString("permission"));
         skillMap.put("fireball", fireball);
+
+        ConfigurationSection nuk = config.getConfigurationSection("nuker");
+        Nuker nuker = new Nuker(color(nuk.getString("name")),
+                nuk.getInt("levelUnlocked"),
+                nuk.getInt("cost"),
+                nuk.getString("permission"));
+        skillMap.put("nuker", nuker);
     }
 
     public PSkill getPSkill(String name) {

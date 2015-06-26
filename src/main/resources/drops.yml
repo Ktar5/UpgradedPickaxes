@@ -12,11 +12,11 @@ blocks:
       #Weight / amount - How likely they are to get this item
       #Weight is autmatically set to '1' if none is specified.
         drops:
-          - 'give $player$ apple%10'
-          - 'give $player$ stick%90'
+          - 'apple%10'
+          - 'stick%90'
       2:
         drops:
-          - 'give $player$ iron_ingot%20'
+          - 'iron_ingot%20'
 
 #When the 'Lucky' Enchant is added to a Sword, and a mob is killed, this list is checked.
 #All values are the same as the 'blocks' section, while changing the block to the mob
@@ -25,8 +25,8 @@ mobs:
     levels:
       1:
         drops:
-          - 'give $player$ apple%10'
-          - 'give $player$ stick%90'
+          - 'apple%10'
+          - 'stick%90'
       2:
         drops:
-          - 'give $player$ iron_ingot%20'
+          - 'iron_ingot%20'

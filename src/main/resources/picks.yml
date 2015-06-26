@@ -20,6 +20,7 @@
 ## ice
 ## tnt
 ## lightning
+## ==========
 ## shotgun
 ## acid
 ## fireball
@@ -48,5 +49,12 @@ lapis:
   startXp: 0
   ##defaults to 1 if not added
   startLevel: 1
+  ##defaults to 1 if not added
+  startPoints: 5
   #defaults to 1 if not added
   pointsPerLevel: 1
+  #relative coords to broken (x,y,z) where x is the axis closest to the direction the player is looking
+  #without this the nuker skill will not have an effect
+  blocks:
+        - "0|0|0"
+        - "2|0|0"

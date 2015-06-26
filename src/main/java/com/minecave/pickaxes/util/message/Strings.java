@@ -11,6 +11,8 @@ package com.minecave.pickaxes.util.message;
 import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class Strings {
 
@@ -33,5 +35,15 @@ public class Strings {
             retVal += s;
         }
         return retVal.trim();
+    }
+
+    public static void debug(Player player, ItemStack stack) {
+        StringBuilder builder = new StringBuilder("");
+        builder.append("\n").append("=== Item Debug ===").append("\n")
+                .append(System.identityHashCode(stack)).append("\n")
+                .append("===============================").append("\n")
+                .append("ItemStack: ").append(stack.hashCode()).append("\n")
+                .append("=== ItemDebug ===").append("\n");
+        player.sendMessage(builder.toString());
     }
 }

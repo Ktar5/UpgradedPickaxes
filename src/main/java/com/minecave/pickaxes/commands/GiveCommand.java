@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class GiveCommand implements CommandExecutor {
 
@@ -27,6 +28,7 @@ public class GiveCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         EnhancedPicks plugin = EnhancedPicks.getInstance();
         if (strings.length < 2) {
+            sender.sendMessage(ChatColor.RED + "Not enough arguments.");
             return false;
         }
         String typeStr = strings[0];
@@ -41,6 +43,7 @@ public class GiveCommand implements CommandExecutor {
         } else if (typeStr.equalsIgnoreCase("sword") || typeStr.equalsIgnoreCase("s")) {
             type = PItemType.SWORD;
         } else {
+            sender.sendMessage(ChatColor.RED + "Not a valid item type.");
             return false;
         }
         PItemManager.PItemSettings pItemSettings = plugin.getPItemManager().getSettingsMap().get(configStr);
@@ -69,14 +72,16 @@ public class GiveCommand implements CommandExecutor {
         switch (type) {
             case PICK:
                 PItem<BlockBreakEvent> pItem = pItemSettings.generate(BlockBreakEvent.class);
-                player.getInventory().addItem(pItem.getItem());
-                pItem.update(player);
+                ItemStack stack = pItem.getItem();
+                pItem.updateManually(player, stack);
+                player.getInventory().addItem(stack);
                 plugin.getPItemManager().addPItem(pItem);
                 break;
             case SWORD:
                 PItem<EntityDamageByEntityEvent> eItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
-                player.getInventory().addItem(eItem.getItem());
-                eItem.update(player);
+                stack = eItem.getItem();
+                eItem.updateManually(player, stack);
+                player.getInventory().addItem(stack);
                 plugin.getPItemManager().addPItem(eItem);
                 break;
         }

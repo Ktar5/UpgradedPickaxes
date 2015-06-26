@@ -1,20 +1,27 @@
 package com.minecave.pickaxes.drops;
 
 import com.minecave.pickaxes.EnhancedPicks;
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Timothy Andis
  */
 public class BlockDrop extends Drop {
 
-    public BlockDrop(int weight, String command, int level) {
-        super(weight, command, level);
+    public BlockDrop(int weight, String item, int level) {
+        super(weight, item, level);
     }
 
     public static BlockDrop random(int level) {
-        return EnhancedPicks.getInstance().getDropManager().getBlockDrops().get(0);
+        if(level > EnhancedPicks.getInstance().getDropManager().getBlockDrops().size()) {
+            level = EnhancedPicks.getInstance().getDropManager().getBlockDrops().size();
+        }
+        return EnhancedPicks.getInstance().getDropManager().getBlockDrops()
+                .get(ThreadLocalRandom.current().nextInt(level - 1));
     }
 
     @Override
@@ -45,7 +52,8 @@ public class BlockDrop extends Drop {
         if (drop == null) {
             return;
         }
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), drop.command);
+        Material mat = Material.valueOf(drop.item.toUpperCase());
+        player.getInventory().addItem(new ItemStack(mat, 1));
+        player.updateInventory();
     }
-
 }

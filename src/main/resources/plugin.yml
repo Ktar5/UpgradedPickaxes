@@ -9,7 +9,7 @@ commands:
   sword:
     description: Opens up your sword UI.
     usage: /<command>
-  pGive:
+  pgive:
     description: Give a new enhanced pick or sword to a player.
     usage: /<command> [pick/sword] [config name] [player]
     permission: pickaxes.admin

@@ -59,3 +59,8 @@ rain:
   arrowHeight: 15
   arrowCount: 10
   seconds: 3
+nuker:
+  name: Nuker
+  levelUnlocked: 4
+  cost: 5
+  permission: "skill.nuker"

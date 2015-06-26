@@ -23,6 +23,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class PItemManager {
 
     private final EnhancedPicks              plugin;
     @Getter
-    private       Map<ItemStack, PItem<?>>   pItemMap;
+    private       Map<String, PItem<?>>      pItemMap;
     @Getter
     private       Map<String, PItemSettings> settingsMap;
 
@@ -41,19 +42,22 @@ public class PItemManager {
         plugin = EnhancedPicks.getInstance();
         pItemMap = new HashMap<>();
         settingsMap = new HashMap<>();
-        CustomConfig pickConfig = plugin.getConfig("picks");
-        CustomConfig swordConfig = plugin.getConfig("swords");
 
+        CustomConfig pickConfig = plugin.getConfig("picks");
         for (String n : pickConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.PICK);
             String name = pickConfig.get(concat(n, "name"), String.class, n);
             int xp = pickConfig.get(concat(n, "startXp"), Integer.class, 0);
             int level = pickConfig.get(concat(n, "startLevel"), Integer.class, 1);
+            int points = pickConfig.get(concat(n, "startPoints"), Integer.class, 1);
             int ppl = pickConfig.get(concat(n, "pointsPerLevel"), Integer.class, 1);
+            List<String> nukerBlocks = pickConfig.getConfig().getStringList(concat(n, "blocks"));
             settings.setName(name);
             settings.setStartXp(xp);
             settings.setStartLevel(level);
+            settings.setStartPoints(points);
             settings.setPointsPerLevel(ppl);
+            nukerBlocks.forEach(settings::addNukerBlocks);
             for (String e : pickConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
                 PEnchant enchant = plugin.getPEnchantManager().getEnchantMap().get(e);
                 if (enchant == null) {
@@ -85,16 +89,18 @@ public class PItemManager {
             this.settingsMap.put(n, settings);
             EnhancedPicks.getInstance().getLogger().info(settings.toString());
         }
-
+        CustomConfig swordConfig = plugin.getConfig("swords");
         for (String n : swordConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.SWORD);
             String name = swordConfig.get(concat(n, "name"), String.class, n);
             int xp = swordConfig.get(concat(n, "startXp"), Integer.class, 0);
             int level = swordConfig.get(concat(n, "startLevel"), Integer.class, 1);
+            int points = swordConfig.get(concat(n, "startPoints"), Integer.class, 1);
             int ppl = swordConfig.get(concat(n, "pointsPerLevel"), Integer.class, 1);
             settings.setName(name);
             settings.setStartXp(xp);
             settings.setStartLevel(level);
+            settings.setStartPoints(points);
             settings.setPointsPerLevel(ppl);
             for (String e : swordConfig.getConfig().getConfigurationSection(concat(n, "enchants")).getKeys(false)) {
                 PEnchant enchant = plugin.getPEnchantManager().getEnchantMap().get(e);
@@ -129,41 +135,51 @@ public class PItemManager {
     }
 
     public PItem<?> getPItem(ItemStack item) {
-        PItem<?> pItem = this.pItemMap.get(item);
-        if (pItem == null) {
-            for (PItem<?> pItem1 : pItemMap.values()) {
-                if (pItem1.getItem().isSimilar(item)) {
-                    return pItem1;
-                }
-            }
-//            plugin.getLogger().warning(item + " is not a PItem.");
+        if (item == null) {
+            return null;
         }
-        return pItem;
+        if (!item.hasItemMeta()) {
+            return null;
+        }
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.getLore();
+        if (lore == null || lore.isEmpty()) {
+            return null;
+        }
+        for (String l : lore) {
+            if (!pItemMap.containsKey(l)) {
+                continue;
+            }
+            return this.pItemMap.get(l);
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
     public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack item) {
-        PItem<?> pItem = this.pItemMap.get(item);
-        if (pItem == null) {
-            for (PItem<?> pItem1 : pItemMap.values()) {
-                if (pItem1.getItem().isSimilar(item)) {
-                    if (!pClass.equals(pItem1.getEClass())) {
-                        return null;
-                    }
-                    return (PItem<P>) pItem1;
-                }
+        if (!item.hasItemMeta()) {
+            return null;
+        }
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.getLore();
+        if (lore == null || lore.isEmpty()) {
+            return null;
+        }
+        for (String l : lore) {
+            if (!pItemMap.containsKey(l)) {
+                continue;
             }
-//            plugin.getLogger().warning(item + " is not a PItem.");
-            return null;
+            PItem<?> pItem = this.pItemMap.get(l);
+            if (!pClass.equals(pItem.getEClass())) {
+                return null;
+            }
+            return (PItem<P>) pItem;
         }
-        if (!pClass.equals(pItem.getEClass())) {
-            return null;
-        }
-        return (PItem<P>) pItem;
+        return null;
     }
 
     public void addPItem(PItem<?> pItem) {
-        this.pItemMap.put(pItem.getItem(), pItem);
+        this.pItemMap.put(pItem.getUuid().toString(), pItem);
     }
 
     public PItemSettings getSettings(String key) {
@@ -185,7 +201,9 @@ public class PItemManager {
         private       String         name;
         private       int            startXp;
         private       int            startLevel;
+        private       int            startPoints;
         private       int            pointsPerLevel;
+        private       List<String>   nukerBlocks;
 
         public PItemSettings(String key, PItemType type) {
             this.key = key;
@@ -193,9 +211,15 @@ public class PItemManager {
             this.type = type;
             this.skillList = new ArrayList<>();
             this.enchantList = new ArrayList<>();
+            this.nukerBlocks = new ArrayList<>();
             this.startXp = 0;
             this.startLevel = 0;
+            this.startPoints = 1;
             this.pointsPerLevel = 1;
+        }
+
+        public void addNukerBlocks(String s) {
+            nukerBlocks.add(s);
         }
 
         public void addSkill(PSkill skill) {
@@ -246,7 +270,9 @@ public class PItemManager {
                     break;
             }
             pItem.setLevel(level);
+            pItem.setPoints(startPoints);
             pItem.setPointsPerLevel(pointsPerLevel);
+            nukerBlocks.forEach(pItem::addNukerBlocks);
             for (PEnchant pEnchant : this.enchantList) {
                 PEnchant clone = pEnchant.cloneEnchant();
                 clone.setLevel(pEnchant.getLevel());
@@ -254,7 +280,11 @@ public class PItemManager {
                 pItem.addEnchant(clone);
             }
             this.skillList.forEach(pItem::addAvailableSkill);
+            for (PEnchant pEnchant : pItem.getEnchants()) {
+                pEnchant.apply(pItem);
+            }
             pItem.setPItemSettings(this.key);
+            pItem.updateMeta();
             return pItem;
         }
 
@@ -267,6 +297,7 @@ public class PItemManager {
                     .append("  Type: ").append(type.name()).append("\n")
                     .append("  Start XP: ").append(startXp).append("\n")
                     .append("  Start Level: ").append(startLevel).append("\n")
+                    .append("  Start Points: ").append(startPoints).append("\n")
                     .append("  Points per level: ").append(pointsPerLevel).append("\n")
                     .append("  Skills: \n");
             for (PSkill pSkill : this.skillList) {
@@ -276,7 +307,7 @@ public class PItemManager {
                         .append("    Permission: ").append(pSkill.getPerm()).append("\n");
             }
             builder.append("  Enchants: \n");
-            for(PEnchant pEnchant : this.enchantList) {
+            for (PEnchant pEnchant : this.enchantList) {
                 builder.append("    Name: ").append(pEnchant.getName()).append("\n")
                         .append("    Display Name: ").append(pEnchant.getDisplayName()).append("\n")
                         .append("    Level: ").append(pEnchant.getLevel()).append("\n")

@@ -42,6 +42,11 @@ public class UpgradesMenu extends Menu {
         int enchantCount = pItem.getEnchants().size();
         Button[] buttons = new Button[(int) (Math.ceil((double) enchantCount / 2D) * 9)];
         fillPanes(buttons, PaneType.ALL, new FillerButton(new ItemStack(Material.AIR)));
+        ItemStack points = new ItemStack(Material.DIAMOND, pItem.getPoints());
+        ItemMeta pointsMeta = points.getItemMeta();
+        pointsMeta.setDisplayName(ChatColor.GOLD + "Current Points: " + ChatColor.WHITE + pItem.getPoints());
+        points.setItemMeta(pointsMeta);
+        buttons[buttons.length - 1] = new FillerButton(points);
         int c = 0;
         for (PEnchant enchant : pItem.getEnchants()) {
             int redWoolIndex = c + 1;

@@ -12,11 +12,13 @@ package com.minecave.pickaxes.skill;
 
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.skill.pick.Nuker;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
@@ -69,6 +71,10 @@ public abstract class PSkill {
     }
 
     public void use(Player player, PlayerInteractEvent event) {
+        if(this instanceof Nuker) {
+            player.sendMessage(ChatColor.GOLD + "Nuker is a passive skill. Break some blocks.");
+            return;
+        }
         player.sendMessage(ChatColor.GOLD + "You used " + this.getName() + ". Cooldown: " + cooldown + "s.");
         EnhancedPicks.getInstance().getServer().getScheduler()
                 .runTaskLater(EnhancedPicks.getInstance(), () -> {
@@ -78,6 +84,8 @@ public abstract class PSkill {
     }
 
     protected abstract void use(PlayerInteractEvent event);
+
+    public void onBreak(BlockBreakEvent event) { }
 
     public int getLevel() {
         return level;

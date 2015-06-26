@@ -16,6 +16,14 @@ level-up-message:
 - '&e&lNext Level: $nextLevel$'
 - '  &a&lXP needed: $nextXP$'
 - '&e&l&n-----------[ &a&lLevel Up &e&l&n ]----------'
+##
+## {name} - name in picks/swords.yml
+## {level} - item level
+## {xp} - item xp
+## {blocks} - blocks broken (only for picks ofc)
+##
+pick-display-name: "{name} | Level: {level} | Xp: {xp}/{nextLevelXpTotal} | Next Level in: {xpDiff} | Blocks Broken: {blocks}"
+sword-display-name: "{name} | Level: {level} | Xp: {xp}/{nextLevelXpTotal} | Next Level in: {xpDiff}"
 cosmetics:
   firework:
     #Does each level control the firework effect? Set to true for in-depth management
