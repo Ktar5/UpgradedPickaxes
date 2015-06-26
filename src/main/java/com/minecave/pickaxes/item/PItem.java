@@ -143,10 +143,14 @@ public class PItem<E extends Event> {
         } else if (type == PItemType.SWORD) {
             displayName = config.get("sword-display-name", String.class);
         }
+        int totalXp = getTotalXp();
+        if (totalXp < xp) {
+            totalXp = xp;
+        }
         displayName = displayName.replace("{name}", name)
                 .replace("{level}", String.valueOf(level.getId()))
                 .replace("{xp}", String.valueOf(xp))
-                .replace("{nextLevelXpTotal}", String.valueOf(getTotalXp()))
+                .replace("{nextLevelXpTotal}", String.valueOf(totalXp))
                 .replace("{xpDiff}", String.valueOf(getXpToNextLevel()))
                 .replace("{blocks}", String.valueOf(blocksBroken));
         return Strings.color(displayName);
@@ -306,10 +310,18 @@ public class PItem<E extends Event> {
     public void updateMeta() {
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(item.getType());
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GREEN + "Points: " + ChatColor.GOLD + points);
-        lore.add(ChatColor.GREEN + "Points/Level: " + ChatColor.GOLD + pointsPerLevel);
+
+        lore.add(ChatColor.DARK_AQUA + "Level: " + ChatColor.YELLOW + level.getId());
+        int totalXp = getTotalXp();
+        if (totalXp < xp) {
+            totalXp = xp;
+        }
+        lore.add(ChatColor.DARK_AQUA + "Xp: " + ChatColor.YELLOW + xp + "/" + totalXp);
+        if(type == PItemType.PICK) {
+            lore.add(ChatColor.DARK_AQUA + "Blocks Broken: " + ChatColor.YELLOW + blocksBroken);
+        }
         if (currentSkill != null) {
-            lore.add(ChatColor.LIGHT_PURPLE + "Skill: " + ChatColor.GOLD + currentSkill.getName());
+            lore.add(ChatColor.DARK_AQUA + "Skill: " + ChatColor.YELLOW + currentSkill.getName());
         }
         lore.add("Custom Enchants: ");
         List<String> list = this.enchants.stream()
@@ -323,7 +335,7 @@ public class PItem<E extends Event> {
         }
         lore.add(this.uuid.toString());
         meta.setLore(lore);
-        meta.setDisplayName(buildName());
+        meta.setDisplayName(ChatColor.GOLD + name);
         item.setItemMeta(meta);
     }
 

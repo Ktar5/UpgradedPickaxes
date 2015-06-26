@@ -9,6 +9,7 @@
 package com.minecave.pickaxes.commands;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemManager;
 import com.minecave.pickaxes.item.PItemType;
@@ -74,6 +75,9 @@ public class GiveCommand implements CommandExecutor {
                 PItem<BlockBreakEvent> pItem = pItemSettings.generate(BlockBreakEvent.class);
                 ItemStack stack = pItem.getItem();
                 pItem.updateManually(player, stack);
+                for (PEnchant pEnchant : pItem.getEnchants()) {
+                    pEnchant.apply(pItem);
+                }
                 player.getInventory().addItem(stack);
                 plugin.getPItemManager().addPItem(pItem);
                 break;
@@ -81,6 +85,9 @@ public class GiveCommand implements CommandExecutor {
                 PItem<EntityDamageByEntityEvent> eItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
                 stack = eItem.getItem();
                 eItem.updateManually(player, stack);
+                for (PEnchant pEnchant : eItem.getEnchants()) {
+                    pEnchant.apply(eItem);
+                }
                 player.getInventory().addItem(stack);
                 plugin.getPItemManager().addPItem(eItem);
                 break;
