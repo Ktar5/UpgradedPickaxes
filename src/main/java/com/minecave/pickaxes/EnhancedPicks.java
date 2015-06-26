@@ -18,7 +18,6 @@ import com.minecave.pickaxes.level.LevelManager;
 import com.minecave.pickaxes.listener.MenuListener;
 import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
-import com.minecave.pickaxes.menu.MenuManager;
 import com.minecave.pickaxes.player.PlayerManager;
 import com.minecave.pickaxes.skill.PSkillManager;
 import com.minecave.pickaxes.util.config.CustomConfig;
@@ -49,8 +48,6 @@ public class EnhancedPicks extends JavaPlugin {
     @Getter
     private        PEnchantManager           pEnchantManager;
     @Getter
-    private        MenuManager               menuManager;
-    @Getter
     private        PItemManager              pItemManager;
     @Getter
     private        PlayerManager             playerManager;
@@ -75,7 +72,6 @@ public class EnhancedPicks extends JavaPlugin {
         pSkillManager = new PSkillManager();
         dropManager = new DropManager();
         pEnchantManager = new PEnchantManager();
-        menuManager = new MenuManager();
         pItemManager = new PItemManager();
         playerManager = new PlayerManager();
 

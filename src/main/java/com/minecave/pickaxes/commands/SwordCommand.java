@@ -8,8 +8,7 @@
  */
 package com.minecave.pickaxes.commands;
 
-import com.minecave.pickaxes.EnhancedPicks;
-import com.minecave.pickaxes.menu.menus.MainSwordMenu;
+import com.minecave.pickaxes.menu.menus.MenuCreator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,8 +19,7 @@ public class SwordCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (commandSender instanceof Player) {
-            MainSwordMenu menu = EnhancedPicks.getInstance().getMenuManager().get(MainSwordMenu.class);
-            menu.display((Player) commandSender);
+            MenuCreator.createMainSword((Player) commandSender);
         }
         return true;
     }
