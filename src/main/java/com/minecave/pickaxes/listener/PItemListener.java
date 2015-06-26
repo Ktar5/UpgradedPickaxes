@@ -101,7 +101,7 @@ public class PItemListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEarthquake(EntityChangeBlockEvent event) {
         if (event.getEntity() == null) {
             return;
@@ -110,7 +110,7 @@ public class PItemListener implements Listener {
             //TODO: earthquake give players item
             Block block = event.getBlock();
             FallingBlock fallingBlock = (FallingBlock) event.getEntity();
-            Earthquake earthquake = ((Earthquake)plugin.getPSkillManager().getPSkill("earthquake"));
+            Earthquake earthquake = ((Earthquake) plugin.getPSkillManager().getPSkill("earthquake"));
             if ((fallingBlock.getCustomName() != null &&
                     fallingBlock.getCustomName().contains("earthquake")) ||
                     earthquake.getFallingBlockList().contains(fallingBlock)) {

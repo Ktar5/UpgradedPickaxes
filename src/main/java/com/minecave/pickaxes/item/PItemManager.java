@@ -147,16 +147,22 @@ public class PItemManager {
             return null;
         }
         for (String l : lore) {
-            if (!pItemMap.containsKey(l)) {
-                continue;
+            if (l.startsWith("UUID:")) {
+                String u = l.replace("UUID:", "");
+                if (!pItemMap.containsKey(u)) {
+                    continue;
+                }
+                return this.pItemMap.get(u);
             }
-            return this.pItemMap.get(l);
         }
         return null;
     }
 
     @SuppressWarnings("unchecked")
     public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack item) {
+        if (item == null) {
+            return null;
+        }
         if (!item.hasItemMeta()) {
             return null;
         }
@@ -166,14 +172,17 @@ public class PItemManager {
             return null;
         }
         for (String l : lore) {
-            if (!pItemMap.containsKey(l)) {
-                continue;
+            if (l.startsWith("UUID:")) {
+                String u = l.replace("UUID:", "");
+                if (!pItemMap.containsKey(u)) {
+                    continue;
+                }
+                PItem<?> pItem = this.pItemMap.get(u);
+                if (!pClass.equals(pItem.getEClass())) {
+                    return null;
+                }
+                return (PItem<P>) pItem;
             }
-            PItem<?> pItem = this.pItemMap.get(l);
-            if (!pClass.equals(pItem.getEClass())) {
-                return null;
-            }
-            return (PItem<P>) pItem;
         }
         return null;
     }

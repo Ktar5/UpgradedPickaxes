@@ -333,7 +333,7 @@ public class PItem<E extends Event> {
         } else {
             lore.addAll(list);
         }
-        lore.add(this.uuid.toString());
+        lore.add("UUID:" + this.uuid.toString());
         meta.setLore(lore);
         meta.setDisplayName(ChatColor.GOLD + name);
         item.setItemMeta(meta);

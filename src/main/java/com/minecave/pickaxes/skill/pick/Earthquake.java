@@ -5,7 +5,6 @@ import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.item.OreConversion;
-import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;
@@ -27,7 +26,6 @@ public class Earthquake extends PSkill {
 
     private int radius;
     private Random             random           = new Random();
-    @Getter
     private List<FallingBlock> fallingBlockList = new ArrayList<>();
 
     public Earthquake(int radius, String name, long cooldown, int level, int cost, String perm) {
@@ -82,5 +80,9 @@ public class Earthquake extends PSkill {
             }
         }
         this.add(player);
+    }
+
+    public List<FallingBlock> getFallingBlockList() {
+        return this.fallingBlockList;
     }
 }
