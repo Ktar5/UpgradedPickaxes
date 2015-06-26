@@ -1,6 +1,9 @@
 package com.minecave.pickaxes.enchant.enchants;
 
+import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.util.item.OreConversion;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
@@ -34,9 +37,21 @@ public class TnTEnchant extends PEnchant {
             return;
         }
         Player player = event.getPlayer();
+        PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
+        if (pItem == null) {
+            return;
+        }
         Block block = event.getBlock();
         Location location = block.getLocation();
-        for (Block b : getRegionBlocks(location, this.getLevel())) {
+        int rad = 1;
+        if(this.getLevel() >= 1 && this.getLevel() <= 3) {
+            rad = 1;
+        } else if(this.getLevel() > 3 && this.getLevel() <= 6) {
+            rad = 2;
+        } else {
+            rad = 3;
+        }
+        for (Block b : getRegionBlocks(location, rad)) {
             Location loc = b.getLocation();
             if (!wg.canBuild(event.getPlayer(), loc) ||
                     loc.getBlock().getType() == Material.BEDROCK ||
@@ -50,6 +65,10 @@ public class TnTEnchant extends PEnchant {
                 stack.setType(OreConversion.convertToItem(stack.getType()));
                 array[i++] = stack;
             }
+            int xp = BlockValue.getXp(loc.getBlock());
+            pItem.incrementXp(xp, player);
+            pItem.addBlockBroken();
+            pItem.update(player);
             player.getInventory().addItem(array);
             player.updateInventory();
             loc.getBlock().setType(Material.AIR);
@@ -85,7 +104,7 @@ public class TnTEnchant extends PEnchant {
         for (double x = -radius; x <= radius; x++) {
             for (double z = -radius; z <= radius; z++) {
                 for (double y = -radius / 2; y <= radius / 2; y++) {
-                    if (ThreadLocalRandom.current().nextInt(10) > (7 - this.getLevel())) {
+                    if (ThreadLocalRandom.current().nextInt(10) > (5 - this.getLevel())) {
                         Location l = loc1.clone().add(x, y, z);
                         if (!l.getChunk().isLoaded()) {
                             continue;
