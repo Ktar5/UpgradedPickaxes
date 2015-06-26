@@ -16,6 +16,7 @@ public class AttributeStorage {
 
     static {
         Attributes.Attribute.newBuilder();
+        Attributes.AttributeType.values();
     }
 
     private AttributeStorage(ItemStack target, UUID uniqueKey) {

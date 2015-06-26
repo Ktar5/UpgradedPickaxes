@@ -1,5 +1,12 @@
 package com.minecave.pickaxes;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
 import com.minecave.pickaxes.commands.GiveCommand;
 import com.minecave.pickaxes.commands.PickCommand;
 import com.minecave.pickaxes.commands.SwordCommand;
@@ -18,10 +25,13 @@ import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ActionBar;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EnhancedPicks extends JavaPlugin {
@@ -77,6 +87,60 @@ public class EnhancedPicks extends JavaPlugin {
         getCommand("pgive").setExecutor(new GiveCommand());
         getCommand("pick").setExecutor(new PickCommand());
         getCommand("sword").setExecutor(new SwordCommand());
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this /*your plugin instance*/,
+                ListenerPriority.NORMAL, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
+                    PacketContainer packet = event.getPacket().deepClone();
+                    StructureModifier<ItemStack> sm = packet
+                            .getItemModifier();
+                    for (int j = 0; j < sm.size(); j++) {
+                        if (sm.getValues().get(j) != null) {
+                            ItemStack item = sm.getValues().get(j);
+                            ItemMeta itemMeta = item.getItemMeta();
+                            if (itemMeta.hasLore()) {
+                                List<String> lore = itemMeta.getLore();
+                                for (String s : lore) {
+                                    if (s.startsWith("UUID:")) {
+                                        lore.remove(s);
+                                        break;
+                                    }
+                                }
+                                itemMeta.setLore(lore);
+                                item.setItemMeta(itemMeta);
+                            }
+                        }
+                    }
+                    event.setPacket(packet);
+                }
+                if (event.getPacketType() == PacketType.Play.Server.WINDOW_ITEMS) {
+                    PacketContainer packet = event.getPacket().deepClone();
+                    StructureModifier<ItemStack[]> sm = packet
+                            .getItemArrayModifier();
+                    for (int j = 0; j < sm.size(); j++) {
+                        for (int i = 0; i < sm.getValues().size(); i++) {
+                            if (sm.getValues().get(j)[i] != null) {
+                                ItemStack item = sm.getValues().get(j)[i];                                ItemMeta itemMeta = item.getItemMeta();
+                                if (itemMeta.hasLore()) {
+                                    List<String> lore = itemMeta.getLore();
+                                    for (String s : lore) {
+                                        if (s.startsWith("UUID:")) {
+                                            lore.remove(s);
+                                            break;
+                                        }
+                                    }
+                                    itemMeta.setLore(lore);
+                                    item.setItemMeta(itemMeta);
+                                }
+                            }
+                        }
+                    }
+                    event.setPacket(packet);
+                }
+            }
+        });
 
         Bukkit.getOnlinePlayers().forEach(playerManager::load);
 
