@@ -60,6 +60,7 @@ public class Bomber extends PSkill {
                     return;
                 }
                 int curCount = 0;
+                int cap = ThreadLocalRandom.current().nextInt(30) + 1;
                 for(Block b : getRegionBlocks(location, amount)) {
                     Location loc = b.getLocation();
                     if (!wg.canBuild(event.getPlayer(), loc) ||
@@ -67,7 +68,7 @@ public class Bomber extends PSkill {
                             loc.getBlock().getType() == Material.AIR) {
                         continue;
                     }
-                    if(curCount >= 30) {
+                    if(curCount >= cap) {
                         break;
                     }
                     Collection<ItemStack> items = loc.getBlock().getDrops();

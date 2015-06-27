@@ -45,12 +45,13 @@ public class Earthquake extends PSkill {
         int playerZ = location.getBlockZ();
         int y = location.getBlockY();
         int curCount = 0;
+        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
         for (int x = playerX - radius; x <= (playerX + radius); x++) {
-            if(curCount >= 30) {
+            if(curCount >= cap) {
                 break;
             }
             for (int z = playerZ - radius; z <= (playerZ + radius); z++) {
-                if(curCount >= 30) {
+                if(curCount >= cap) {
                     break;
                 }
                 Location loc = new Location(location.getWorld(), x, y, z);

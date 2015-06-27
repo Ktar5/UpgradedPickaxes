@@ -48,12 +48,13 @@ public class Lightning extends PSkill {
         world.strikeLightningEffect(location);
         player.sendMessage("location: " + location);
         int curCount = 0;
+        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
         for(int x = -depth; x <= depth; x++) {
-            if(curCount >= depth * 2) {
+            if(curCount >= cap) {
                 break;
             }
             for(int z = -depth; z <= depth; z++) {
-                if(curCount >= depth * 2) {
+                if(curCount >= cap) {
                     break;
                 }
                 if(Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(depth, 2)) {
@@ -62,7 +63,7 @@ public class Lightning extends PSkill {
                         d = 1;
                     }
                     for (int y = 0; y < d; y++) {
-                        if(curCount >= 30) {
+                        if(curCount >= cap) {
                             break;
                         }
                         if (ThreadLocalRandom.current().nextInt(10) > 4) {

@@ -42,11 +42,12 @@ public class Ice extends PSkill {
         List<Block> broken = new ArrayList<>();
 
         int curCount = 0;
+        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
         for (Block block : blocks) {
             if (!this.wg.canBuild(event.getPlayer(), block)) {
                 continue;
             }
-            if(curCount >= 30) {
+            if(curCount >= cap) {
                 break;
             }
             Collection<ItemStack> items = block.getDrops(player.getItemInHand());
