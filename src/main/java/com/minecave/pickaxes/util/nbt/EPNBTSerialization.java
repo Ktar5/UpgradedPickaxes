@@ -21,7 +21,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class NBTSerialization {
+public class EPNBTSerialization {
     private static Method WRITE_NBT;
     private static Method READ_NBT;
 

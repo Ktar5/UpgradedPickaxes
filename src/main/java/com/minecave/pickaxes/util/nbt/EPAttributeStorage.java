@@ -10,15 +10,11 @@ import java.util.UUID;
  * Store meta-data in an ItemStack as attributes.
  * Thank you to Kristian & aadnk & Comphenix for allowing me to use these <3
  */
-public class AttributeStorage {
+public class EPAttributeStorage {
     private final UUID      uniqueKey;
     private       ItemStack target;
 
-    static {
-        Attributes.Attribute.newBuilder();
-    }
-
-    private AttributeStorage(ItemStack target, UUID uniqueKey) {
+    private EPAttributeStorage(ItemStack target, UUID uniqueKey) {
         this.target = Preconditions.checkNotNull(target, "target cannot be NULL");
         this.uniqueKey = Preconditions.checkNotNull(uniqueKey, "uniqueKey cannot be NULL");
     }
@@ -31,12 +27,12 @@ public class AttributeStorage {
      * @param target    - the item stack where the data will be stored.
      * @param uniqueKey - the unique key used to retrieve the correct data.
      */
-    public static AttributeStorage newTarget(ItemStack target, UUID uniqueKey) {
-        return new AttributeStorage(target, uniqueKey);
+    public static EPAttributeStorage newTarget(ItemStack target, UUID uniqueKey) {
+        return new EPAttributeStorage(target, uniqueKey);
     }
 
-    public static AttributeStorage newTarget(ItemStack target, String uniqueKey) {
-        return new AttributeStorage(target, UUID.fromString(uniqueKey));
+    public static EPAttributeStorage newTarget(ItemStack target, String uniqueKey) {
+        return new EPAttributeStorage(target, UUID.fromString(uniqueKey));
     }
 
     /**
@@ -46,7 +42,7 @@ public class AttributeStorage {
      * @return The stored data, or defaultValue if not found.
      */
     public String getData(String defaultValue) {
-        Attributes.Attribute current = getAttribute(new Attributes(target), uniqueKey);
+        EPAttribute current = getAttribute(new EPAttributes(target), uniqueKey);
         return current != null ? current.getName() : defaultValue;
     }
 
@@ -56,23 +52,23 @@ public class AttributeStorage {
      * @param data - the data.
      */
     public void setData(String data) {
-        Attributes attributes = new Attributes(target);
-        Attributes.Attribute current = getAttribute(attributes, uniqueKey);
+        EPAttributes EPAttributes = new EPAttributes(target);
+        EPAttribute current = getAttribute(EPAttributes, uniqueKey);
 
         if (current == null) {
-            attributes.add(
-                    Attributes.Attribute.newBuilder().
+            EPAttributes.add(
+                    new EPAttributeBuilder().uuid(UUID.randomUUID()).operation(EPOperation.ADD_NUMBER).
                             name(data).
                             amount(0).
                             uuid(uniqueKey).
-                            operation(Attributes.Operation.ADD_NUMBER).
-                            type(Attributes.AttributeType.GENERIC_ATTACK_DAMAGE).
+                            operation(EPOperation.ADD_NUMBER).
+                            type(EPAttributeType.GENERIC_ATTACK_DAMAGE).
                             build()
             );
         } else {
             current.setName(data);
         }
-        this.target = attributes.getStack();
+        this.target = EPAttributes.getStack();
     }
 
     /**
@@ -87,14 +83,14 @@ public class AttributeStorage {
     /**
      * Retrieve an attribute by UUID.
      *
-     * @param attributes - the attribute.
+     * @param EPAttributes - the attribute.
      * @param id         - the UUID to search for.
      * @return The first attribute associated with this UUID, or NULL.
      */
-    private Attributes.Attribute getAttribute(Attributes attributes, UUID id) {
-        for (Attributes.Attribute attribute : attributes.values()) {
-            if (Objects.equal(attribute.getUUID(), id)) {
-                return attribute;
+    private EPAttribute getAttribute(EPAttributes EPAttributes, UUID id) {
+        for (EPAttribute EPAttribute : EPAttributes.values()) {
+            if (Objects.equal(EPAttribute.getUUID(), id)) {
+                return EPAttribute;
             }
         }
         return null;

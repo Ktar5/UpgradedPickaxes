@@ -42,37 +42,38 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class NbtFactory {
+public class EPNbtFactory {
     // Convert between NBT id and the equivalent class in java
     private static final BiMap<Integer, Class<?>> NBT_CLASS = HashBiMap.create();
     private static final BiMap<Integer, NbtType>  NBT_ENUM  = HashBiMap.create();
     // Shared instance
-    private static NbtFactory INSTANCE;
+    private static EPNbtFactory INSTANCE;
     private final Field[] DATA_FIELD = new Field[12];
     // The NBT base class
-    private Class<?> BASE_CLASS;
-    private Class<?> COMPOUND_CLASS;
-    private Class<?> STREAM_TOOLS;
-    private Class<?> READ_LIMITER_CLASS;
-    private Method   NBT_CREATE_TAG;
-    private Method   NBT_GET_TYPE;
-    private Field    NBT_LIST_TYPE;
+    private Class<?>           BASE_CLASS;
+    private Class<?>           COMPOUND_CLASS;
+    private Class<?>           STREAM_TOOLS;
+    private Class<?>           READ_LIMITER_CLASS;
+    private Method             NBT_CREATE_TAG;
+    private Method             NBT_GET_TYPE;
+    private Field              NBT_LIST_TYPE;
     // CraftItemStack
-    private Class<?> CRAFT_STACK;
-    private Field    CRAFT_HANDLE;
-    private Field    STACK_TAG;
+    private Class<?>           CRAFT_STACK;
+    private Field              CRAFT_HANDLE;
+    private Field              STACK_TAG;
     // Loading/saving compounds
     private LoadCompoundMethod LOAD_COMPOUND;
     private Method             SAVE_COMPOUND;
+
     /**
      * Construct an instance of the NBT factory by deducing the class of NBTBase.
      */
-    private NbtFactory() {
+    private EPNbtFactory() {
         if (BASE_CLASS == null) {
             try {
                 // Keep in mind that I do use hard-coded field names - but it's okay as long as we're dealing
                 // with CraftBukkit or its derivatives. This does not work in MCPC+ however.
-                ClassLoader loader = NbtFactory.class.getClassLoader();
+                ClassLoader loader = EPNbtFactory.class.getClassLoader();
 
                 String packageName = getPackageName();
                 Class<?> offlinePlayer = loader.loadClass(packageName + ".CraftOfflinePlayer");
@@ -108,9 +109,9 @@ public class NbtFactory {
      *
      * @return The factory.
      */
-    private static NbtFactory get() {
+    private static EPNbtFactory get() {
         if (INSTANCE == null)
-            INSTANCE = new NbtFactory();
+            INSTANCE = new EPNbtFactory();
         return INSTANCE;
     }
 
@@ -553,7 +554,7 @@ public class NbtFactory {
         GZIP_COMPRESSION,
     }
 
-    private enum NbtType {
+    public enum NbtType {
         TAG_END(0, Void.class),
         TAG_BYTE(1, byte.class),
         TAG_SHORT(2, short.class),
@@ -605,7 +606,7 @@ public class NbtFactory {
      *
      * @author Kristian
      */
-    private static abstract class LoadCompoundMethod {
+    public static abstract class LoadCompoundMethod {
         protected Method staticMethod;
 
         protected void setMethod(Method method) {
@@ -625,7 +626,7 @@ public class NbtFactory {
     /**
      * Load an NBT compound from the NBTCompressedStreamTools static method in 1.7.2 - 1.7.5
      */
-    private static class LoadMethodWorldUpdate extends LoadCompoundMethod {
+    public static class LoadMethodWorldUpdate extends LoadCompoundMethod {
         public LoadMethodWorldUpdate(Class<?> streamClass) {
             setMethod(getMethod(Modifier.STATIC, 0, streamClass, null, DataInput.class));
         }
@@ -639,7 +640,7 @@ public class NbtFactory {
     /**
      * Load an NBT compound from the NBTCompressedStreamTools static method in 1.7.8
      */
-    private static class LoadMethodSkinUpdate extends LoadCompoundMethod {
+    public static class LoadMethodSkinUpdate extends LoadCompoundMethod {
         private Object readLimiter;
 
         public LoadMethodSkinUpdate(Class<?> streamClass, Class<?> readLimiterClass) {
@@ -676,8 +677,8 @@ public class NbtFactory {
      * <p/>
      * See also:
      * <ul>
-     * <li>{@link NbtFactory#createCompound()}</li>
-     * <li>{@link NbtFactory#fromCompound(Object)}</li>
+     * <li>{@link EPNbtFactory#createCompound()}</li>
+     * <li>{@link EPNbtFactory#fromCompound(Object)}</li>
      * </ul>
      *
      * @author Kristian
@@ -840,8 +841,8 @@ public class NbtFactory {
      * Represents a root NBT list.
      * See also:
      * <ul>
-     * <li>{@link NbtFactory#createNbtList()}</li>
-     * <li>{@link NbtFactory#fromList(Object)}</li>
+     * <li>{@link EPNbtFactory#createNbtList()}</li>
+     * <li>{@link EPNbtFactory#fromList(Object)}</li>
      * </ul>
      *
      * @author Kristian
@@ -857,7 +858,7 @@ public class NbtFactory {
      *
      * @author Kristian
      */
-    private final class CachedNativeWrapper {
+    public final class CachedNativeWrapper {
         // Don't recreate wrapper objects
         private final ConcurrentMap<Object, Object> cache = new MapMaker().weakKeys().makeMap();
 
@@ -883,7 +884,7 @@ public class NbtFactory {
      *
      * @author Kristian
      */
-    private class ConvertedMap extends AbstractMap<String, Object> implements Wrapper {
+    public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper {
         private final Object              handle;
         private final Map<String, Object> original;
 
@@ -989,7 +990,7 @@ public class NbtFactory {
      *
      * @author Kristian
      */
-    private class ConvertedList extends AbstractList<Object> implements Wrapper {
+    public class ConvertedList extends AbstractList<Object> implements Wrapper {
         private final Object handle;
 
         private final List<Object> original;

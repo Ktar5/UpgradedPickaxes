@@ -12,7 +12,7 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.item.ItemSerialization;
-import com.minecave.pickaxes.util.nbt.AttributeStorage;
+import com.minecave.pickaxes.util.nbt.EPAttributeStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -63,14 +63,14 @@ public class PItemSerializer {
 
     public static PItem<?> deserializePItem(ItemStack item) {
         EnhancedPicks plugin = EnhancedPicks.getInstance();
-        AttributeStorage storage;
+        EPAttributeStorage storage;
 
         //TYPE
-        storage = AttributeStorage.newTarget(item, TYPE);
+        storage = EPAttributeStorage.newTarget(item, TYPE);
         PItemType pItemType = PItemType.valueOf(storage.getData("PICK"));
 
         //PITEM_SETTINGS
-        storage = AttributeStorage.newTarget(storage.getTarget(), PITEM_SETTINGS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), PITEM_SETTINGS);
         String pItemSettingsKey = storage.getData("");
         if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
             return null;
@@ -94,23 +94,23 @@ public class PItemSerializer {
         plugin.getPItemManager().addPItem(pItem);
 
         //XP
-        storage = AttributeStorage.newTarget(storage.getTarget(), XP);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), XP);
         pItem.setXp(Integer.parseInt(storage.getData("0")));
 
         //POINTS
-        storage = AttributeStorage.newTarget(storage.getTarget(), POINTS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), POINTS);
         pItem.setPoints(Integer.parseInt(storage.getData("1")));
 
         //CUR_LEVEL
-        storage = AttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
         pItem.setLevel(plugin.getLevelManager().getLevel(Integer.parseInt(storage.getData("1"))));
 
         //MAX_LEVEL
-        storage = AttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
         pItem.setMaxLevel(plugin.getLevelManager().getLevel(Integer.parseInt(storage.getData("10"))));
 
         //AVAILABLE_SKILL
-        storage = AttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
         String availSkills = storage.getData("");
         if (availSkills != null && !availSkills.equals("")) {
             String[] skillSplit = availSkills.split(";");
@@ -120,7 +120,7 @@ public class PItemSerializer {
         }
 
         //PURCHASED_SKILL
-        storage = AttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
         String purSkills = storage.getData("");
         if (purSkills != null && !purSkills.equals("")) {
             String[] skillSplit = purSkills.split(";");
@@ -130,7 +130,7 @@ public class PItemSerializer {
         }
 
         //CUR_SKILL
-        storage = AttributeStorage.newTarget(storage.getTarget(), CUR_SKILL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_SKILL);
         String curSkill = storage.getData("");
         if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
             pItem.setCurrentSkill(null);
@@ -139,11 +139,11 @@ public class PItemSerializer {
         }
 
         //BLOCKS
-        storage = AttributeStorage.newTarget(storage.getTarget(), BLOCKS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), BLOCKS);
         pItem.setBlocksBroken(Integer.parseInt(storage.getData("0")));
 
         //ENCHANTS
-        storage = AttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
         String aEnchants = storage.getData("");
         if (aEnchants != null && !aEnchants.equals("")) {
             String[] aEnchantSplit = aEnchants.split(";");
@@ -169,7 +169,7 @@ public class PItemSerializer {
         }
 
         //DURABILITY
-        storage = AttributeStorage.newTarget(storage.getTarget(), DURABILITY);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), DURABILITY);
         short dura = Short.parseShort(storage.getData("0"));
 
         ItemStack temp = storage.getTarget();
@@ -185,35 +185,35 @@ public class PItemSerializer {
 
     public static <T extends Event> ItemStack serializePItem(PItem<T> pItem) {
         EnhancedPicks plugin = EnhancedPicks.getInstance();
-        AttributeStorage storage;
+        EPAttributeStorage storage;
         Map<String, String> tagMap = new HashMap<>();
 
         //TYPE
-        storage = AttributeStorage.newTarget(pItem.getItem(), TYPE);
+        storage = EPAttributeStorage.newTarget(pItem.getItem(), TYPE);
         storage.setData(pItem.getType().name());
 
         //PITEM_SETTINGS
-        storage = AttributeStorage.newTarget(storage.getTarget(), PITEM_SETTINGS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), PITEM_SETTINGS);
         storage.setData(pItem.getPItemSettings());
 
         //XP
-        storage = AttributeStorage.newTarget(storage.getTarget(), XP);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), XP);
         storage.setData(String.valueOf(pItem.getXp()));
 
         //POINTS
-        storage = AttributeStorage.newTarget(storage.getTarget(), POINTS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), POINTS);
         storage.setData(String.valueOf(pItem.getPoints()));
 
         //CUR_LEVEL
-        storage = AttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
         storage.setData(String.valueOf(pItem.getLevel().getId()));
 
         //MAX_LEVEL
-        storage = AttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
         storage.setData(String.valueOf(pItem.getMaxLevel().getId()));
 
         //AVAILABLE_SKILL
-        storage = AttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
         StringBuilder availSkills = new StringBuilder("");
         for (PSkill pSkill : pItem.getAvailableSkills()) {
             availSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append(";");
@@ -221,7 +221,7 @@ public class PItemSerializer {
         storage.setData(availSkills.toString());
 
         //PURCHASED_SKILL
-        storage = AttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
         StringBuilder purSkills = new StringBuilder("");
         for (PSkill pSkill : pItem.getPurchasedSkills()) {
             purSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append(";");
@@ -229,16 +229,16 @@ public class PItemSerializer {
         storage.setData(purSkills.toString());
 
         //CUR_SKILL
-        storage = AttributeStorage.newTarget(storage.getTarget(), CUR_SKILL);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_SKILL);
         storage.setData(pItem.getCurrentSkill() == null ? "null" :
                 plugin.getPSkillManager().getPSkillKey(pItem.getCurrentSkill()));
 
         //BLOCKS
-        storage = AttributeStorage.newTarget(storage.getTarget(), BLOCKS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), BLOCKS);
         storage.setData(String.valueOf(pItem.getBlocksBroken()));
 
         //ENCHANTS
-        storage = AttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
         StringBuilder enchants = new StringBuilder("");
         for (PEnchant pEnchant : pItem.getEnchants()) {
             enchants.append(pEnchant.getName().toLowerCase()).append(":")
@@ -248,7 +248,7 @@ public class PItemSerializer {
         storage.setData(enchants.toString());
 
         //DURABILITY
-        storage = AttributeStorage.newTarget(storage.getTarget(), DURABILITY);
+        storage = EPAttributeStorage.newTarget(storage.getTarget(), DURABILITY);
         storage.setData(String.valueOf(pItem.getItem().getDurability()));
 
         return storage.getTarget();

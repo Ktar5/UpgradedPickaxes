@@ -21,7 +21,7 @@ public class BlockDrop extends Drop {
             level = EnhancedPicks.getInstance().getDropManager().getBlockDrops().size();
         }
         return EnhancedPicks.getInstance().getDropManager().getBlockDrops()
-                .get(ThreadLocalRandom.current().nextInt(level - 1));
+                .get(ThreadLocalRandom.current().nextInt(level - 1) + 1);
     }
 
     @Override

@@ -39,10 +39,15 @@ public class Ice extends PSkill {
             return;
         }
         List<Block> blocks = getRegionBlocks(player.getLocation(), radius);
+        List<Block> broken = new ArrayList<>();
 
+        int curCount = 0;
         for (Block block : blocks) {
             if (!this.wg.canBuild(event.getPlayer(), block)) {
                 continue;
+            }
+            if(curCount >= 30) {
+                break;
             }
             Collection<ItemStack> items = block.getDrops(player.getItemInHand());
             ItemStack[] array = new ItemStack[items.size()];
@@ -58,13 +63,15 @@ public class Ice extends PSkill {
             player.getInventory().addItem(array);
             player.updateInventory();
             block.setType(Material.ICE);
+            broken.add(block);
+            curCount++;
         }
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 player.playSound(event.getPlayer().getLocation(), Sound.GLASS, 3.0F, 2.0F);
-                for (Block block : blocks) {
+                for (Block block : broken) {
                     if (!wg.canBuild(event.getPlayer(), block)) {
                         continue;
                     }

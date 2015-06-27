@@ -240,11 +240,7 @@ public class PItem<E extends Event> {
     }
 
     public void setItem(ItemStack item) {
-//        if (EnhancedPicks.getInstance().getPItemManager().getPItemMap().containsKey(this.item)) {
-//            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(this.item);
-//        }
-//        this.item = item;
-//        EnhancedPicks.getInstance().getPItemManager().getPItemMap().put(item, this);
+        this.item = item;
     }
 
     public boolean hasEnchant(String name) {
