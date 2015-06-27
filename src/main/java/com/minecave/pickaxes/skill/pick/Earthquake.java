@@ -44,8 +44,16 @@ public class Earthquake extends PSkill {
         int playerX = location.getBlockX();
         int playerZ = location.getBlockZ();
         int y = location.getBlockY();
+        int curCount = 0;
+        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
         for (int x = playerX - radius; x <= (playerX + radius); x++) {
+            if(curCount >= cap) {
+                break;
+            }
             for (int z = playerZ - radius; z <= (playerZ + radius); z++) {
+                if(curCount >= cap) {
+                    break;
+                }
                 Location loc = new Location(location.getWorld(), x, y, z);
                 if(ThreadLocalRandom.current().nextInt(10) < 5) {
                     continue;
@@ -77,6 +85,7 @@ public class Earthquake extends PSkill {
                 fallingBlockList.add(fallingBlock);
                 //not sure if they want this
                 loc.getBlock().setType(Material.AIR);
+                curCount++;
             }
         }
         this.add(player);

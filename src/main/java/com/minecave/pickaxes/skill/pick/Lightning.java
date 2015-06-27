@@ -47,14 +47,25 @@ public class Lightning extends PSkill {
         World world = location.getWorld();
         world.strikeLightningEffect(location);
         player.sendMessage("location: " + location);
+        int curCount = 0;
+        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
         for(int x = -depth; x <= depth; x++) {
+            if(curCount >= cap) {
+                break;
+            }
             for(int z = -depth; z <= depth; z++) {
+                if(curCount >= cap) {
+                    break;
+                }
                 if(Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(depth, 2)) {
                     int d = depth / 2;
                     if(d == 0) {
                         d = 1;
                     }
                     for (int y = 0; y < d; y++) {
+                        if(curCount >= cap) {
+                            break;
+                        }
                         if (ThreadLocalRandom.current().nextInt(10) > 4) {
                             Location loc = location.clone().add(x, -y, z);
                             if (!this.wg.canBuild(event.getPlayer(), loc)) {
@@ -77,6 +88,7 @@ public class Lightning extends PSkill {
                             player.getInventory().addItem(array);
                             loc.getBlock().setType(Material.AIR);
                             player.updateInventory();
+                            curCount++;
                         }
                     }
                 }

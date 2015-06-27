@@ -51,7 +51,11 @@ public class TnTEnchant extends PEnchant {
         } else {
             rad = 3;
         }
-        for (Block b : getRegionBlocks(location, rad)) {
+        int curCount = this.getLevel();
+        for (Block b : getRegionBlocks(location, rad * (Math.random() * 2))) {
+            if(curCount<= 0) {
+                break;
+            }
             Location loc = b.getLocation();
             if (!wg.canBuild(event.getPlayer(), loc) ||
                     loc.getBlock().getType() == Material.BEDROCK ||
@@ -76,6 +80,7 @@ public class TnTEnchant extends PEnchant {
                 player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
                 player.playEffect(location, Effect.EXPLOSION_HUGE, 0);
             }
+            curCount--;
         }
     }
 
@@ -107,7 +112,7 @@ public class TnTEnchant extends PEnchant {
                     if(blocks.size() == this.getLevel()) {
                         return blocks;
                     }
-                    if (ThreadLocalRandom.current().nextInt(100) > (90 - this.getLevel() * 10)) {
+                    if (ThreadLocalRandom.current().nextInt(100) > (50 - this.getLevel() * 10)) {
                         Location l = loc1.clone().add(x, y, z);
                         if (!l.getChunk().isLoaded()) {
                             continue;

@@ -59,12 +59,17 @@ public class Bomber extends PSkill {
                 if (!wg.canBuild(event.getPlayer(), location)) {
                     return;
                 }
+                int curCount = 0;
+                int cap = ThreadLocalRandom.current().nextInt(30) + 1;
                 for(Block b : getRegionBlocks(location, amount)) {
                     Location loc = b.getLocation();
                     if (!wg.canBuild(event.getPlayer(), loc) ||
                             loc.getBlock().getType() == Material.BEDROCK ||
                             loc.getBlock().getType() == Material.AIR) {
                         continue;
+                    }
+                    if(curCount >= cap) {
+                        break;
                     }
                     Collection<ItemStack> items = loc.getBlock().getDrops();
                     ItemStack[] array = new ItemStack[items.size()];
@@ -82,6 +87,7 @@ public class Bomber extends PSkill {
                     loc.getBlock().setType(Material.AIR);
                     player.playSound(loc, Sound.EXPLODE, 1.0F, 1.0F);
                     player.playEffect(loc, Effect.LARGE_SMOKE, 1);
+                    curCount++;
                 }
             }
         }.runTaskLater(EnhancedPicks.getInstance(), ticks);
