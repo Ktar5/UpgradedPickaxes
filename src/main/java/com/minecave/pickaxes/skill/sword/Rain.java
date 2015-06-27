@@ -54,6 +54,7 @@ public class Rain extends PSkill {
                         Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, 1, 0), 1f, 12);
                         arrow.setBounce(false);
                         arrow.setShooter(player);
+                        arrow.setCustomName("rain");
                     }
                 }
                 count += 1;

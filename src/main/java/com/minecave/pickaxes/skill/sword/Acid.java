@@ -8,10 +8,12 @@
  */
 package com.minecave.pickaxes.skill.sword;
 
+import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.skill.PSkill;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 public class Acid extends PSkill {
@@ -37,6 +39,7 @@ public class Acid extends PSkill {
             enderPearl.setVelocity(clone);
             enderPearl.setCustomName("acid");
             enderPearl.setCustomNameVisible(false);
+            enderPearl.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
         }
     }
 

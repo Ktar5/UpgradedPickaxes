@@ -254,7 +254,7 @@ public class PItemSerializer {
         return storage.getTarget();
     }
 
-    public static <E extends Event> String base64PItems(List<PItem<E>> pItems) throws UnsupportedEncodingException {
+    public static <E extends Event> String base64PItems(Collection<PItem<E>> pItems) throws UnsupportedEncodingException {
         if (pItems == null || pItems.isEmpty()) {
             return "";
         }
@@ -310,7 +310,6 @@ public class PItemSerializer {
             if (pItem == null) {
                 return null;
             }
-            plugin.getPItemManager().addPItem(pItem);
             pItem.getItem().setDurability(Short.parseShort(durability));
 
             pItem.setXp(Integer.parseInt(xp));
@@ -367,6 +366,10 @@ public class PItemSerializer {
             clone.setData(temp.getData());
             clone.setDurability(temp.getDurability());
             pItem.setItem(clone);
+
+            for (PEnchant pEnchant : pItem.getEnchants()) {
+                pEnchant.apply(pItem);
+            }
 
             pItemList.add(pItem);
             EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);

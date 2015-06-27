@@ -26,11 +26,9 @@ public class FireballSkill extends PSkill {
         if (!this.wg.canBuild(event.getPlayer(), player.getEyeLocation())) {
             return;
         }
-        Location spawn = player.getEyeLocation().toVector()
-                .add(player.getEyeLocation().getDirection().multiply(3))
-                .toLocation(player.getWorld());
+        Location spawn = player.getLocation().getDirection().toLocation(player.getWorld());
         Fireball fireball = spawn.getWorld().spawn(spawn, Fireball.class);
-        fireball.setDirection(player.getEyeLocation().toVector().multiply(2));
+        fireball.setDirection(player.getLocation().getDirection().multiply(2));
         fireball.setBounce(false);
         fireball.setIsIncendiary(false);
         fireball.setYield(0);

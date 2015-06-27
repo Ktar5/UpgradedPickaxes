@@ -35,7 +35,7 @@ public class Ice extends PSkill {
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
-        if(pItem == null) {
+        if (pItem == null) {
             return;
         }
         List<Block> blocks = getRegionBlocks(player.getLocation(), radius);
@@ -47,13 +47,13 @@ public class Ice extends PSkill {
             if (!this.wg.canBuild(event.getPlayer(), block)) {
                 continue;
             }
-            if(curCount >= cap) {
+            if (curCount >= cap) {
                 break;
             }
             Collection<ItemStack> items = block.getDrops(player.getItemInHand());
             ItemStack[] array = new ItemStack[items.size()];
             int i = 0;
-            for(ItemStack stack : items) {
+            for (ItemStack stack : items) {
                 stack.setType(OreConversion.convertToItem(stack.getType()));
                 array[i++] = stack;
             }
@@ -85,15 +85,15 @@ public class Ice extends PSkill {
 
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
-        for (double x = -radius; x <= radius; x++) {
+        int d = (int) (radius / 2);
+        if (d == 0) {
+            d = 1;
+        }
+        for(int y = 0; y >= -d; y--) {
             for (double z = -radius; z <= radius; z++) {
-                if(Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
-                    int d = (int) (radius / 2);
-                    if(d == 0) {
-                        d = 1;
-                    }
-                    if(ThreadLocalRandom.current().nextInt(10) > 4) {
-                        for (double y = -radius; y <= d; y++) {
+                for (double x = -radius; x <= radius; x++) {
+                    if (ThreadLocalRandom.current().nextInt(10) > 4) {
+                        if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
                             Location l = loc1.clone().add(x, y, z);
                             if (!l.getChunk().isLoaded()) {
                                 continue;

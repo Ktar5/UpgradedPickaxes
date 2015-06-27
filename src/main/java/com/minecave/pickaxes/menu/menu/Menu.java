@@ -16,8 +16,8 @@
 package com.minecave.pickaxes.menu.menu;
 
 import com.minecave.pickaxes.menu.items.Item;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,8 +30,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class Menu implements Listener {
+
     private static final JavaPlugin OWNER = JavaPlugin.getProvidingPlugin(Menu.class);
 
     private String    name;
@@ -39,6 +41,7 @@ public class Menu implements Listener {
     private Inventory inventory;
     protected Map<Integer, Item> items = new HashMap<>(); // map for quick lookup
     private Menu parent;
+    private BiConsumer<Player, Integer> lowerInventoryListener = null;
 
     protected Menu(String name, int size) { // allow for sub classes
         this.name = ChatColor.translateAlternateColorCodes('&', name);
@@ -54,6 +57,7 @@ public class Menu implements Listener {
 
     /**
      * The name of this menu, with translated color codes
+     *
      * @return The name
      */
     public String name() {
@@ -62,6 +66,7 @@ public class Menu implements Listener {
 
     /**
      * The size of this menu
+     *
      * @return The size of this menu
      */
     public int size() {
@@ -70,6 +75,7 @@ public class Menu implements Listener {
 
     /**
      * The inventory representation of this menu
+     *
      * @return The inventory representation
      */
     public Inventory inventory() {
@@ -78,6 +84,7 @@ public class Menu implements Listener {
 
     /**
      * Returns the item at specified index
+     *
      * @param index
      * @return Found item
      */
@@ -87,6 +94,7 @@ public class Menu implements Listener {
 
     /**
      * Returns the item at specified coordinates, where x is on the horizontal axis and z is on the vertical axis.
+     *
      * @param x The x coordinate
      * @param z The z coordinate
      * @return Found item
@@ -97,8 +105,9 @@ public class Menu implements Listener {
 
     /**
      * Sets the item at the specified index
+     *
      * @param index Index of the item you wish to set
-     * @param item The item you wish to set the index as
+     * @param item  The item you wish to set the index as
      */
     public Menu setItem(int index, Item item) {
         if (item == null) {
@@ -113,8 +122,9 @@ public class Menu implements Listener {
 
     /**
      * Sets the item at the specified coordinates, where x is on the horizontal axis and z is on the vertical axis.
-     * @param x The x coordinate
-     * @param z The z coordinate
+     *
+     * @param x    The x coordinate
+     * @param z    The z coordinate
      * @param item The item you wish to set the index as
      */
     public Menu setItem(int x, int z, Item item) {
@@ -135,23 +145,24 @@ public class Menu implements Listener {
 
     /**
      * Show the menu to the inputted players
+     *
      * @param players The players you wish to show the menu too
      */
-    public void open(Player... players) {
+    public void showTo(Player... players) {
         for (Player p : players) {
             p.openInventory(inventory);
         }
     }
 
     public void close(Player... players) {
-        for(Player p : players) {
+        for (Player p : players) {
             p.closeInventory();
         }
     }
 
     @EventHandler
     public void onExit(InventoryCloseEvent event) {
-        if(!event.getInventory().equals(inventory))
+        if (!event.getInventory().equals(inventory))
             return;
 
         if (parent != null) {
@@ -166,26 +177,44 @@ public class Menu implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if(!event.getInventory().equals(inventory))
+        if (!event.getInventory().equals(inventory))
             return;
+        // RawSlow < topinv size == top inv
+        if (event.getRawSlot() >= event.getView().getTopInventory().getSize() && this.lowerInventoryListener != null) {
+            lowerInventoryListener.accept((Player) event.getWhoClicked(), event.getSlot());
+            event.setCancelled(true);
+            return;
+        }
 
-        if(event.getRawSlot() >= size)
+        if (event.getRawSlot() >= size)
             return;
 
         event.setCancelled(true);
 
-        if(!items.containsKey(event.getSlot())) {
+        if (!items.containsKey(event.getSlot())) {
             return;
         }
-
-        items.get(event.getSlot()).act((Player) event.getWhoClicked(), event.getClick());
+        Item item = items.get(event.getSlot());
+        item.act((Player) event.getWhoClicked(), event.getClick());
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        if(!event.getInventory().equals(inventory))
+        if (!event.getInventory().equals(inventory))
             return;
 
         event.setCancelled(true);
+    }
+
+    public Map<Integer, Item> getItems() {
+        return this.items;
+    }
+
+    public BiConsumer<Player, Integer> getLowerInventoryListener() {
+        return this.lowerInventoryListener;
+    }
+
+    public void setLowerInventoryListener(BiConsumer<Player, Integer> lowerInventoryListener) {
+        this.lowerInventoryListener = lowerInventoryListener;
     }
 }

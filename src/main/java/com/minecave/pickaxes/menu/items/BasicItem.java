@@ -26,7 +26,7 @@ public class BasicItem implements Item {
     private ItemListener listener;
     private ItemStack    stack;
 
-    private BasicItem(ItemStack stack, ItemListener listener) {
+    protected BasicItem(ItemStack stack, ItemListener listener) {
         this.stack = stack;
         this.listener = listener;
     }

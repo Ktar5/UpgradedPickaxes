@@ -67,6 +67,7 @@ public class PEnchantManager {
                         }
                     }
             }
+            enchantMap.keySet().forEach(System.out::println);
         }
     }
 

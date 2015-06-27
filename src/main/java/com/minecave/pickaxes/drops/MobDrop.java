@@ -21,7 +21,7 @@ public class MobDrop extends Drop {
             level = EnhancedPicks.getInstance().getDropManager().getMobDrops().size();
         }
         return EnhancedPicks.getInstance().getDropManager().getMobDrops()
-                .get(ThreadLocalRandom.current().nextInt(level - 1));
+                .get(ThreadLocalRandom.current().nextInt(level - 1) + 1);
     }
 
     @Override

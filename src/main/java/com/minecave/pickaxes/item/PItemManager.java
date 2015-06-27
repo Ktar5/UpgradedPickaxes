@@ -18,6 +18,7 @@ import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ItemBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -271,8 +272,13 @@ public class PItemManager {
                     pItem = new PItem<>(pClass, this.name, type, builder.build());
                     pItem.setAction((p, e) -> {
                         EntityDamageByEntityEvent attackEvent = (EntityDamageByEntityEvent) e;
-                        int xp = MobValue.getXp(attackEvent.getEntityType());
-                        p.incrementXp(xp, (Player) attackEvent.getDamager());
+                        if(attackEvent.getEntity() instanceof LivingEntity) {
+                            LivingEntity le = (LivingEntity) attackEvent.getEntity();
+                            if(le.getHealth() <= attackEvent.getFinalDamage()) {
+                                int xp = MobValue.getXp(attackEvent.getEntityType());
+                                p.incrementXp(xp, (Player) attackEvent.getDamager());
+                            }
+                        }
                         p.activateEnchants(attackEvent);
                         p.update((Player) attackEvent.getDamager());
                     });

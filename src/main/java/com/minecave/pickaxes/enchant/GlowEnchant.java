@@ -36,6 +36,16 @@ public class GlowEnchant extends Enchantment {
         return true;
     }
 
+    public static boolean remove(final ItemStack itemStack) {
+        if(itemStack == null) {
+            return false;
+        }
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.removeEnchant(instance);
+        itemStack.setItemMeta(meta);
+        return true;
+    }
+
     public GlowEnchant() {
         super(ID);
     }

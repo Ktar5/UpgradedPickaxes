@@ -11,9 +11,12 @@ package com.minecave.pickaxes.menu.menus;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.item.PItemType;
 import com.minecave.pickaxes.menu.items.BasicItem;
 import com.minecave.pickaxes.menu.items.Item;
 import com.minecave.pickaxes.menu.menu.Menu;
+import com.minecave.pickaxes.menu.menu.ScrollingMenu;
+import com.minecave.pickaxes.player.PlayerInfo;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ItemBuilder;
@@ -22,6 +25,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Wool;
@@ -48,9 +53,11 @@ public class MenuCreator {
                                     ChatColor.GRAY + "Click to view all your current pickaxes.")
                             .build();
                     Item item = BasicItem.create(chest, (p, c) -> {
-                        Menu menu = createPickMenu(p);
-                        menu.setParent(mainPick);
-                        menu.open(p);
+                        ScrollingMenu menu = createPickMenu(p);
+                        if (menu != null) {
+                            menu.setParent(mainPick);
+                            menu.showTo(p);
+                        }
                     });
                     mainPick.setItem(i, item);
                     break;
@@ -64,7 +71,7 @@ public class MenuCreator {
                         Menu menu = createUpgradesMenu(p);
                         if (menu != null) {
                             menu.setParent(mainPick);
-                            menu.open(p);
+                            menu.showTo(p);
                         }
                     });
                     mainPick.setItem(i, item);
@@ -79,7 +86,7 @@ public class MenuCreator {
                         Menu menu = createSkillsMenu(p);
                         if (menu != null) {
                             menu.setParent(mainPick);
-                            menu.open(p);
+                            menu.showTo(p);
                         }
                     });
                     mainPick.setItem(i, item);
@@ -89,7 +96,7 @@ public class MenuCreator {
                     break;
             }
         }
-        mainPick.open(player);
+        mainPick.showTo(player);
     }
 
     public static void createMainSword(Player player) {
@@ -105,9 +112,11 @@ public class MenuCreator {
                                     ChatColor.GRAY + "Click to view all your current swords.")
                             .build();
                     Item item = BasicItem.create(chest, (p, c) -> {
-                        Menu menu = createSwordMenu(p);
-                        menu.setParent(mainSword);
-                        menu.open(p);
+                        ScrollingMenu menu = createSwordMenu(p);
+                        if (menu != null) {
+                            menu.setParent(mainSword);
+                            menu.showTo(p);
+                        }
                     });
                     mainSword.setItem(i, item);
                     break;
@@ -121,7 +130,7 @@ public class MenuCreator {
                         Menu menu = createUpgradesMenu(p);
                         if (menu != null) {
                             menu.setParent(mainSword);
-                            menu.open(p);
+                            menu.showTo(p);
                         }
                     });
                     mainSword.setItem(i, item);
@@ -136,7 +145,7 @@ public class MenuCreator {
                         Menu menu = createSkillsMenu(p);
                         if (menu != null) {
                             menu.setParent(mainSword);
-                            menu.open(p);
+                            menu.showTo(p);
                         }
                     });
                     mainSword.setItem(i, item);
@@ -146,19 +155,139 @@ public class MenuCreator {
                     break;
             }
         }
-        mainSword.open(player);
+        mainSword.showTo(player);
     }
 
-    public static Menu createPickMenu(Player player) {
+    public static ScrollingMenu createPickMenu(Player player) {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("pickaxeMenu", String.class, "Pickaxe Menu"));
-        return null;
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        if (info == null) {
+            return null;
+        }
+
+        ScrollingMenu menu = ScrollingMenu.create(name);
+        List<PItem<BlockBreakEvent>> picksClone = new ArrayList<>(info.getPickaxes());
+
+        int k = 0;
+        while(!picksClone.isEmpty()) {
+            PItem<BlockBreakEvent> pick = picksClone.remove(0);
+            pick.updateMeta();
+            menu.setItem(k, BasicItem.create(pick.getItem(), (p, c) -> {
+                int emptySlot = -1;
+                for (int i = 0; i < p.getInventory().getContents().length; i++) {
+                    if (p.getInventory().getItem(i) == null || p.getInventory().getItem(i).getType() == Material.AIR) {
+                        emptySlot = i;
+                        break;
+                    }
+                }
+                if (emptySlot == -1) {
+                    p.sendMessage(ChatColor.RED + "You cannot take out a pick with a full inventory.");
+                    p.closeInventory();
+                } else {
+                    info.removePickaxe(pick);
+                    pick.update(p);
+                    p.getInventory().setItem(emptySlot, pick.getItem());
+                    pick.setItem(p.getInventory().getItem(emptySlot));
+                    pick.updateManually(p, p.getInventory().getItem(emptySlot));
+                    Menu newMenu = createPickMenu(p);
+                    if (newMenu != null) {
+                        newMenu.setParent(menu.getParent());
+                        menu.setParent(null);
+                        p.closeInventory();
+                        newMenu.showTo(p);
+                    }
+                }
+            }));
+            k++;
+        }
+        menu.setLowerInventoryListener((p, i) -> {
+            ItemStack stack = p.getInventory().getItem(i);
+            PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance()
+                    .getPItemManager().getPItem(BlockBreakEvent.class, stack);
+            if (pItem == null) {
+                return;
+            }
+            if (pItem.getEClass() == BlockBreakEvent.class && pItem.getType() == PItemType.PICK) {
+                p.getInventory().setItem(i, null);
+                info.addPickaxe(pItem);
+                Menu newMenu = createPickMenu(p);
+                if (newMenu != null) {
+                    newMenu.setParent(menu.getParent());
+                    menu.setParent(null);
+                    menu.close(p);
+                    newMenu.showTo(p);
+                }
+            }
+        });
+        menu.flush();
+        return menu;
     }
 
-    public static Menu createSwordMenu(Player player) {
+    public static ScrollingMenu createSwordMenu(Player player) {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("swordMenu", String.class, "Sword Menu"));
-        return null;
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        if (info == null) {
+            return null;
+        }
+
+        ScrollingMenu menu = ScrollingMenu.create(name);
+        List<PItem<EntityDamageByEntityEvent>> swordsClone = new ArrayList<>(info.getSwords());
+
+        int k = 0;
+        while(!swordsClone.isEmpty()) {
+            PItem<EntityDamageByEntityEvent> sword = swordsClone.remove(0);
+            sword.updateMeta();
+            menu.setItem(k, BasicItem.create(sword.getItem(), (p, c) -> {
+                int emptySlot = -1;
+                for (int i = 0; i < p.getInventory().getContents().length; i++) {
+                    if (p.getInventory().getItem(i) == null || p.getInventory().getItem(i).getType() == Material.AIR) {
+                        emptySlot = i;
+                        break;
+                    }
+                }
+                if (emptySlot == -1) {
+                    p.sendMessage(ChatColor.RED + "You cannot take out a sword with a full inventory.");
+                    p.closeInventory();
+                } else {
+                    info.removeSword(sword);
+                    sword.update(p);
+                    p.getInventory().setItem(emptySlot, sword.getItem());
+                    sword.setItem(p.getInventory().getItem(emptySlot));
+                    sword.updateManually(p, p.getInventory().getItem(emptySlot));
+                    Menu newMenu = createPickMenu(p);
+                    if (newMenu != null) {
+                        newMenu.setParent(menu.getParent());
+                        menu.setParent(null);
+                        p.closeInventory();
+                        newMenu.showTo(p);
+                    }
+                }
+            }));
+            k++;
+        }
+        menu.setLowerInventoryListener((p, i) -> {
+            ItemStack stack = p.getInventory().getItem(i);
+            PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance()
+                    .getPItemManager().getPItem(EntityDamageByEntityEvent.class, stack);
+            if (pItem == null) {
+                return;
+            }
+            if (pItem.getEClass() == EntityDamageByEntityEvent.class && pItem.getType() == PItemType.PICK) {
+                p.getInventory().setItem(i, null);
+                info.addSword(pItem);
+                Menu newMenu = createPickMenu(p);
+                if (newMenu != null) {
+                    newMenu.setParent(menu.getParent());
+                    menu.setParent(null);
+                    menu.close(p);
+                    newMenu.showTo(p);
+                }
+            }
+        });
+        menu.flush();
+        return menu;
     }
 
     public static Menu createUpgradesMenu(Player player) {
@@ -180,6 +309,7 @@ public class MenuCreator {
     }
 
     private static void updateMenuItems(Menu menu, List<Item> refreshed) {
+//        menu.getItems().clear();
         for (int i = 0; i < menu.size(); i++) {
             if (i < refreshed.size()) {
                 menu.setItem(i, refreshed.get(i));

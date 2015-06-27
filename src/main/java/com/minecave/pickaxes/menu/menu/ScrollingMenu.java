@@ -36,9 +36,9 @@ import java.util.Map;
  * When slots are set, your indexes are added by 10. Moreover, slot at (0,0) are at position (1,0) for the inventory or
  * slot at the index 0 are at the position 9.
  *
- * @see io.mazenmc.menuapi.menu.ScrollingMenu#flush()
  */
 public class ScrollingMenu extends Menu {
+
     private static final ItemStack SCROLL = new ItemStack(Material.LADDER);
 
     private Map<Integer, Item> extendedMenu = new HashMap<>();
@@ -179,4 +179,5 @@ public class ScrollingMenu extends Menu {
         UP,
         DOWN
     }
+
 }

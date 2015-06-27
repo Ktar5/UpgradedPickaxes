@@ -44,16 +44,16 @@ public class TnTEnchant extends PEnchant {
         Block block = event.getBlock();
         Location location = block.getLocation();
         int rad = 1;
-        if(this.getLevel() >= 1 && this.getLevel() <= 3) {
+        if (this.getLevel() >= 1 && this.getLevel() <= 3) {
             rad = 1;
-        } else if(this.getLevel() > 3 && this.getLevel() <= 6) {
+        } else if (this.getLevel() > 3 && this.getLevel() <= 6) {
             rad = 2;
         } else {
             rad = 3;
         }
-        int curCount = this.getLevel();
+        int curCount = this.getLevel() * 2;
         for (Block b : getRegionBlocks(location, rad * (Math.random() * 2))) {
-            if(curCount<= 0) {
+            if (curCount <= 0) {
                 break;
             }
             Location loc = b.getLocation();
@@ -92,7 +92,7 @@ public class TnTEnchant extends PEnchant {
         Player player = (Player) event.getDamager();
         int radius = this.getLevel() * 2;
         player.getNearbyEntities(radius, radius, radius).stream()
-                .filter(ent -> ent instanceof LivingEntity)
+                .filter(ent -> ent instanceof LivingEntity && !(ent instanceof Player))
                 .forEach(ent -> ((LivingEntity) ent).damage(0.5D * this.getLevel()));
     }
 
@@ -109,18 +109,16 @@ public class TnTEnchant extends PEnchant {
         for (double x = 0; x <= radius; x++) {
             for (double z = 0; z <= radius; z++) {
                 for (double y = 0 / 2; y <= radius / 2; y++) {
-                    if(blocks.size() == this.getLevel()) {
+                    if (blocks.size() == this.getLevel()) {
                         return blocks;
                     }
-                    if (ThreadLocalRandom.current().nextInt(100) > (50 - this.getLevel() * 10)) {
-                        Location l = loc1.clone().add(x, y, z);
-                        if (!l.getChunk().isLoaded()) {
-                            continue;
-                        }
-                        Block b = l.getBlock();
-                        if (b.getType() != Material.AIR && b.getType().isBlock()) {
-                            blocks.add(b);
-                        }
+                    Location l = loc1.clone().add(x, y, z);
+                    if (!l.getChunk().isLoaded()) {
+                        continue;
+                    }
+                    Block b = l.getBlock();
+                    if (b.getType() != Material.AIR && b.getType().isBlock()) {
+                        blocks.add(b);
                     }
                 }
             }

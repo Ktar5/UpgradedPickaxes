@@ -8,10 +8,12 @@
  */
 package com.minecave.pickaxes.skill.sword;
 
+import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.skill.PSkill;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 public class Shotgun extends PSkill {
@@ -35,7 +37,9 @@ public class Shotgun extends PSkill {
             Snowball snowball = player.launchProjectile(Snowball.class);
             snowball.setVelocity(clone);
             snowball.setCustomName("shotgun");
+            snowball.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
             snowball.setCustomNameVisible(false);
         }
+        this.add(player);
     }
 }

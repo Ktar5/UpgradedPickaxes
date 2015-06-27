@@ -207,7 +207,10 @@ public class EnhancedPicks extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Bukkit.getOnlinePlayers().forEach(playerManager::save);
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            p.closeInventory();
+            playerManager.save(p);
+        });
     }
 
     public void saveDefaultConfig(String name) {

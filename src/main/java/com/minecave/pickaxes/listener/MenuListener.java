@@ -13,9 +13,26 @@ public class MenuListener implements Listener {
     public void onClick(InventoryClickEvent event) {
 //        Player player = (Player) event.getWhoClicked();
 //        ClickType clickType = event.getClick();
-//        Menu menu = Menu.get(event.getInventory().getTitle());
-//        if (menu == null) {
-//            return;
+//        CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
+//        String pickName = Strings.color(config.get("pickaxeMenu", String.class, "Pickaxe Menu"));
+//        String swordName = Strings.color(config.get("swordMenu", String.class, "Sword Menu"));
+//        if (event.getInventory().getTitle().equalsIgnoreCase(pickName)) {
+//            Inventory inventory = event.getView().getBottomInventory();
+//            ItemStack clickedItem = event.getCurrentItem();
+//            if (clickedItem == null || clickedItem.getType() != Material.DIAMOND_PICKAXE) {
+//                return;
+//            }
+//            int slot = event.getSlot();
+//            inventory.setItem(slot, null);
+//            pickMenu.addButton(new PickaxeButton(clickedItem), player);
+//            info.addPickaxe(plugin.getPItemManager().getPItem(BlockBreakEvent.class, clickedItem));
+//            pickMenu.update(player);
+//            event.setCancelled(true);
+//            event.setResult(Event.Result.DENY);
+//        } else if (event.getInventory().getTitle().equalsIgnoreCase(swordName)) {
+//
+//            event.setCancelled(true);
+//            event.setResult(Event.Result.DENY);
 //        }
 //
 //        event.setCancelled(true);

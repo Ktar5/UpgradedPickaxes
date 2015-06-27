@@ -11,6 +11,7 @@ package com.minecave.pickaxes.item;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.enchant.enchants.LuckEnchant;
 import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
@@ -20,6 +21,7 @@ import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -200,7 +202,16 @@ public class PItem<E extends Event> {
                     if (type == PItemType.PICK) {
                         enchant.activate((BlockBreakEvent) event);
                     } else if (type == PItemType.SWORD) {
-                        enchant.activate((EntityDamageByEntityEvent) event);
+                        if(enchant instanceof LuckEnchant) {
+                            EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
+                            if(e.getEntity() instanceof LivingEntity) {
+                                if(((LivingEntity) e.getEntity()).getHealth() <= e.getFinalDamage()) {
+                                    enchant.activate((EntityDamageByEntityEvent) event);
+                                }
+                            }
+                        } else {
+                            enchant.activate((EntityDamageByEntityEvent) event);
+                        }
                     }
                 });
     }
