@@ -54,18 +54,23 @@ public class PlayerListener implements Listener {
                 Snowball entity = (Snowball) event.getDamager();
                 if (entity.getCustomName().equals("shotgun")) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, entity.getMetadata("player")));
-                    event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth());
+                    event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
                 }
             } else if (event.getDamager() instanceof EnderPearl) {
                 EnderPearl entity = (EnderPearl) event.getDamager();
                 if (entity.getCustomName().equals("acid")) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, entity.getMetadata("player")));
-                    event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth());
+                    event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
                 }
-            } else if(event.getDamager() instanceof Arrow) {
-                if(event.getFinalDamage() >= ((LivingEntity) event.getEntity()).getHealth()) {
+            } else if (event.getDamager() instanceof Arrow) {
+                if (event.getFinalDamage() >= ((LivingEntity) event.getEntity()).getHealth()) {
                     Arrow entity = (Arrow) event.getDamager();
-                    event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, entity.getMetadata("player")));
+                    if (entity.getShooter() instanceof Player) {
+                        if (entity.getCustomName().equals("rain")) {
+                            event.getEntity().setMetadata("player", new FixedMetadataValue(plugin,
+                                    ((Player) entity.getShooter()).getUniqueId().toString()));
+                        }
+                    }
                 }
             }
         }
@@ -73,16 +78,16 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        if(event.getEntity().hasMetadata("player")) {
+        if (event.getEntity().hasMetadata("player")) {
             List<MetadataValue> m = event.getEntity().getMetadata("player");
-            for(MetadataValue mv : m) {
-                if(mv.value() instanceof String) {
+            for (MetadataValue mv : m) {
+                if (mv.value() instanceof String) {
                     String s = mv.asString();
                     Player player = Bukkit.getPlayer(UUID.fromString(s));
-                    if(player != null) {
+                    if (player != null) {
                         player.getInventory().addItem(event.getDrops().toArray(new ItemStack[event.getDrops().size()]));
                         PItem<?> pItem = plugin.getPItemManager().getPItem(player.getItemInHand());
-                        if(pItem != null) {
+                        if (pItem != null) {
                             int xp = MobValue.getXp(event.getEntityType());
                             pItem.incrementXp(xp, player);
                         }
@@ -104,7 +109,7 @@ public class PlayerListener implements Listener {
                         .forEach(e -> {
                             LivingEntity le = (LivingEntity) e;
                             event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, entity.getMetadata("player")));
-                            le.damage(((LivingEntity) event.getEntity()).getMaxHealth());
+                            le.damage(((LivingEntity) e).getMaxHealth() * 2);
 
                         });
             }
@@ -119,9 +124,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onEntityTeleport(PlayerTeleportEvent event) {
-        if(event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             PItem<?> pItem = plugin.getPItemManager().getPItem(event.getPlayer().getItemInHand());
-            if(pItem != null) {
+            if (pItem != null) {
                 event.setCancelled(true);
             }
         }

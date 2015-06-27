@@ -41,7 +41,7 @@ public class Bomber extends PSkill {
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
-        if(pItem == null) {
+        if (pItem == null) {
             return;
         }
         Location location = player.getEyeLocation();
@@ -59,22 +59,17 @@ public class Bomber extends PSkill {
                 if (!wg.canBuild(event.getPlayer(), location)) {
                     return;
                 }
-                int curCount = 0;
-                int cap = ThreadLocalRandom.current().nextInt(30) + 1;
-                for(Block b : getRegionBlocks(location, amount)) {
+                for (Block b : getRegionBlocks(location, amount)) {
                     Location loc = b.getLocation();
                     if (!wg.canBuild(event.getPlayer(), loc) ||
                             loc.getBlock().getType() == Material.BEDROCK ||
                             loc.getBlock().getType() == Material.AIR) {
                         continue;
                     }
-                    if(curCount >= cap) {
-                        break;
-                    }
                     Collection<ItemStack> items = loc.getBlock().getDrops();
                     ItemStack[] array = new ItemStack[items.size()];
                     int i = 0;
-                    for(ItemStack stack : items) {
+                    for (ItemStack stack : items) {
                         stack.setType(OreConversion.convertToItem(stack.getType()));
                         array[i++] = stack;
                     }
@@ -85,10 +80,9 @@ public class Bomber extends PSkill {
                     player.getInventory().addItem(array);
                     player.updateInventory();
                     loc.getBlock().setType(Material.AIR);
-                    player.playSound(loc, Sound.EXPLODE, 1.0F, 1.0F);
-                    player.playEffect(loc, Effect.LARGE_SMOKE, 1);
-                    curCount++;
                 }
+                player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
+                player.playEffect(location, Effect.LARGE_SMOKE, 1);
             }
         }.runTaskLater(EnhancedPicks.getInstance(), ticks);
         this.add(player);
@@ -96,15 +90,15 @@ public class Bomber extends PSkill {
 
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
-        for (double x = -radius; x <= radius; x++) {
-            for (double z = -radius; z <= radius; z++) {
-                if(Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
-                    int d = (int) (radius / 2);
-                    if(d == 0) {
-                        d = 1;
-                    }
-                    if(ThreadLocalRandom.current().nextInt(10) > 4) {
-                        for (double y = -radius; y <= d; y++) {
+        int d = (int) (radius / 2);
+        if (d == 0) {
+            d = 1;
+        }
+        for (double y = -d; y <= 0; y++)
+            for (double x = -radius * 0.75; x <= radius * 0.75; x++) {
+                for (double z = -radius * 0.75; z <= radius * 0.75; z++) {
+                    if (ThreadLocalRandom.current().nextInt(10) > 2) {
+                        if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
                             Location l = loc1.clone().add(x, y, z);
                             if (!l.getChunk().isLoaded()) {
                                 continue;
@@ -117,7 +111,6 @@ public class Bomber extends PSkill {
                     }
                 }
             }
-        }
         return blocks;
     }
 }

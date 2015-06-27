@@ -170,7 +170,7 @@ public class MenuCreator {
         List<PItem<BlockBreakEvent>> picksClone = new ArrayList<>(info.getPickaxes());
 
         int k = 0;
-        while(!picksClone.isEmpty()) {
+        while (!picksClone.isEmpty()) {
             PItem<BlockBreakEvent> pick = picksClone.remove(0);
             pick.updateMeta();
             menu.setItem(k, BasicItem.create(pick.getItem(), (p, c) -> {
@@ -236,7 +236,7 @@ public class MenuCreator {
         List<PItem<EntityDamageByEntityEvent>> swordsClone = new ArrayList<>(info.getSwords());
 
         int k = 0;
-        while(!swordsClone.isEmpty()) {
+        while (!swordsClone.isEmpty()) {
             PItem<EntityDamageByEntityEvent> sword = swordsClone.remove(0);
             sword.updateMeta();
             menu.setItem(k, BasicItem.create(sword.getItem(), (p, c) -> {
@@ -335,7 +335,8 @@ public class MenuCreator {
 
             ItemStack redWool = new Wool(DyeColor.RED).toItemStack(1);
             ItemMeta meta = redWool.getItemMeta();
-            meta.setLore(Collections.singletonList(ChatColor.GOLD + "You get " + prevCost + " points back."));
+            meta.setLore(Collections.singletonList(enchant.getLevel() == 0 ? "" :
+                    ChatColor.GOLD + "You get " + prevCost + " points back."));
             meta.setDisplayName(enchant.getLevel() > 0 ?
                     ChatColor.RED + "Click to remove a level." :
                     ChatColor.DARK_RED + "Level 0. Cannot decrease.");

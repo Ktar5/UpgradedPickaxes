@@ -41,31 +41,33 @@ public class Ice extends PSkill {
         List<Block> blocks = getRegionBlocks(player.getLocation(), radius);
         List<Block> broken = new ArrayList<>();
 
-        int curCount = 0;
-        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
+//        int curCount = 0;
+//        int cap = ThreadLocalRandom.current().nextInt(radius * 2) + 1;
         for (Block block : blocks) {
             if (!this.wg.canBuild(event.getPlayer(), block)) {
                 continue;
             }
-            if (curCount >= cap) {
-                break;
+//            if (curCount >= cap) {
+//                break;
+//            }
+            if(ThreadLocalRandom.current().nextInt(10) > 4) {
+                Collection<ItemStack> items = block.getDrops(player.getItemInHand());
+                ItemStack[] array = new ItemStack[items.size()];
+                int i = 0;
+                for (ItemStack stack : items) {
+                    stack.setType(OreConversion.convertToItem(stack.getType()));
+                    array[i++] = stack;
+                }
+                int xp = BlockValue.getXp(block);
+                pItem.incrementXp(xp, player);
+                pItem.addBlockBroken();
+                pItem.update(player);
+                player.getInventory().addItem(array);
+                player.updateInventory();
+                block.setType(Material.ICE);
+                broken.add(block);
+//                curCount++;
             }
-            Collection<ItemStack> items = block.getDrops(player.getItemInHand());
-            ItemStack[] array = new ItemStack[items.size()];
-            int i = 0;
-            for (ItemStack stack : items) {
-                stack.setType(OreConversion.convertToItem(stack.getType()));
-                array[i++] = stack;
-            }
-            int xp = BlockValue.getXp(block);
-            pItem.incrementXp(xp, player);
-            pItem.addBlockBroken();
-            pItem.update(player);
-            player.getInventory().addItem(array);
-            player.updateInventory();
-            block.setType(Material.ICE);
-            broken.add(block);
-            curCount++;
         }
 
         new BukkitRunnable() {
@@ -92,7 +94,7 @@ public class Ice extends PSkill {
         for(int y = 0; y >= -d; y--) {
             for (double z = -radius; z <= radius; z++) {
                 for (double x = -radius; x <= radius; x++) {
-                    if (ThreadLocalRandom.current().nextInt(10) > 4) {
+//                    if (ThreadLocalRandom.current().nextInt(10) > 4) {
                         if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
                             Location l = loc1.clone().add(x, y, z);
                             if (!l.getChunk().isLoaded()) {
@@ -103,7 +105,7 @@ public class Ice extends PSkill {
                                 blocks.add(b);
                             }
                         }
-                    }
+//                    }
                 }
             }
         }

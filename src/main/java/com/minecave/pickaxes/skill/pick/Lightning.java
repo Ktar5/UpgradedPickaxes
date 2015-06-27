@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Timothy Andis
@@ -41,33 +40,17 @@ public class Lightning extends PSkill {
         }
         Set<Material> materialSet = new HashSet<>();
         materialSet.add(Material.AIR);
-        Block block = player.getTargetBlock(materialSet, distance);
+        Block block = player.getTargetBlock(materialSet, 20);
         Location location = block.getLocation();
-        System.out.println(location);
         World world = location.getWorld();
         world.strikeLightningEffect(location);
-        player.sendMessage("location: " + location);
-        int curCount = 0;
-        int cap = ThreadLocalRandom.current().nextInt(30) + 1;
-        for(int x = -depth; x <= depth; x++) {
-            if(curCount >= cap) {
-                break;
-            }
-            for(int z = -depth; z <= depth; z++) {
-                if(curCount >= cap) {
-                    break;
-                }
-                if(Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(depth, 2)) {
-                    int d = depth / 2;
-                    if(d == 0) {
-                        d = 1;
-                    }
-                    for (int y = 0; y < d; y++) {
-                        if(curCount >= cap) {
-                            break;
-                        }
-                        if (ThreadLocalRandom.current().nextInt(10) > 4) {
-                            Location loc = location.clone().add(x, -y, z);
+
+        for(int y = 0; y >= -depth; y--) {
+            for(int x = -(distance / 2); x < distance / 2; x++) {
+                for(int z = -(distance / 2); z < distance / 2; z++) {
+                    if(Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow((distance), 2)) {
+//                        if (ThreadLocalRandom.current().nextInt(10) > 4) {
+                            Location loc = location.clone().add(x, y, z);
                             if (!this.wg.canBuild(event.getPlayer(), loc)) {
                                 continue;
                             }
@@ -88,12 +71,12 @@ public class Lightning extends PSkill {
                             player.getInventory().addItem(array);
                             loc.getBlock().setType(Material.AIR);
                             player.updateInventory();
-                            curCount++;
                         }
-                    }
+//                    }
                 }
             }
         }
+
         this.add(player);
     }
 }

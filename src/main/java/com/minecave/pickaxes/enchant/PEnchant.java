@@ -69,10 +69,10 @@ public abstract class PEnchant {
             player.sendMessage(ChatColor.RED + "That enchantment is already at maxLevel.");
             return;
         }
+        pItem.setPoints(pItem.getPoints() - getLevelCost(level + 1));
         this.setLevel(getLevel() + 1);
-        pItem.setPoints(pItem.getPoints() - getLevelCost(level - 1));
         pItem.update(player);
-        player.sendMessage(ChatColor.RED + "You spent " + getLevelCost(level - 1) + " points.");
+        player.sendMessage(ChatColor.RED + "You spent " + getLevelCost(level) + " points.");
         player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
         this.apply(pItem);
     }
@@ -82,10 +82,10 @@ public abstract class PEnchant {
             player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
             return;
         }
+        pItem.setPoints(pItem.getPoints() + getLevelCost(level));
         this.setLevel(getLevel() - 1);
-        pItem.setPoints(pItem.getPoints() + getLevelCost(level + 1));
         pItem.update(player);
-        player.sendMessage(ChatColor.GREEN + "You received " + getLevelCost(level + 1) + " points back.");
+        player.sendMessage(ChatColor.GREEN + "You received " + getLevelCost(level) + " points back.");
         player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
         this.apply(pItem);
     }
@@ -102,7 +102,7 @@ public abstract class PEnchant {
         }
         if (config.getConfig().contains(key + ".levelCosts")) {
             List<Integer> list = config.getConfig().getIntegerList(key + ".levelCosts");
-            int index = 0;
+            int index = 1;
             for (int i : list) {
                 this.getCostMap().put(index++, i);
             }

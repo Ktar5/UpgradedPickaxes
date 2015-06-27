@@ -180,8 +180,10 @@ public class Menu implements Listener {
         if (!event.getInventory().equals(inventory))
             return;
         // RawSlow < topinv size == top inv
-        if (event.getRawSlot() >= event.getView().getTopInventory().getSize() && this.lowerInventoryListener != null) {
-            lowerInventoryListener.accept((Player) event.getWhoClicked(), event.getSlot());
+        if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
+            if(lowerInventoryListener != null) {
+                lowerInventoryListener.accept((Player) event.getWhoClicked(), event.getSlot());
+            }
             event.setCancelled(true);
             return;
         }

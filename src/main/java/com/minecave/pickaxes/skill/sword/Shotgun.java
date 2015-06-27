@@ -28,7 +28,7 @@ public class Shotgun extends PSkill {
     @Override
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Vector velocity = player.getLocation().getDirection().normalize().multiply(0.5);
+        Vector velocity = player.getEyeLocation().getDirection().normalize().multiply(1.5);
         for (int i = 0; i < numberOfSnowballs; i++) {
             Vector clone = velocity.clone();
             clone.add(new Vector((Math.random() * 0.5) - 0.25,
@@ -36,6 +36,7 @@ public class Shotgun extends PSkill {
                     (Math.random() * 0.5) - 0.25));
             Snowball snowball = player.launchProjectile(Snowball.class);
             snowball.setVelocity(clone);
+            snowball.setTicksLived(10);
             snowball.setCustomName("shotgun");
             snowball.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
             snowball.setCustomNameVisible(false);

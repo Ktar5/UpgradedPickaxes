@@ -54,7 +54,7 @@ public class Earthquake extends PSkill {
                 if(curCount >= cap) {
                     break;
                 }
-                Location loc = new Location(location.getWorld(), x, y, z);
+                Location loc = new Location(location.getWorld(), x, y - 1, z);
                 if(ThreadLocalRandom.current().nextInt(10) < 5) {
                     continue;
                 }
@@ -78,8 +78,8 @@ public class Earthquake extends PSkill {
                 player.getInventory().addItem(array);
                 player.updateInventory();
                 Material type = loc.getBlock().getType();
-                FallingBlock fallingBlock = location.getWorld().spawnFallingBlock(loc, type, loc.getBlock().getData());
-                fallingBlock.setVelocity(new Vector(Math.random() * 4.1, (random.nextInt(3) * Math.random()), Math.random() * 4.1));
+                FallingBlock fallingBlock = location.getWorld().spawnFallingBlock(loc.clone().add(0, 1, 0), type, loc.getBlock().getData());
+                fallingBlock.setVelocity(new Vector(0, (random.nextInt(3) * Math.random() + 0.2), 0));
                 fallingBlock.setDropItem(false);
                 fallingBlock.setCustomName("earthquake");
                 fallingBlockList.add(fallingBlock);

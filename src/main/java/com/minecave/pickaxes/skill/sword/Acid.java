@@ -41,6 +41,7 @@ public class Acid extends PSkill {
             enderPearl.setCustomNameVisible(false);
             enderPearl.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
         }
+        this.add(player);
     }
 
     public int getRadius() {

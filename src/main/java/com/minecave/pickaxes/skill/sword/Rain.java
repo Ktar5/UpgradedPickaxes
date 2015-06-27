@@ -51,7 +51,7 @@ public class Rain extends PSkill {
                 for (int i = -(arrowCount / 2); i < (arrowCount / 2); i++) {
                     for (int j = -(arrowCount / 2); j < (arrowCount / 2); j++) {
                         Location spawnLocation = lookingAt.clone().add(i, 0, j);
-                        Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, 1, 0), 1f, 12);
+                        Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, -3, 0), 1f, 12);
                         arrow.setBounce(false);
                         arrow.setShooter(player);
                         arrow.setCustomName("rain");
@@ -60,5 +60,6 @@ public class Rain extends PSkill {
                 count += 1;
             }
         }.runTaskTimer(EnhancedPicks.getInstance(), 0L, 20);
+        this.add(player);
     }
 }
