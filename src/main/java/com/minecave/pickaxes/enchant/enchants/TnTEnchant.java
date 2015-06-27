@@ -77,8 +77,8 @@ public class TnTEnchant extends PEnchant {
             player.updateInventory();
             loc.getBlock().setType(Material.AIR);
             if (ThreadLocalRandom.current().nextBoolean()) {
-                player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
-                player.playEffect(location, Effect.EXPLOSION_HUGE, 0);
+                player.playSound(b.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+                player.playEffect(b.getLocation().add(0, 1, 0), Effect.EXPLOSION, 0);
             }
             curCount--;
         }

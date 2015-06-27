@@ -8,6 +8,8 @@
  */
 package com.minecave.pickaxes.item;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.drops.MobValue;
@@ -26,23 +28,20 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PItemManager {
 
-    private final EnhancedPicks              plugin;
+    private final EnhancedPicks                   plugin;
     @Getter
-    private       Map<String, PItem<?>>      pItemMap;
+    private       Map<String, PItem<?>>           pItemMap;
     @Getter
-    private       Map<String, PItemSettings> settingsMap;
+    private       Multimap<String, PItemSettings> settingsMap;
 
     public PItemManager() {
         plugin = EnhancedPicks.getInstance();
         pItemMap = new HashMap<>();
-        settingsMap = new HashMap<>();
+        settingsMap = ArrayListMultimap.create();
 
         CustomConfig pickConfig = plugin.getConfig("picks");
         for (String n : pickConfig.getConfig().getKeys(false)) {
@@ -192,7 +191,7 @@ public class PItemManager {
         this.pItemMap.put(pItem.getUuid().toString(), pItem);
     }
 
-    public PItemSettings getSettings(String key) {
+    public Collection<PItemSettings> getSettings(String key) {
         return this.settingsMap.get(key);
     }
 

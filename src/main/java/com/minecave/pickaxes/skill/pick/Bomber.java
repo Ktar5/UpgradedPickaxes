@@ -20,7 +20,6 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Timothy Andis
@@ -50,7 +49,7 @@ public class Bomber extends PSkill {
         TNTPrimed tnt = location.getWorld().spawn(location.clone().add(0, 0.2, 0), TNTPrimed.class);
         tnt.setFuseTicks(ticks + 1);
         tnt.setVelocity(to);
-        int amount = random.nextInt(boomblocks) + 1;
+        int amount = (int) (random.nextInt(boomblocks / 2) + (boomblocks / 2));
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -90,23 +89,21 @@ public class Bomber extends PSkill {
 
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
         ArrayList<Block> blocks = new ArrayList<>();
-        int d = (int) (radius / 2);
+        int d = (int) (radius / 1.5);
         if (d == 0) {
             d = 1;
         }
         for (double y = -d; y <= 0; y++)
-            for (double x = -radius * 0.75; x <= radius * 0.75; x++) {
-                for (double z = -radius * 0.75; z <= radius * 0.75; z++) {
-                    if (ThreadLocalRandom.current().nextInt(10) > 2) {
-                        if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
-                            Location l = loc1.clone().add(x, y, z);
-                            if (!l.getChunk().isLoaded()) {
-                                continue;
-                            }
-                            Block b = l.getBlock();
-                            if (b.getType() != Material.AIR && b.getType().isBlock()) {
-                                blocks.add(b);
-                            }
+            for (double x = -radius; x <= radius; x++) {
+                for (double z = -radius; z <= radius; z++) {
+                    if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
+                        Location l = loc1.clone().add(x, y, z);
+                        if (!l.getChunk().isLoaded()) {
+                            continue;
+                        }
+                        Block b = l.getBlock();
+                        if (b.getType() != Material.AIR && b.getType().isBlock()) {
+                            blocks.add(b);
                         }
                     }
                 }

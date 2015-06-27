@@ -75,7 +75,16 @@ public class PItemSerializer {
         if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
             return null;
         }
-        PItemManager.PItemSettings pItemSettings = plugin.getPItemManager().getSettings(pItemSettingsKey);
+        Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+        if(settingsCollection == null) {
+            return null;
+        }
+        PItemManager.PItemSettings pItemSettings = null;
+        for(PItemManager.PItemSettings ps : settingsCollection) {
+            if(pItemType == ps.getType()) {
+                pItemSettings = ps;
+            }
+        }
         if (pItemSettings == null || pItemSettings.getType() != pItemType) {
             return null;
         }
@@ -296,8 +305,19 @@ public class PItemSerializer {
             if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
                 return null;
             }
-            PItemManager.PItemSettings pItemSettings = plugin.getPItemManager().getSettings(pItemSettingsKey);
-
+            Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+            if(settingsCollection == null) {
+                return null;
+            }
+            PItemManager.PItemSettings pItemSettings = null;
+            for(PItemManager.PItemSettings ps : settingsCollection) {
+                if(pItemType == ps.getType()) {
+                    pItemSettings = ps;
+                }
+            }
+            if(pItemSettings == null) {
+                return null;
+            }
             PItem<?> pItem = null;
             switch (pItemType) {
                 case PICK:

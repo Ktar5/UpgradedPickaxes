@@ -23,6 +23,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
+
 public class GiveCommand implements CommandExecutor {
 
     @Override
@@ -45,9 +47,23 @@ public class GiveCommand implements CommandExecutor {
             type = PItemType.SWORD;
         } else {
             sender.sendMessage(ChatColor.RED + "Not a valid item type.");
-            return false;
+            return true;
         }
-        PItemManager.PItemSettings pItemSettings = plugin.getPItemManager().getSettingsMap().get(configStr);
+        Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(configStr);
+        if(settingsCollection == null) {
+            sender.sendMessage(ChatColor.RED + configStr + " does not exist in the config.");
+            return true;
+        }
+        PItemManager.PItemSettings pItemSettings = null;
+        for(PItemManager.PItemSettings ps : settingsCollection) {
+            if(type == ps.getType()) {
+                pItemSettings = ps;
+            }
+        }
+        if(pItemSettings == null) {
+            sender.sendMessage(ChatColor.RED + configStr + " does not exist in the config.");
+            return true;
+        }
         if (type != pItemSettings.getType()) {
             sender.sendMessage(configStr + " is not of type " + type.name());
             return true;
