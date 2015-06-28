@@ -16,6 +16,7 @@ level-up-message:
 - '&e&lNext Level: $nextLevel$'
 - '  &a&lXP needed: $nextXP$'
 - '&e&l&n-----------[ &a&lLevel Up &e&l&n ]----------'
+costPerLevel: 5
 ##
 ## {name} - name in picks/swords.yml
 ## {level} - item level

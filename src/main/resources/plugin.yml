@@ -5,10 +5,10 @@ depend: [WorldGuard]
 commands:
   pick:
     description: Opens up your pick UI. Use points arg to spend points on this item.
-    usage: /<command> points [amount]
+    usage: /<command> points/level [amount]
   sword:
     description: Opens up your sword UI. Use points arg to spend points on this item.
-    usage: /<command> points [amount]
+    usage: /<command> points/level [amount]
   pgive:
     description: Give a new enhanced pick or sword to a player.
     usage: /<command> [pick/sword] [config name] [player]

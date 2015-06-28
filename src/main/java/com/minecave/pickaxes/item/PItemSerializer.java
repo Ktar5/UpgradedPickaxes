@@ -127,6 +127,11 @@ public class PItemSerializer {
                 pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
             }
         }
+        for (PSkill pSkill : pItemSettings.getSkillList()) {
+            if(!pItem.getAvailableSkills().contains(pSkill)) {
+                pItem.addAvailableSkill(pSkill);
+            }
+        }
 
         //PURCHASED_SKILL
         storage = EPAttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
@@ -174,6 +179,14 @@ public class PItemSerializer {
                         pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
                     }
                 }
+            }
+        }
+        for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+            if(pItem.getEnchant(pEnchant.getName()) == null) {
+                PEnchant clone = pEnchant.cloneEnchant();
+                clone.setLevel(pEnchant.getLevel());
+                clone.setMaxLevel(pEnchant.getMaxLevel());
+                pItem.addEnchant(clone);
             }
         }
 
@@ -343,6 +356,11 @@ public class PItemSerializer {
                     pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
                 }
             }
+            for (PSkill pSkill : pItemSettings.getSkillList()) {
+                if(!pItem.getAvailableSkills().contains(pSkill)) {
+                    pItem.addAvailableSkill(pSkill);
+                }
+            }
 
             if (purSkills != null && !purSkills.equals("")) {
                 String[] skillSplit = purSkills.split("-");
@@ -381,15 +399,19 @@ public class PItemSerializer {
                     }
                 }
             }
+            for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                if(pItem.getEnchant(pEnchant.getName()) == null) {
+                    PEnchant clone = pEnchant.cloneEnchant();
+                    clone.setLevel(pEnchant.getLevel());
+                    clone.setMaxLevel(pEnchant.getMaxLevel());
+                    pItem.addEnchant(clone);
+                }
+            }
             ItemStack temp = pItem.getItem();
             ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
             clone.setData(temp.getData());
             clone.setDurability(temp.getDurability());
             pItem.setItem(clone);
-
-            for (PEnchant pEnchant : pItem.getEnchants()) {
-                pEnchant.apply(pItem);
-            }
 
             pItemList.add(pItem);
             EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);

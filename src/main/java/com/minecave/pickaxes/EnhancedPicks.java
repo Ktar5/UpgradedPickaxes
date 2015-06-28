@@ -54,6 +54,8 @@ public class EnhancedPicks extends JavaPlugin {
     private        PItemManager              pItemManager;
     @Getter
     private        PlayerManager             playerManager;
+    @Getter
+    private int costPerLevel = 5;
 
     @Override
     public void onEnable() {
@@ -70,6 +72,7 @@ public class EnhancedPicks extends JavaPlugin {
         saveDefaultConfig("enchants");
         saveDefaultConfig("picks");
         saveDefaultConfig("swords");
+        costPerLevel = getConfig("config").get("costPerLevel", Integer.class, 5);
 
         levelManager = new LevelManager();
         pSkillManager = new PSkillManager();

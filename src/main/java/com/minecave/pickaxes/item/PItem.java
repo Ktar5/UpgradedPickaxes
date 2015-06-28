@@ -229,11 +229,15 @@ public class PItem<E extends Event> {
         }
         this.xp += xp;
         while (getTotalXp() <= this.xp && level.getId() != maxLevel.getId()) {
-            this.level = level.getNext();
-            this.points += pointsPerLevel;
-            level.levelUp(player, this);
+            levelUp(player);
         }
         update(player);
+    }
+
+    public void levelUp(Player player) {
+        this.level = level.getNext();
+        this.points += pointsPerLevel;
+        level.levelUp(player, this);
     }
 
     private int getXpToNextLevel() {
@@ -356,5 +360,9 @@ public class PItem<E extends Event> {
 
     public void addPoints(int points) {
         this.points += points;
+    }
+
+    public void subtractPoints(int cost) {
+        this.points -= points;
     }
 }
