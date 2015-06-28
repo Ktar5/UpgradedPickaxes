@@ -21,27 +21,38 @@ public class PointsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(commandSender instanceof Player) {
-
+        //ppoints give player 10
+        if (strings.length != 2) {
+            return false;
         } else {
-            //ppoints give player 10
-            if (strings.length != 4) {
-                return false;
+            Player player = Bukkit.getPlayer(strings[0]);
+            if (player == null || !player.isOnline()) {
+                commandSender.sendMessage(ChatColor.RED + strings[0] + " is not a valid player.");
+                return true;
             } else {
-                if (strings[1].equalsIgnoreCase("give") || strings[1].equalsIgnoreCase("g")) {
-                    Player player = Bukkit.getPlayer(strings[2]);
-                    if(player == null || !player.isOnline()) {
-                        commandSender.sendMessage(ChatColor.RED + strings[1] + " is not a valid player.");
-                    } else {
-
-                        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
-
-                    }
-                } else {
-                    return false;
+                if (!isInteger(strings[1])) {
+                    commandSender.sendMessage("The points must be an integer.");
+                    return true;
                 }
+                PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                int points = Integer.parseInt(strings[1]);
+                info.addPoints(points);
+                info.getPlayer().sendMessage(ChatColor.GREEN + "You received " + points + " points to spend on your picks/swords.");
+                commandSender.sendMessage("You gave " + info.getPlayer().getName() + " " + points + " points.");
+                return true;
             }
         }
+    }
+
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return false;
+        } catch (NullPointerException e) {
+            return false;
+        }
+        // only got here if we didn't return false
         return true;
     }
 }

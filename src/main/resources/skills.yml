@@ -67,6 +67,7 @@ nuker:
 rage:
   name: Rage
   cooldown: 20
+  time: 10
   levelUnlocked: 5
   cost: 5
   permission: "skill.rage"

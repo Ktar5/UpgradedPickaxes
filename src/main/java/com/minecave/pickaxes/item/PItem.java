@@ -353,4 +353,8 @@ public class PItem<E extends Event> {
     public void addNukerBlocks(String s) {
         this.nukerBlocks.add(s);
     }
+
+    public void addPoints(int points) {
+        this.points += points;
+    }
 }

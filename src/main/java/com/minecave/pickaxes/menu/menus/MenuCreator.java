@@ -46,7 +46,7 @@ public class MenuCreator {
         Menu mainPick = Menu.createMenu(name, 9);
         for (int i = 0; i < mainPick.size(); i++) {
             switch (i) {
-                case 2:
+                case 1:
                     ItemStack chest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
                             .name(ChatColor.YELLOW + "Pick Chest")
                             .lore(" ",
@@ -61,7 +61,7 @@ public class MenuCreator {
                     });
                     mainPick.setItem(i, item);
                     break;
-                case 4:
+                case 3:
                     ItemStack upgrades = ItemBuilder.wrap(new ItemStack(Material.ENCHANTED_BOOK))
                             .name(ChatColor.YELLOW + "Upgrades")
                             .lore(" ",
@@ -76,8 +76,8 @@ public class MenuCreator {
                     });
                     mainPick.setItem(i, item);
                     break;
-                case 6:
-                    ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
+                case 5:
+                    ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.GOLD_INGOT))
                             .name(ChatColor.YELLOW + "Skills")
                             .lore(" ",
                                     ChatColor.GRAY + "Click to manage your Pick's skills.")
@@ -89,6 +89,26 @@ public class MenuCreator {
                             menu.showTo(p);
                         }
                     });
+                    mainPick.setItem(i, item);
+                    break;
+                case 7:
+                    PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
+                    String curItemPoints = pItem == null ? "You don't have a pick/sword inhand." :
+                            ChatColor.GRAY + "Current item point: " + ChatColor.WHITE + pItem.getPoints();
+                    ItemStack itemPoints = ItemBuilder.wrap(new ItemStack(Material.DIAMOND))
+                            .name(ChatColor.GOLD + "Item Points")
+                            .lore(" ", curItemPoints)
+                            .build();
+                    item = BasicItem.createFiller(itemPoints);
+                    mainPick.setItem(i, item);
+                    break;
+                case 8:
+                    PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                    ItemStack unusedPoints = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
+                            .name(ChatColor.GOLD + "Unspent Points")
+                            .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints())
+                            .build();
+                    item = BasicItem.createFiller(unusedPoints);
                     mainPick.setItem(i, item);
                     break;
                 default:
@@ -105,7 +125,7 @@ public class MenuCreator {
         Menu mainSword = Menu.createMenu(name, 9);
         for (int i = 0; i < mainSword.size(); i++) {
             switch (i) {
-                case 2:
+                case 1:
                     ItemStack chest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
                             .name(ChatColor.YELLOW + "Sword Chest")
                             .lore(" ",
@@ -120,7 +140,7 @@ public class MenuCreator {
                     });
                     mainSword.setItem(i, item);
                     break;
-                case 4:
+                case 3:
                     ItemStack upgrades = ItemBuilder.wrap(new ItemStack(Material.ENCHANTED_BOOK))
                             .name(ChatColor.YELLOW + "Upgrades")
                             .lore(" ",
@@ -135,8 +155,8 @@ public class MenuCreator {
                     });
                     mainSword.setItem(i, item);
                     break;
-                case 6:
-                    ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
+                case 5:
+                    ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.GOLD_INGOT))
                             .name(ChatColor.YELLOW + "Skills")
                             .lore(" ",
                                     ChatColor.GRAY + "Click to manage your Sword's skills.")
@@ -148,6 +168,26 @@ public class MenuCreator {
                             menu.showTo(p);
                         }
                     });
+                    mainSword.setItem(i, item);
+                    break;
+                case 7:
+                    PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
+                    String curItemPoints = pItem == null ? "You don't have a pick/sword inhand." :
+                            ChatColor.GRAY + "Current item point: " + ChatColor.WHITE + pItem.getPoints();
+                    ItemStack itemPoints = ItemBuilder.wrap(new ItemStack(Material.DIAMOND))
+                            .name(ChatColor.GOLD + "Item Points")
+                            .lore(" ", curItemPoints)
+                            .build();
+                    item = BasicItem.createFiller(itemPoints);
+                    mainSword.setItem(i, item);
+                    break;
+                case 8:
+                    PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                    ItemStack unusedPoints = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
+                            .name(ChatColor.GOLD + "Unspent Points")
+                            .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints())
+                            .build();
+                    item = BasicItem.createFiller(unusedPoints);
                     mainSword.setItem(i, item);
                     break;
                 default:

@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.minecave.pickaxes.commands.GiveCommand;
 import com.minecave.pickaxes.commands.PickCommand;
+import com.minecave.pickaxes.commands.PointsCommand;
 import com.minecave.pickaxes.commands.SwordCommand;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
@@ -85,6 +86,7 @@ public class EnhancedPicks extends JavaPlugin {
         getCommand("pgive").setExecutor(new GiveCommand());
         getCommand("pick").setExecutor(new PickCommand());
         getCommand("sword").setExecutor(new SwordCommand());
+        getCommand("ppoints").setExecutor(new PointsCommand());
 
         try {
             Class.forName(EPAttributeBuilder.class.getName());

@@ -5,6 +5,7 @@ import com.minecave.pickaxes.drops.MobValue;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.player.PlayerInfo;
 import com.minecave.pickaxes.skill.sword.Acid;
+import com.minecave.pickaxes.skill.sword.Rage;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -50,6 +51,18 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
+        if(event.getDamager() instanceof Player && !(event.getEntity() instanceof Player)) {
+            //rage
+            Player player = (Player) event.getDamager();
+            if(plugin.getPSkillManager().getPSkill(Rage.class).getRagePlayers().contains(player)) {
+                if(event.getEntity() instanceof LivingEntity) {
+                    LivingEntity le = (LivingEntity) event.getEntity();
+                    le.setMetadata("player", new FixedMetadataValue(plugin, player.getUniqueId().toString()));
+                    le.damage(le.getMaxHealth() * 2);
+                }
+            }
+            return;
+        }
         if (event.getEntity() instanceof Player) {
             if (event.getDamager() instanceof Arrow &&
                     event.getDamager().getCustomName().equals("rain")) {

@@ -17,6 +17,7 @@ commands:
   ppoints:
     description: Give points to a player to spend on picks/swords.
     usage: /<command> give [player] [points]
+    permission: pickaxes.admin
 permissions:
   pickaxes.*:
     description: Gives access to all enhanced pickaxes commands.

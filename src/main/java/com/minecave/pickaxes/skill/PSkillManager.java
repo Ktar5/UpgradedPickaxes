@@ -128,6 +128,7 @@ public class PSkillManager {
         ConfigurationSection rag = config.getConfigurationSection("rage");
         Rage rage = new Rage(color(rag.getString("name")),
                 rag.getInt("cooldown"),
+                rag.getInt("time"),
                 rag.getInt("levelUnlocked"),
                 rag.getInt("cost"),
                 rag.getString("permission"));
