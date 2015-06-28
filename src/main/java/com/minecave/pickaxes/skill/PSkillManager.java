@@ -10,10 +10,7 @@ package com.minecave.pickaxes.skill;
 
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.skill.pick.*;
-import com.minecave.pickaxes.skill.sword.Acid;
-import com.minecave.pickaxes.skill.sword.FireballSkill;
-import com.minecave.pickaxes.skill.sword.Rain;
-import com.minecave.pickaxes.skill.sword.Shotgun;
+import com.minecave.pickaxes.skill.sword.*;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.message.Strings;
 import org.bukkit.configuration.ConfigurationSection;
@@ -128,6 +125,13 @@ public class PSkillManager {
                 nuk.getInt("cost"),
                 nuk.getString("permission"));
         skillMap.put("nuker", nuker);
+        ConfigurationSection rag = config.getConfigurationSection("rage");
+        Rage rage = new Rage(color(rag.getString("name")),
+                rag.getInt("cooldown"),
+                rag.getInt("levelUnlocked"),
+                rag.getInt("cost"),
+                rag.getString("permission"));
+        skillMap.put("rage", rage);
     }
 
     public PSkill getPSkill(String name) {

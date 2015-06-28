@@ -4,16 +4,19 @@ main: ${plugin.mainClass}
 depend: [WorldGuard]
 commands:
   pick:
-    description: Opens up your pick UI.
-    usage: /<command>
+    description: Opens up your pick UI. Use points arg to spend points on this item.
+    usage: /<command> points [amount]
   sword:
-    description: Opens up your sword UI.
-    usage: /<command>
+    description: Opens up your sword UI. Use points arg to spend points on this item.
+    usage: /<command> points [amount]
   pgive:
     description: Give a new enhanced pick or sword to a player.
     usage: /<command> [pick/sword] [config name] [player]
     permission: pickaxes.admin
     aliases: [givepick, givesword, pitem]
+  ppoints:
+    description: Give points to a player to spend on picks/swords.
+    usage: /<command> give [player] [points]
 permissions:
   pickaxes.*:
     description: Gives access to all enhanced pickaxes commands.

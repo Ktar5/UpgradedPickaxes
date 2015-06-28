@@ -39,6 +39,8 @@ public class Acid extends PSkill {
             enderPearl.setVelocity(clone);
             enderPearl.setCustomName("acid");
             enderPearl.setCustomNameVisible(false);
+            enderPearl.setShooter(player);
+            enderPearl.setMetadata("acid", new FixedMetadataValue(EnhancedPicks.getInstance(), ""));
             enderPearl.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
         }
         this.add(player);

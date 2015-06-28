@@ -32,6 +32,7 @@ public class FireballSkill extends PSkill {
         fireball.setBounce(false);
         fireball.setIsIncendiary(false);
         fireball.setYield(0);
+        fireball.setShooter(player);
         fireball.setCustomName("fireball");
         this.add(player);
     }

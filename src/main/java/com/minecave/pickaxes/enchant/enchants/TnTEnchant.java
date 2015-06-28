@@ -52,6 +52,7 @@ public class TnTEnchant extends PEnchant {
             rad = 3;
         }
         int curCount = this.getLevel() * 2;
+        boolean broken = false;
         for (Block b : getRegionBlocks(location, rad * (Math.random() * 2))) {
             if (curCount <= 0) {
                 break;
@@ -70,15 +71,16 @@ public class TnTEnchant extends PEnchant {
                 array[i++] = stack;
             }
             int xp = BlockValue.getXp(loc.getBlock());
-            pItem.incrementXp(xp, player);
             pItem.addBlockBroken();
-            pItem.update(player);
+            pItem.incrementXp(xp, player);
+            pItem.updateManually(player, player.getItemInHand());
             player.getInventory().addItem(array);
             player.updateInventory();
             loc.getBlock().setType(Material.AIR);
-            if (ThreadLocalRandom.current().nextBoolean()) {
+            if (ThreadLocalRandom.current().nextBoolean() && !broken) {
+                broken = true;
                 player.playSound(b.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
-                player.playEffect(b.getLocation().add(0, 1, 0), Effect.EXPLOSION, 0);
+                player.playEffect(b.getLocation(), Effect.EXPLOSION_LARGE, 0);
             }
             curCount--;
         }

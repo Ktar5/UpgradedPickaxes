@@ -64,3 +64,9 @@ nuker:
   levelUnlocked: 4
   cost: 5
   permission: "skill.nuker"
+rage:
+  name: Rage
+  cooldown: 20
+  levelUnlocked: 5
+  cost: 5
+  permission: "skill.rage"

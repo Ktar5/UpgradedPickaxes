@@ -37,6 +37,7 @@ public class Shotgun extends PSkill {
             Snowball snowball = player.launchProjectile(Snowball.class);
             snowball.setVelocity(clone);
             snowball.setTicksLived(10);
+            snowball.setShooter(player);
             snowball.setCustomName("shotgun");
             snowball.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
             snowball.setCustomNameVisible(false);

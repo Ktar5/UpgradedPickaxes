@@ -28,11 +28,13 @@ public class PlayerInfo {
 
     private List<PItem<BlockBreakEvent>>           pickaxes;
     private List<PItem<EntityDamageByEntityEvent>> swords;
-    private Player                                 player;
-    private CustomConfig                           config;
+    private int unspentPoints = 0;
+    private Player       player;
+    private CustomConfig config;
 
     public PlayerInfo(Player player) {
         this.player = player;
+        this.unspentPoints = 0;
         this.pickaxes = new ArrayList<>();
         this.swords = new ArrayList<>();
         this.config = new CustomConfig(player);
@@ -65,7 +67,7 @@ public class PlayerInfo {
         if (config.has("pickData")) {
             try {
                 List<PItem<?>> pickaxes = PItemSerializer.pItemsBase64(config.get("pickData", String.class));
-                if(pickaxes != null) {
+                if (pickaxes != null) {
                     List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
                     for (PItem<?> pItem : pickaxes) {
                         if (pItem == null) {
@@ -84,7 +86,7 @@ public class PlayerInfo {
         if (config.has("swordData")) {
             try {
                 List<PItem<?>> swords = PItemSerializer.pItemsBase64(config.get("swordData", String.class));
-                if(swords != null) {
+                if (swords != null) {
                     List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
                     for (PItem<?> pItem : swords) {
                         if (pItem == null) {
@@ -99,6 +101,21 @@ public class PlayerInfo {
                 e.printStackTrace();
             }
         }
+        if(config.has("unspentPoints")) {
+            this.unspentPoints = config.get("unspentPoints", Integer.class, 0);
+        }
+    }
+
+    public void addPoints(int points) {
+        this.unspentPoints += points;
+    }
+
+    public boolean subtractPoints(int points) {
+        if(this.unspentPoints < points) {
+            return false;
+        }
+        this.unspentPoints -= points;
+        return true;
     }
 
     public void save() {
@@ -133,6 +150,7 @@ public class PlayerInfo {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        config.set("unspentPoints", this.unspentPoints);
         config.saveConfig();
     }
 
