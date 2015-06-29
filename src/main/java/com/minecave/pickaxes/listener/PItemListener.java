@@ -1,8 +1,11 @@
 package com.minecave.pickaxes.listener;
 
 import com.minecave.pickaxes.EnhancedPicks;
+import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.item.PItemManager;
 import com.minecave.pickaxes.item.PItemType;
+import com.minecave.pickaxes.kit.Kit;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.skill.pick.Earthquake;
 import com.minecave.pickaxes.skill.pick.Nuker;
@@ -19,8 +22,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Collection;
 
 /**
  * @author Timothy Andis
@@ -28,6 +34,55 @@ import org.bukkit.inventory.ItemStack;
 public class PItemListener implements Listener {
 
     private EnhancedPicks plugin = EnhancedPicks.getInstance();
+
+    @EventHandler
+    public void preprocessCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+        if (message.toLowerCase().startsWith("/kit")) {
+            //kit message
+            String[] split = message.split(" ");
+            if (split.length <= 1) {
+                return;
+            }
+            if (plugin.getKitManager().getKitMap().containsKey(split[1])) {
+                Kit kit = plugin.getKitManager().getKitMap().get(split[1]);
+                Collection<PItemManager.PItemSettings> settings = plugin.getPItemManager().getSettings(kit.getPSettingsKey());
+                if (settings != null && !settings.isEmpty()) {
+                    if(kit.isPick()) {
+                        for (PItemManager.PItemSettings setting : settings) {
+                            if(setting.getType() == PItemType.PICK) {
+                                PItem<BlockBreakEvent> pItem = setting.generate(BlockBreakEvent.class);
+                                ItemStack stack = pItem.getItem();
+                                pItem.updateManually(player, stack);
+                                for (PEnchant pEnchant : pItem.getEnchants()) {
+                                    pEnchant.apply(pItem);
+                                }
+                                player.getInventory().addItem(stack);
+                                plugin.getPItemManager().addPItem(pItem);
+                                break;
+                            }
+                        }
+                    }
+                    if(kit.isSword()) {
+                        for (PItemManager.PItemSettings setting : settings) {
+                            if(setting.getType() == PItemType.SWORD) {
+                                PItem<EntityDamageByEntityEvent> pItem = setting.generate(EntityDamageByEntityEvent.class);
+                                ItemStack stack = pItem.getItem();
+                                pItem.updateManually(player, stack);
+                                for (PEnchant pEnchant : pItem.getEnchants()) {
+                                    pEnchant.apply(pItem);
+                                }
+                                player.getInventory().addItem(stack);
+                                plugin.getPItemManager().addPItem(pItem);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBreak(BlockBreakEvent event) {

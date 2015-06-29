@@ -59,7 +59,7 @@ public class Level {
             messages.add(Strings.color(builder.build()));
         }
         for (String s : this.commands) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replace("$player$", player.getName()));
         }
         if (!EnhancedPicks.getInstance().getLevelManager().getBlackList().contains(this.id)) {
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0F, 1.0F);

@@ -21,7 +21,7 @@ public class LevelManager {
     private final EnhancedPicks plugin;
     private int maxLevel = 10;
     @Getter
-    private Map<Integer, Level> levelMap;
+    private Map<Integer, Level> defaultLevelMap;
     private Level exampleLevel = null;
     private FireworkBuilder defaultBuilder;
     @Getter
@@ -31,7 +31,7 @@ public class LevelManager {
 
     public LevelManager() {
         plugin = EnhancedPicks.getInstance();
-        levelMap = new HashMap<>();
+        defaultLevelMap = new HashMap<>();
 
         CustomConfig pluginConfig = plugin.getConfig("config");
         ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
@@ -76,13 +76,13 @@ public class LevelManager {
             if (exampleLevel == null) {
                 exampleLevel = levelObject;
             }
-            this.levelMap.put(level, levelObject);
+            this.defaultLevelMap.put(level, levelObject);
             for (int i = 1; i <= maxLevel; i++) {
-                if (!levelMap.containsKey(i)) {
+                if (!defaultLevelMap.containsKey(i)) {
                     if (exampleLevel != null) {
-                        levelMap.put(i, new Level(i, exampleLevel.getXp(), exampleLevel.getCommands(), exampleLevel.getFireworkBuilder()));
+                        defaultLevelMap.put(i, new Level(i, exampleLevel.getXp(), exampleLevel.getCommands(), exampleLevel.getFireworkBuilder()));
                     } else {
-                        levelMap.put(i, new Level(i, 100, Collections.singletonList("give $player$ diamond 1"), defaultBuilder));
+                        defaultLevelMap.put(i, new Level(i, 100, Collections.singletonList("give $player$ diamond 1"), defaultBuilder));
                     }
                 }
             }
@@ -90,7 +90,7 @@ public class LevelManager {
     }
 
     public Level getLevel(int id) {
-        return levelMap.get(maxLevel < id ? maxLevel : (id > 0 ? id : 1));
+        return defaultLevelMap.get(maxLevel < id ? maxLevel : (id > 0 ? id : 1));
     }
 
     public Level getMaxLevel() {

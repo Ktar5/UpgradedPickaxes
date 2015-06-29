@@ -390,9 +390,9 @@ public class MenuCreator {
                 }
             }));
 
-            ItemStack book = new ItemStack(Material.ENCHANTED_BOOK, enchant.getLevel());
+            ItemStack book = new ItemStack(Material.ENCHANTED_BOOK, 1);
             meta = book.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + enchant.getDisplayName() + " Level: " + enchant.getLevel());
+            meta.setDisplayName(ChatColor.GOLD + enchant.getDisplayName() + " Level: " + ChatColor.WHITE + enchant.getLevel());
             book.setItemMeta(meta);
             itemList.add(BasicItem.createFiller(book));
 

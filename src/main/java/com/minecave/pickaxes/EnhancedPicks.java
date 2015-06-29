@@ -16,6 +16,7 @@ import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.enchant.PEnchantManager;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemManager;
+import com.minecave.pickaxes.kit.KitManager;
 import com.minecave.pickaxes.level.LevelManager;
 import com.minecave.pickaxes.listener.MenuListener;
 import com.minecave.pickaxes.listener.PItemListener;
@@ -37,26 +38,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class EnhancedPicks extends JavaPlugin {
 
-    @Getter
     private static EnhancedPicks             instance;
-    @Getter
     private        Map<String, CustomConfig> configMap;
-    @Getter
     private        LevelManager              levelManager;
-    @Getter
     private        PSkillManager             pSkillManager;
-    @Getter
     private        DropManager               dropManager;
-    @Getter
     private        PEnchantManager           pEnchantManager;
-    @Getter
     private        PItemManager              pItemManager;
-    @Getter
     private        PlayerManager             playerManager;
-    @Getter
+    private        KitManager                kitManager;
     private int costPerLevel = 5;
+
+    public static EnhancedPicks getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -73,8 +71,10 @@ public class EnhancedPicks extends JavaPlugin {
         saveDefaultConfig("enchants");
         saveDefaultConfig("picks");
         saveDefaultConfig("swords");
+        saveDefaultConfig("kits");
         costPerLevel = getConfig("config").get("costPerLevel", Integer.class, 5);
 
+        kitManager = new KitManager();
         levelManager = new LevelManager();
         pSkillManager = new PSkillManager();
         dropManager = new DropManager();

@@ -56,5 +56,11 @@ lapis:
   #relative coords to broken (x,y,z) where x is the axis closest to the direction the player is looking
   #without this the nuker skill will not have an effect
   blocks:
-        - "0|0|0"
-        - "2|0|0"
+    - "0|0|0"
+    - "2|0|0"
+  max-level: 5
+  levels:
+    '1': 10
+    '2': 20
+    '3': 30
+    '4': 40

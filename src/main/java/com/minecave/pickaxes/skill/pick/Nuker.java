@@ -87,6 +87,7 @@ public class Nuker extends PSkill {
             if (!this.wg.canBuild(event.getPlayer(), loc)) {
                 continue;
             }
+//            loc.getBlock().setType(Material.GOLD_BLOCK);
             if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK) {
                 continue;
             }
