@@ -398,7 +398,10 @@ public class MenuCreator {
 
             ItemStack greenWool = new Wool(DyeColor.GREEN).toItemStack(enchant.getCost());
             meta = greenWool.getItemMeta();
-            meta.setLore(Collections.singletonList(ChatColor.GOLD + "Costs " + cost + " points."));
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GOLD + "Costs " + cost + " points.");
+            lore.add(ChatColor.DARK_GREEN + "Max level: " + ChatColor.WHITE + String.valueOf(enchant.getMaxLevel()));
+            meta.setLore(lore);
             meta.setDisplayName(enchant.getLevel() < enchant.getMaxLevel() ?
                     ChatColor.GREEN + "Click to add a level." :
                     ChatColor.DARK_GREEN + "Max level. Cannot increase.");
