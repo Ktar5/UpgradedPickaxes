@@ -202,10 +202,10 @@ public class PItem<E extends Event> {
                     if (type == PItemType.PICK) {
                         enchant.activate((BlockBreakEvent) event);
                     } else if (type == PItemType.SWORD) {
-                        if(enchant instanceof LuckEnchant) {
+                        if (enchant instanceof LuckEnchant) {
                             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
-                            if(e.getEntity() instanceof LivingEntity) {
-                                if(((LivingEntity) e.getEntity()).getHealth() <= e.getFinalDamage()) {
+                            if (e.getEntity() instanceof LivingEntity) {
+                                if (((LivingEntity) e.getEntity()).getHealth() <= e.getFinalDamage()) {
                                     enchant.activate((EntityDamageByEntityEvent) event);
                                 }
                             }
@@ -328,7 +328,7 @@ public class PItem<E extends Event> {
             totalXp = xp;
         }
         lore.add(ChatColor.DARK_AQUA + "Xp: " + ChatColor.YELLOW + xp + "/" + totalXp);
-        if(type == PItemType.PICK) {
+        if (type == PItemType.PICK) {
             lore.add(ChatColor.DARK_AQUA + "Blocks Broken: " + ChatColor.YELLOW + blocksBroken);
         }
         if (currentSkill != null) {
@@ -344,7 +344,12 @@ public class PItem<E extends Event> {
         } else {
             lore.addAll(list);
         }
-        lore.add("UUID:" + this.uuid.toString());
+        String uuid = "UUID:" + this.uuid.toString();
+        StringBuilder uuidBuilder = new StringBuilder();
+        for(char c : uuid.toCharArray()) {
+            uuidBuilder.append(ChatColor.COLOR_CHAR).append(c);
+        }
+        lore.add(uuidBuilder.toString());
         meta.setLore(lore);
         meta.setDisplayName(ChatColor.GOLD + Strings.color(name));
         item.setItemMeta(meta);

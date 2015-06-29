@@ -20,6 +20,7 @@ import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ItemBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -147,6 +148,7 @@ public class PItemManager {
             return null;
         }
         for (String l : lore) {
+            l = l.replace(ChatColor.COLOR_CHAR + "", "");
             if (l.startsWith("UUID:")) {
                 String u = l.replace("UUID:", "");
                 if (!pItemMap.containsKey(u)) {
@@ -172,6 +174,7 @@ public class PItemManager {
             return null;
         }
         for (String l : lore) {
+            l = l.replace(ChatColor.COLOR_CHAR + "", "");
             if (l.startsWith("UUID:")) {
                 String u = l.replace("UUID:", "");
                 if (!pItemMap.containsKey(u)) {

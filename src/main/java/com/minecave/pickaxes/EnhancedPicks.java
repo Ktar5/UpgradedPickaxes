@@ -26,6 +26,7 @@ import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ActionBar;
 import com.minecave.pickaxes.util.nbt.*;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -130,6 +131,7 @@ public class EnhancedPicks extends JavaPlugin {
                             if (itemMeta.hasLore()) {
                                 List<String> lore = itemMeta.getLore();
                                 for (String s : lore) {
+                                    s = s.replace(ChatColor.COLOR_CHAR + "", "");
                                     if (s.startsWith("UUID:")) {
                                         PItem<?> pItem = pItemManager.getPItemMap().get(s.replace("UUID:", ""));
                                         if (pItem != null) {
@@ -144,6 +146,7 @@ public class EnhancedPicks extends JavaPlugin {
                                     }
                                 }
                                 for (String s : lore) {
+                                    s = s.replace(ChatColor.COLOR_CHAR + "", "");
                                     if (s.startsWith("UUID:")) {
                                         lore.remove(s);
                                         break;
@@ -169,6 +172,7 @@ public class EnhancedPicks extends JavaPlugin {
                                 if (itemMeta.hasLore()) {
                                     List<String> lore = itemMeta.getLore();
                                     for (String s : lore) {
+                                        s = s.replace(ChatColor.COLOR_CHAR + "", "");
                                         if (s.startsWith("UUID:")) {
                                             PItem<?> pItem = pItemManager.getPItemMap().get(s.replace("UUID:", ""));
                                             if (pItem != null) {
@@ -183,6 +187,7 @@ public class EnhancedPicks extends JavaPlugin {
                                         }
                                     }
                                     for (String s : lore) {
+                                        s = s.replace(ChatColor.COLOR_CHAR + "", "");
                                         if (s.startsWith("UUID:")) {
                                             lore.remove(s);
                                             break;
