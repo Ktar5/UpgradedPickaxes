@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,7 +96,10 @@ public class TnTEnchant extends PEnchant {
         int radius = this.getLevel() * 2;
         player.getNearbyEntities(radius, radius, radius).stream()
                 .filter(ent -> ent instanceof LivingEntity && !(ent instanceof Player))
-                .forEach(ent -> ((LivingEntity) ent).damage(0.5D * this.getLevel()));
+                .forEach(ent -> {
+                    ent.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
+                    ((LivingEntity) ent).damage(0.5D * this.getLevel());
+                });
     }
 
     @Override

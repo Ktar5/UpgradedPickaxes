@@ -85,7 +85,7 @@ public class PickCommand implements CommandExecutor {
                     if (pItem.getPoints() < cost) {
                         player.sendMessage(ChatColor.RED + "You don't have enough points for " + levels + " levels.");
                         return true;
-                    } else if (pItem.getLevel().getId() + levels <= pItem.getMaxLevel().getId()) {
+                    } else if (pItem.getLevel().getId() + levels > pItem.getMaxLevel().getId()) {
                         player.sendMessage(ChatColor.RED + "Level " + (pItem.getLevel().getId() + 1) +
                                 " is higher than the max " + pItem.getMaxLevel().getId());
                         return true;

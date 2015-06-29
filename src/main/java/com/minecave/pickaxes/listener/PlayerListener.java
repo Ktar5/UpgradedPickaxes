@@ -1,5 +1,6 @@
 package com.minecave.pickaxes.listener;
 
+import com.minecave.minesell.nms.ShopVillager;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.MobValue;
 import com.minecave.pickaxes.item.PItem;
@@ -10,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,11 +60,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
+        Entity nonDamager = event.getEntity();
         if(event.getDamager() instanceof Player && !(event.getEntity() instanceof Player)) {
             //rage
             Player player = (Player) event.getDamager();
             if(plugin.getPSkillManager().getPSkill(Rage.class).getRagePlayers().contains(player)) {
-                if(event.getEntity() instanceof LivingEntity) {
+                if(event.getEntity() instanceof LivingEntity &&
+                        !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager)) {
                     LivingEntity le = (LivingEntity) event.getEntity();
                     le.setMetadata("player", new FixedMetadataValue(plugin, player.getUniqueId().toString()));
                     le.damage(le.getMaxHealth() * 2);
@@ -84,14 +88,16 @@ public class PlayerListener implements Listener {
             if (event.getDamager() instanceof Snowball) {
                 Snowball entity = (Snowball) event.getDamager();
                 if (entity.getCustomName() != null &&
-                        entity.getCustomName().equals("shotgun")) {
+                        entity.getCustomName().equals("shotgun") &&
+                        !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager)) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
                     event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
                 }
             } else if (event.getDamager() instanceof EnderPearl) {
                 EnderPearl entity = (EnderPearl) event.getDamager();
                 if (entity.getCustomName() != null &&
-                        entity.getCustomName().equals("acid")) {
+                        entity.getCustomName().equals("acid") &&
+                        !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager)) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
                     event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
                 }
@@ -100,7 +106,8 @@ public class PlayerListener implements Listener {
                 if (entity.getCustomName() != null &&
                         entity.getCustomName().equals("fireball")) {
                     entity.getNearbyEntities(3, 3, 3).stream()
-                            .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
+                            .filter(e -> !(e instanceof Player) &&
+                                    !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager) && e instanceof LivingEntity)
                             .forEach(e -> {
                                 LivingEntity le = (LivingEntity) e;
                                 le.setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
@@ -144,7 +151,6 @@ public class PlayerListener implements Listener {
                             pItem.incrementXp(xp, player);
                         }
                         event.getDrops().clear();
-                        event.getEntity().remove();
                     }
                 }
             }
@@ -159,7 +165,8 @@ public class PlayerListener implements Listener {
                     entity.getCustomName().equals("acid") || entity.hasMetadata("acid")) {
                 int radius = plugin.getPSkillManager().getPSkill(Acid.class).getRadius();
                 entity.getNearbyEntities(radius, radius, radius).stream()
-                        .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
+                        .filter(e -> !(e instanceof Player) &&
+                                !(((CraftEntity) e).getHandle() instanceof ShopVillager) && e instanceof LivingEntity)
                         .forEach(e -> {
                             LivingEntity le = (LivingEntity) e;
                             le.setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
@@ -172,7 +179,8 @@ public class PlayerListener implements Listener {
             if (entity.getCustomName() != null &&
                     entity.getCustomName().equals("fireball")) {
                 entity.getNearbyEntities(3, 3, 3).stream()
-                        .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
+                        .filter(e -> !(e instanceof Player) &&
+                                !(((CraftEntity) e).getHandle() instanceof ShopVillager) && e instanceof LivingEntity)
                         .forEach(e -> {
                             LivingEntity le = (LivingEntity) e;
                             le.setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));

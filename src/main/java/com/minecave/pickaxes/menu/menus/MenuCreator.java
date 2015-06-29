@@ -10,6 +10,7 @@ package com.minecave.pickaxes.menu.menus;
 
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
+import com.minecave.pickaxes.enchant.enchants.NormalEnchant;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemType;
 import com.minecave.pickaxes.menu.items.BasicItem;
@@ -385,6 +386,11 @@ public class MenuCreator {
                 if (enchant.getLevel() > 0) {
                     pItem.setItem(p.getItemInHand());
                     enchant.decreaseLevel(p, pItem);
+                    for (PEnchant pEnchant : pItem.getEnchants()) {
+                        if(pEnchant instanceof NormalEnchant) {
+                            pEnchant.apply(pItem);
+                        }
+                    }
                     updateMenuItems(menu, buildUpgradeItems(menu, player, pItem));
                     pItem.update(p);
                 }
@@ -412,6 +418,11 @@ public class MenuCreator {
                             enchant.getCost() <= pItem.getPoints()) {
                         pItem.setItem(p.getItemInHand());
                         enchant.increaseLevel(p, pItem);
+                        for (PEnchant pEnchant : pItem.getEnchants()) {
+                            if(pEnchant instanceof NormalEnchant) {
+                                pEnchant.apply(pItem);
+                            }
+                        }
                         updateMenuItems(menu, buildUpgradeItems(menu, player, pItem));
                         pItem.update(p);
                         return;

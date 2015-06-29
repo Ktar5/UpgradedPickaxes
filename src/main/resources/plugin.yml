@@ -1,7 +1,7 @@
 name: ${plugin.name}
 version: ${version}
 main: ${plugin.mainClass}
-depend: [WorldGuard]
+depend: [WorldGuard, MineSell]
 commands:
   pick:
     description: Opens up your pick UI. Use points arg to spend points on this item.
