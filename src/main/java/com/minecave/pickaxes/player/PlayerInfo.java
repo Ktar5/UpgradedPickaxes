@@ -13,7 +13,6 @@ import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemSerializer;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import lombok.Getter;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -43,22 +42,24 @@ public class PlayerInfo {
     @SuppressWarnings("unchecked")
     public void load() {
         //load items in player's inventory
-        for (int i = 0; i < this.player.getInventory().getContents().length; i++) {
-            ItemStack item = this.player.getInventory().getItem(i);
-            if (item != null) {
-                if (item.getType() == Material.DIAMOND_PICKAXE) {
-                    PItem<BlockBreakEvent> pItem = (PItem<BlockBreakEvent>) PItemSerializer.deserializePItem(item);
-                    if (pItem != null) {
+        if (config.has("invData")) {
+            String saved = config.get("invData", String.class, "");
+            if (!saved.equals("")) {
+                String[] items = saved.split("&");
+                for (String item : items) {
+                    String[] data = item.split("%");
+                    int i = Integer.parseInt(data[0]);
+                    String encoded = data[1];
+                    try {
+                        PItem<?> pItem = PItemSerializer.singlePItemBase64(encoded);
+                        if (pItem == null) {
+                            continue;
+                        }
                         EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
                         this.player.getInventory().setItem(i, pItem.getItem());
                         pItem.updateManually(player, pItem.getItem());
-                    }
-                } else if (item.getType() == Material.DIAMOND_SWORD) {
-                    PItem<EntityDamageByEntityEvent> pItem = (PItem<EntityDamageByEntityEvent>) PItemSerializer.deserializePItem(item);
-                    if (pItem != null) {
-                        EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
-                        this.player.getInventory().setItem(i, pItem.getItem());
-                        pItem.updateManually(player, pItem.getItem());
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -101,7 +102,7 @@ public class PlayerInfo {
                 e.printStackTrace();
             }
         }
-        if(config.has("unspentPoints")) {
+        if (config.has("unspentPoints")) {
             this.unspentPoints = config.get("unspentPoints", Integer.class, 0);
         }
     }
@@ -111,7 +112,7 @@ public class PlayerInfo {
     }
 
     public boolean subtractPoints(int points) {
-        if(this.unspentPoints < points) {
+        if (this.unspentPoints < points) {
             return false;
         }
         this.unspentPoints -= points;
@@ -120,26 +121,19 @@ public class PlayerInfo {
 
     public void save() {
         //save items in player's inventory
+        StringBuilder inventory = new StringBuilder("");
         for (int i = 0; i < this.player.getInventory().getContents().length; i++) {
             ItemStack item = this.player.getInventory().getItem(i);
             if (item != null) {
-                if (item.getType() == Material.DIAMOND_PICKAXE) {
-                    PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
-                            .getPItem(BlockBreakEvent.class, item);
-                    if (pItem != null) {
-                        EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
-                        ItemStack newItem = PItemSerializer.serializePItem(pItem);
-                        this.player.getInventory().setItem(i, newItem);
-                        this.player.updateInventory();
-                    }
-                } else if (item.getType() == Material.DIAMOND_SWORD) {
-                    PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
-                            .getPItem(EntityDamageByEntityEvent.class, item);
-                    if (pItem != null) {
-                        EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
-                        ItemStack newItem = PItemSerializer.serializePItem(pItem);
-                        this.player.getInventory().setItem(i, newItem);
-                        this.player.updateInventory();
+                PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(item);
+                if (pItem != null) {
+                    EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
+                    try {
+                        String encoded = PItemSerializer.base64PItem(pItem);
+                        inventory.append(String.valueOf(i)).append("%").append(encoded).append("&");
+                        player.getInventory().setItem(i, null);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -150,6 +144,7 @@ public class PlayerInfo {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        config.set("invData", inventory.toString());
         config.set("unspentPoints", this.unspentPoints);
         config.saveConfig();
     }
