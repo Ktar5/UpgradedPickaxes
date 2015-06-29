@@ -43,7 +43,6 @@ public class NormalEnchant extends PEnchant {
 
     @Override
     public void apply(PItem pItem) {
-        super.apply(pItem);
         if (pItem.getItem().containsEnchantment(this.enchantment) ||
                 super.getLevel() >= 0) {
             pItem.getItem().removeEnchantment(enchantment);
@@ -51,6 +50,7 @@ public class NormalEnchant extends PEnchant {
                 pItem.getItem().addUnsafeEnchantment(enchantment, this.getLevel());
             }
         }
+//        super.apply(pItem);
     }
 
     @Override

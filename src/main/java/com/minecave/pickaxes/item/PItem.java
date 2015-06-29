@@ -149,7 +149,7 @@ public class PItem<E extends Event> {
         if (totalXp < xp) {
             totalXp = xp;
         }
-        displayName = displayName.replace("{name}", name)
+        displayName = displayName.replace("{name}", Strings.color(name) + ChatColor.RESET)
                 .replace("{level}", String.valueOf(level.getId()))
                 .replace("{xp}", String.valueOf(xp))
                 .replace("{nextLevelXpTotal}", String.valueOf(totalXp))
@@ -346,7 +346,7 @@ public class PItem<E extends Event> {
         }
         lore.add("UUID:" + this.uuid.toString());
         meta.setLore(lore);
-        meta.setDisplayName(ChatColor.GOLD + name);
+        meta.setDisplayName(ChatColor.GOLD + Strings.color(name));
         item.setItemMeta(meta);
     }
 

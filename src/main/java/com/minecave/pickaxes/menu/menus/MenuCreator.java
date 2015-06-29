@@ -409,7 +409,6 @@ public class MenuCreator {
                             enchant.getCost() <= pItem.getPoints()) {
                         pItem.setItem(p.getItemInHand());
                         enchant.increaseLevel(p, pItem);
-                        p.sendMessage(String.valueOf(enchant.getLevel()));
                         updateMenuItems(menu, buildUpgradeItems(menu, player, pItem));
                         pItem.update(p);
                         return;

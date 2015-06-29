@@ -137,7 +137,6 @@ public class PlayerListener implements Listener {
                     String s = mv.asString();
                     Player player = Bukkit.getPlayer(UUID.fromString(s));
                     if (player != null) {
-                        System.out.println(player.getName() + " " + player.getUniqueId());
                         player.getInventory().addItem(event.getDrops().toArray(new ItemStack[event.getDrops().size()]));
                         PItem<?> pItem = plugin.getPItemManager().getPItem(player.getItemInHand());
                         if (pItem != null) {

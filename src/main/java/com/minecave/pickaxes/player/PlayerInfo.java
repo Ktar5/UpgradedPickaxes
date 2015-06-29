@@ -57,7 +57,9 @@ public class PlayerInfo {
                         }
                         EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
                         this.player.getInventory().setItem(i, pItem.getItem());
-                        pItem.updateManually(player, pItem.getItem());
+                        ItemStack stack = player.getInventory().getItem(i);
+                        pItem.setItem(stack);
+                        pItem.updateManually(player, stack);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
