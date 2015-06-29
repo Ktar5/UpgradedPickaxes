@@ -30,7 +30,7 @@ public abstract class PSkill {
 
     protected final WorldGuardPlugin wg;
     private         String           name;
-    private         long             cooldown;
+    protected          long             cooldown;
     private         int              level;
     @Getter
     private         int              cost;

@@ -45,4 +45,10 @@ public class Rage extends PSkill {
     public List<Player> getRagePlayers() {
         return this.ragePlayers;
     }
+
+    public void removePlayer(Player player) {
+        if(this.ragePlayers.contains(player)) {
+            this.ragePlayers.remove(player);
+        }
+    }
 }

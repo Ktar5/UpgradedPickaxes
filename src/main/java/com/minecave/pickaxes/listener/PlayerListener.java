@@ -13,10 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -44,9 +41,19 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        plugin.getPSkillManager().getPSkill(Acid.class).removePlayer(player);
+        plugin.getPSkillManager().getPSkill(Rage.class).removePlayer(player);
         PlayerInfo info = plugin.getPlayerManager().get(player);
         info.save();
         plugin.getPlayerManager().remove(player);
+    }
+
+    @EventHandler
+    public void creatureSpawn(CreatureSpawnEvent event) {
+        if(event.getEntity() instanceof Endermite) {
+            event.setCancelled(true);
+            event.getEntity().remove();
+        }
     }
 
     @EventHandler
@@ -65,6 +72,7 @@ public class PlayerListener implements Listener {
         }
         if (event.getEntity() instanceof Player) {
             if (event.getDamager() instanceof Arrow &&
+                    event.getDamager().getCustomName() != null &&
                     event.getDamager().getCustomName().equals("rain")) {
                 event.setCancelled(true);
                 event.setDamage(0);
@@ -75,19 +83,22 @@ public class PlayerListener implements Listener {
                 event.getEntity() instanceof LivingEntity) {
             if (event.getDamager() instanceof Snowball) {
                 Snowball entity = (Snowball) event.getDamager();
-                if (entity.getCustomName().equals("shotgun")) {
+                if (entity.getCustomName() != null &&
+                        entity.getCustomName().equals("shotgun")) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
                     event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
                 }
             } else if (event.getDamager() instanceof EnderPearl) {
                 EnderPearl entity = (EnderPearl) event.getDamager();
-                if (entity.getCustomName().equals("acid")) {
+                if (entity.getCustomName() != null &&
+                        entity.getCustomName().equals("acid")) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
                     event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
                 }
             } else if (event.getDamager() instanceof Fireball) {
                 Fireball entity = (Fireball) event.getDamager();
-                if (entity.getCustomName().equals("fireball")) {
+                if (entity.getCustomName() != null &&
+                        entity.getCustomName().equals("fireball")) {
                     entity.getNearbyEntities(3, 3, 3).stream()
                             .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
                             .forEach(e -> {
@@ -105,7 +116,8 @@ public class PlayerListener implements Listener {
                 if (event.getFinalDamage() >= ((LivingEntity) event.getEntity()).getHealth()) {
                     Arrow entity = (Arrow) event.getDamager();
                     if (entity.getShooter() instanceof Player) {
-                        if (entity.getCustomName().equals("rain")) {
+                        if (entity.getCustomName() != null &&
+                                entity.getCustomName().equals("rain")) {
                             event.getEntity().setMetadata("player", new FixedMetadataValue(plugin,
                                     ((Player) entity.getShooter()).getUniqueId().toString()));
                         }
@@ -144,7 +156,8 @@ public class PlayerListener implements Listener {
     public void onProjectileLand(ProjectileHitEvent event) {
         if (event.getEntity() instanceof EnderPearl) {
             EnderPearl entity = (EnderPearl) event.getEntity();
-            if (entity.getCustomName().equals("acid") || entity.hasMetadata("acid")) {
+            if (entity.getCustomName() != null &&
+                    entity.getCustomName().equals("acid") || entity.hasMetadata("acid")) {
                 int radius = plugin.getPSkillManager().getPSkill(Acid.class).getRadius();
                 entity.getNearbyEntities(radius, radius, radius).stream()
                         .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
@@ -157,7 +170,8 @@ public class PlayerListener implements Listener {
         }
         if (event.getEntity() instanceof Fireball) {
             Fireball entity = (Fireball) event.getEntity();
-            if (entity.getCustomName().equals("fireball")) {
+            if (entity.getCustomName() != null &&
+                    entity.getCustomName().equals("fireball")) {
                 entity.getNearbyEntities(3, 3, 3).stream()
                         .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
                         .forEach(e -> {
@@ -174,7 +188,8 @@ public class PlayerListener implements Listener {
         }
         if (event.getEntity() instanceof Arrow) {
             Arrow entity = (Arrow) event.getEntity();
-            if (entity.getCustomName().equals("rain")) {
+            if (entity.getCustomName() != null &&
+                    entity.getCustomName().equals("rain")) {
                 Bukkit.getScheduler().runTaskLater(EnhancedPicks.getInstance(), entity::remove, 5L);
             }
         }
@@ -183,6 +198,10 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onEntityTeleport(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+            if(plugin.getPSkillManager().getPSkill(Acid.class).hasPlayer(event.getPlayer())) {
+                event.setCancelled(true);
+                return;
+            }
             PItem<?> pItem = plugin.getPItemManager().getPItem(event.getPlayer().getItemInHand());
             if (pItem != null) {
                 event.setCancelled(true);
