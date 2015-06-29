@@ -12,6 +12,7 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.util.firework.FireworkBuilder;
 import com.minecave.pickaxes.util.message.MessageBuilder;
+import com.minecave.pickaxes.util.message.Strings;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -55,7 +56,7 @@ public class Level {
             }
             builder.replace(0, MessageBuilder.IntegerType.XP)
                     .replace(pItem);
-            messages.add(builder.build());
+            messages.add(Strings.color(builder.build()));
         }
         for (String s : this.commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);

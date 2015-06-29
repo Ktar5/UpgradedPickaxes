@@ -32,11 +32,11 @@ public class MessageBuilder {
         return this;
     }
 
-    public MessageBuilder replace(PItem PItem) {
-        if (PItem == null) {
+    public MessageBuilder replace(PItem pItem) {
+        if (pItem == null) {
             return this;
         }
-        this.base = base.replace("$name$", PItem.getName());
+        this.base = base.replace("$name$", Strings.color(pItem.getName()));
         return this;
     }
 
