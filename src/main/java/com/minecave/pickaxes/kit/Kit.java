@@ -14,7 +14,15 @@ import lombok.Value;
 @Value
 @AllArgsConstructor
 public class Kit {
+    private String name;
     private String pSettingsKey;
     private boolean pick;
     private boolean sword;
+
+    @Override
+    public String toString() {
+        return "[Kit: " + name +
+                " [Key: " + pSettingsKey +
+                ", Pick: " + pick + ", Sword: " + sword + "]]";
+    }
 }

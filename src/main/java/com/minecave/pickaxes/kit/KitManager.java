@@ -24,6 +24,7 @@ public class KitManager {
     public KitManager() {
         this.plugin = EnhancedPicks.getInstance();
         this.kitMap = new HashMap<>();
+        this.load();
     }
 
     public void load() {
@@ -35,7 +36,9 @@ public class KitManager {
             if(kitName.equals("") && !pick && !sword) {
                 continue;
             }
-            this.kitMap.put(kitName, new Kit(key, pick, sword));
+            Kit kit = new Kit(kitName, key, pick, sword);
+            plugin.getLogger().info(kit.toString());
+            this.kitMap.put(kit.getName(), kit);
         }
     }
 }
