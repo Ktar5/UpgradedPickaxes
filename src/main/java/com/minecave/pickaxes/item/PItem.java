@@ -40,12 +40,13 @@ public class PItem<E extends Event> {
 
     private final EnhancedPicks plugin;
 
-    private final String       name;
-    private final PItemType    type;
-    private       ItemStack    item;
-    private final UUID         uuid;
-    private       String       pItemSettings;
-    private       List<String> nukerBlocks;
+    private final String        name;
+    private final PItemType     type;
+    private       ItemStack     item;
+    private final UUID          uuid;
+    private       String        pItemSettings;
+    private       PItemSettings settingsObject;
+    private       List<String>  nukerBlocks;
 
     private int xp;
     private int points         = 1;
@@ -63,8 +64,9 @@ public class PItem<E extends Event> {
     private BiConsumer<PItem, E> action;
     private Class<E>             eClass;
 
-    public PItem(Class<E> eClass, String name, PItemType type, ItemStack item) {
+    public PItem(PItemSettings settings, Class<E> eClass, String name, PItemType type, ItemStack item) {
         this.plugin = EnhancedPicks.getInstance();
+        this.settingsObject = settings;
         this.eClass = eClass;
         this.name = name;
         this.type = type;
@@ -73,8 +75,9 @@ public class PItem<E extends Event> {
         this.purchasedSkills = new ArrayList<>();
         this.availableSkills = new ArrayList<>();
         this.nukerBlocks = new ArrayList<>();
-        this.level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
-        this.maxLevel = EnhancedPicks.getInstance().getLevelManager().getMaxLevel();
+
+        this.level = settingsObject.getLevel(1);
+        this.maxLevel = settingsObject.getMaxLevel();
         UUID temp = UUID.randomUUID();
         while (plugin.getPItemManager().getPItemMap().containsKey(temp.toString())) {
             temp = UUID.randomUUID();
@@ -346,7 +349,7 @@ public class PItem<E extends Event> {
         }
         String uuid = "UUID:" + this.uuid.toString();
         StringBuilder uuidBuilder = new StringBuilder();
-        for(char c : uuid.toCharArray()) {
+        for (char c : uuid.toCharArray()) {
             uuidBuilder.append(ChatColor.COLOR_CHAR).append(c);
         }
         lore.add(uuidBuilder.toString());

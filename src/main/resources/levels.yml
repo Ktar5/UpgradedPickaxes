@@ -17,6 +17,7 @@ levels:
     message: '&e&lMessage here'
     cosmetics:
       firework:
+        determinePerLevel: true
         enabled: true
         #The maximim amount of Fireworks that can be launched
         #Set to RANDOM-MIN:3&MAX:7 to randomize between 3 and 7 (you can, of course, use any number)

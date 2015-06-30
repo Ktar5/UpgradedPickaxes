@@ -75,12 +75,12 @@ public class PItemSerializer {
         if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
             return null;
         }
-        Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+        Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
         if(settingsCollection == null) {
             return null;
         }
-        PItemManager.PItemSettings pItemSettings = null;
-        for(PItemManager.PItemSettings ps : settingsCollection) {
+        PItemSettings pItemSettings = null;
+        for(PItemSettings ps : settingsCollection) {
             if(pItemType == ps.getType()) {
                 pItemSettings = ps;
             }
@@ -112,11 +112,11 @@ public class PItemSerializer {
 
         //CUR_LEVEL
         storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
-        pItem.setLevel(plugin.getLevelManager().getLevel(Integer.parseInt(storage.getData("1"))));
+        pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(storage.getData("1"))));
 
         //MAX_LEVEL
         storage = EPAttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
-        pItem.setMaxLevel(plugin.getLevelManager().getLevel(Integer.parseInt(storage.getData("10"))));
+        pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(storage.getData("10"))));
 
         //AVAILABLE_SKILL
         storage = EPAttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
@@ -310,12 +310,12 @@ public class PItemSerializer {
         if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
             return null;
         }
-        Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+        Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
         if(settingsCollection == null) {
             return null;
         }
-        PItemManager.PItemSettings pItemSettings = null;
-        for(PItemManager.PItemSettings ps : settingsCollection) {
+        PItemSettings pItemSettings = null;
+        for(PItemSettings ps : settingsCollection) {
             if(pItemType == ps.getType()) {
                 pItemSettings = ps;
             }
@@ -339,8 +339,8 @@ public class PItemSerializer {
 
         pItem.setXp(Integer.parseInt(xp));
         pItem.setPoints(Integer.parseInt(points));
-        pItem.setLevel(plugin.getLevelManager().getLevel(Integer.parseInt(curLevel)));
-        pItem.setMaxLevel(plugin.getLevelManager().getLevel(Integer.parseInt(maxLevel)));
+        pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+        pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
 
         if (availSkills != null && !availSkills.equals("")) {
             String[] skillSplit = availSkills.split("-");
@@ -451,12 +451,12 @@ public class PItemSerializer {
             if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
                 return null;
             }
-            Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+            Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
             if(settingsCollection == null) {
                 return null;
             }
-            PItemManager.PItemSettings pItemSettings = null;
-            for(PItemManager.PItemSettings ps : settingsCollection) {
+            PItemSettings pItemSettings = null;
+            for(PItemSettings ps : settingsCollection) {
                 if(pItemType == ps.getType()) {
                     pItemSettings = ps;
                 }
@@ -480,8 +480,8 @@ public class PItemSerializer {
 
             pItem.setXp(Integer.parseInt(xp));
             pItem.setPoints(Integer.parseInt(points));
-            pItem.setLevel(plugin.getLevelManager().getLevel(Integer.parseInt(curLevel)));
-            pItem.setMaxLevel(plugin.getLevelManager().getLevel(Integer.parseInt(maxLevel)));
+            pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+            pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
 
             if (availSkills != null && !availSkills.equals("")) {
                 String[] skillSplit = availSkills.split("-");

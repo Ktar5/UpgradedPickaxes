@@ -17,7 +17,6 @@ import com.minecave.pickaxes.enchant.PEnchantManager;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemManager;
 import com.minecave.pickaxes.kit.KitManager;
-import com.minecave.pickaxes.level.LevelManager;
 import com.minecave.pickaxes.listener.MenuListener;
 import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
@@ -43,7 +42,6 @@ public class EnhancedPicks extends JavaPlugin {
 
     private static EnhancedPicks             instance;
     private        Map<String, CustomConfig> configMap;
-    private        LevelManager              levelManager;
     private        PSkillManager             pSkillManager;
     private        DropManager               dropManager;
     private        PEnchantManager           pEnchantManager;
@@ -75,7 +73,6 @@ public class EnhancedPicks extends JavaPlugin {
         costPerLevel = getConfig("config").get("costPerLevel", Integer.class, 5);
 
         kitManager = new KitManager();
-        levelManager = new LevelManager();
         pSkillManager = new PSkillManager();
         dropManager = new DropManager();
         pEnchantManager = new PEnchantManager();
@@ -193,6 +190,7 @@ public class EnhancedPicks extends JavaPlugin {
                                             break;
                                         }
                                     }
+                                    itemMeta.setLore(lore);
                                     item.setItemMeta(itemMeta);
                                 }
                             }

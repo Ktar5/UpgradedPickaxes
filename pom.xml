@@ -6,7 +6,7 @@
 
     <groupId>com.minecave</groupId>
     <artifactId>enhancedpicks</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
 
     <properties>
         <plugin.name>EnhancedPicks</plugin.name>

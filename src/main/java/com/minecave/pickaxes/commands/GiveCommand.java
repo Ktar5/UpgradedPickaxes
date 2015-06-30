@@ -11,7 +11,7 @@ package com.minecave.pickaxes.commands;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
-import com.minecave.pickaxes.item.PItemManager;
+import com.minecave.pickaxes.item.PItemSettings;
 import com.minecave.pickaxes.item.PItemType;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -49,13 +49,13 @@ public class GiveCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Not a valid item type.");
             return true;
         }
-        Collection<PItemManager.PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(configStr);
+        Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(configStr);
         if(settingsCollection == null) {
             sender.sendMessage(ChatColor.RED + configStr + " does not exist in the config.");
             return true;
         }
-        PItemManager.PItemSettings pItemSettings = null;
-        for(PItemManager.PItemSettings ps : settingsCollection) {
+        PItemSettings pItemSettings = null;
+        for(PItemSettings ps : settingsCollection) {
             if(type == ps.getType()) {
                 pItemSettings = ps;
             }

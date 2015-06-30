@@ -10,6 +10,7 @@ package com.minecave.pickaxes.level;
 
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.item.PItemSettings;
 import com.minecave.pickaxes.util.firework.FireworkBuilder;
 import com.minecave.pickaxes.util.message.MessageBuilder;
 import com.minecave.pickaxes.util.message.Strings;
@@ -22,18 +23,17 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Level {
 
-    @Getter
     private int             id;
-    @Getter
     private int             xp;
-    @Getter
     private List<String>    commands;
-    @Getter
     private FireworkBuilder fireworkBuilder;
+    private PItemSettings   pItemSetting;
 
-    public Level(int id, int xp, List<String> commands, FireworkBuilder fireworkBuilder) {
+    public Level(PItemSettings settings, int id, int xp, List<String> commands, FireworkBuilder fireworkBuilder) {
+        this.pItemSetting = settings;
         this.id = id;
         this.xp = xp;
         this.commands = commands;
@@ -43,7 +43,11 @@ public class Level {
     public void levelUp(Player player, PItem pItem) {
         Level next = getNext();
         List<String> messages = new ArrayList<>();
-        for (String s : EnhancedPicks.getInstance().getLevelManager().getLevelUpMessage()) {
+        if (pItemSetting == null) {
+            EnhancedPicks.getInstance().getLogger().severe("Failed to level up " + player.getName() + " due to invalid PItemSettings object.");
+            return;
+        }
+        for (String s : pItemSetting.getLevelUpMessage()) {
             MessageBuilder builder = new MessageBuilder(s);
             builder.replace(player)
                     .replace(id, MessageBuilder.IntegerType.PLAYER_LEVEL);
@@ -61,7 +65,7 @@ public class Level {
         for (String s : this.commands) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replace("$player$", player.getName()));
         }
-        if (!EnhancedPicks.getInstance().getLevelManager().getBlackList().contains(this.id)) {
+        if (!pItemSetting.getBlackList().contains(this.id)) {
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0F, 1.0F);
             if (fireworkBuilder != null) {
                 fireworkBuilder.play(player);
@@ -75,10 +79,10 @@ public class Level {
         if (id == 1) {
             return null;
         }
-        return EnhancedPicks.getInstance().getLevelManager().getLevel(id - 1);
+        return pItemSetting.getLevel(id - 1);
     }
 
     public Level getNext() {
-        return EnhancedPicks.getInstance().getLevelManager().getLevel(id + 1);
+        return pItemSetting.getLevel(id + 1);
     }
 }

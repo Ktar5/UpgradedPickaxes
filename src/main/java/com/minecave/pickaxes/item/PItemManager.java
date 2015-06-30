@@ -11,21 +11,15 @@ package com.minecave.pickaxes.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.minecave.pickaxes.EnhancedPicks;
-import com.minecave.pickaxes.drops.BlockValue;
-import com.minecave.pickaxes.drops.MobValue;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.level.Level;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.config.CustomConfig;
-import com.minecave.pickaxes.util.item.ItemBuilder;
+import com.minecave.pickaxes.util.firework.FireworkBuilder;
 import lombok.Getter;
-import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -44,6 +38,10 @@ public class PItemManager {
         pItemMap = new HashMap<>();
         settingsMap = ArrayListMultimap.create();
 
+        CustomConfig pluginConfig = plugin.getConfig("config");
+        CustomConfig levelConfig = plugin.getConfig("levels");
+
+        //PICKS
         CustomConfig pickConfig = plugin.getConfig("picks");
         for (String n : pickConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.PICK);
@@ -87,9 +85,108 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
+            
+            ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
+            boolean perLevel = firework.getBoolean("determinePerLevel");
+            if (!perLevel) {
+                settings.setDefaultBuilder(new FireworkBuilder());
+                if (firework.get("blacklist") != null) {
+                    settings.getBlackList().addAll(firework.getIntegerList("blacklist"));
+                }
+                settings.getDefaultBuilder().amount(firework.getInt("amount"));
+                settings.getDefaultBuilder().playerOnly(firework.getBoolean("playerOnly"));
+                settings.getDefaultBuilder().range(firework.getInt("range"));
+                firework.getStringList("colors").forEach(settings.getDefaultBuilder()::addColor);
+                firework.getStringList("fade-colors").forEach(settings.getDefaultBuilder()::addFadeColor);
+                settings.getDefaultBuilder().trail(firework.getBoolean("trail"));
+                settings.getDefaultBuilder().flicker(firework.getBoolean("flicker"));
+            }
+            settings.getLevelUpMessage().addAll(pluginConfig.getConfig().getStringList("level-up-message"));
+            if(pickConfig.has(n + ".max-level")){
+                settings.setMaxLevel(pickConfig.get(n + ".max-level", Integer.class, 10));
+            } else {
+                settings.setMaxLevel(levelConfig.get("max-level", Integer.class, 10));
+            }
+            if(pickConfig.has(concat(n, "levels"))) {
+                for (String levelKey : pickConfig.getConfigurationSection(n + ".levels").getKeys(false)) {
+                    int lvl = Integer.parseInt(levelKey);
+                    levelKey = "levels." + levelKey;
+                    int lvlXp = pickConfig.get(concat(n, levelKey) + ".xp", Integer.class);
+                    List<String> commands = pickConfig.getConfig().getStringList(concat(n, levelKey) + ".commands");
+                    ConfigurationSection fireworkSection = pickConfig.getConfigurationSection(concat(n, levelKey) + ".cosmetics.firework");
+                    Level levelObject;
+                    if (fireworkSection.getBoolean("enabled")) {
+                        FireworkBuilder fireworkBuilder = new FireworkBuilder();
+                        fireworkBuilder.amount(fireworkSection.getInt("amount"));
+                        fireworkBuilder.playerOnly(fireworkSection.getBoolean("playerOnly"));
+                        fireworkBuilder.range(fireworkSection.getInt("range"));
+                        fireworkSection.getStringList("colors").forEach(fireworkBuilder::addColor);
+                        fireworkSection.getStringList("fade-colors").forEach(fireworkBuilder::addFadeColor);
+                        fireworkBuilder.trail(fireworkSection.getBoolean("trail"));
+                        fireworkBuilder.flicker(fireworkSection.getBoolean("flicker"));
+                        levelObject = new Level(settings, lvl, lvlXp, commands, fireworkBuilder);
+                    } else {
+                        levelObject = new Level(settings, lvl, lvlXp, commands, settings.getDefaultBuilder());
+                    }
+                    if (settings.getExampleLevel() == null) {
+                        settings.setExampleLevel(levelObject);
+                    }
+                    settings.getLevelMap().put(lvl, levelObject);
+                }
+                for (int i = 1; i <= settings.getMaxLevelInt(); i++) {
+                    if (!settings.getLevelMap().containsKey(i)) {
+                        if (settings.getExampleLevel() != null) {
+                            settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
+                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                        } else {
+                            settings.getLevelMap().put(i, new Level(settings, i, 100,
+                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                        }
+                    }
+                }
+            } else {
+                for (String levelKey : levelConfig.getConfigurationSection("levels").getKeys(false)) {
+                    int lvl = Integer.parseInt(levelKey);
+                    levelKey = "levels." + levelKey;
+                    int lvlXp = levelConfig.get(levelKey + ".xp", Integer.class);
+                    List<String> commands = levelConfig.getConfig().getStringList(levelKey + ".commands");
+                    ConfigurationSection fireworkSection = levelConfig.getConfigurationSection(levelKey + ".cosmetics.firework");
+                    Level levelObject;
+                    if (fireworkSection.getBoolean("enabled")) {
+                        FireworkBuilder fireworkBuilder = new FireworkBuilder();
+                        fireworkBuilder.amount(fireworkSection.getInt("amount"));
+                        fireworkBuilder.playerOnly(fireworkSection.getBoolean("playerOnly"));
+                        fireworkBuilder.range(fireworkSection.getInt("range"));
+                        fireworkSection.getStringList("colors").forEach(fireworkBuilder::addColor);
+                        fireworkSection.getStringList("fade-colors").forEach(fireworkBuilder::addFadeColor);
+                        fireworkBuilder.trail(fireworkSection.getBoolean("trail"));
+                        fireworkBuilder.flicker(fireworkSection.getBoolean("flicker"));
+                        levelObject = new Level(settings, lvl, lvlXp, commands, fireworkBuilder);
+                    } else {
+                        levelObject = new Level(settings, lvl, lvlXp, commands, settings.getDefaultBuilder());
+                    }
+                    if (settings.getExampleLevel() == null) {
+                        settings.setExampleLevel(levelObject);
+                    }
+                    settings.getLevelMap().put(lvl, levelObject);
+                }
+                for (int i = 1; i <= settings.getMaxLevelInt(); i++) {
+                    if (!settings.getLevelMap().containsKey(i)) {
+                        if (settings.getExampleLevel() != null) {
+                            settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
+                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                        } else {
+                            settings.getLevelMap().put(i, new Level(settings, i, 100,
+                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                        }
+                    }
+                }
+            }
+
             this.settingsMap.put(n, settings);
             EnhancedPicks.getInstance().getLogger().info(settings.toString());
         }
+        //SWORDS
         CustomConfig swordConfig = plugin.getConfig("swords");
         for (String n : swordConfig.getConfig().getKeys(false)) {
             PItemSettings settings = new PItemSettings(n, PItemType.SWORD);
@@ -130,6 +227,104 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
+            
+            ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
+            boolean perLevel = firework.getBoolean("determinePerLevel");
+            if (!perLevel) {
+                settings.setDefaultBuilder(new FireworkBuilder());
+                if (firework.get("blacklist") != null) {
+                    settings.getBlackList().addAll(firework.getIntegerList("blacklist"));
+                }
+                settings.getDefaultBuilder().amount(firework.getInt("amount"));
+                settings.getDefaultBuilder().playerOnly(firework.getBoolean("playerOnly"));
+                settings.getDefaultBuilder().range(firework.getInt("range"));
+                firework.getStringList("colors").forEach(settings.getDefaultBuilder()::addColor);
+                firework.getStringList("fade-colors").forEach(settings.getDefaultBuilder()::addFadeColor);
+                settings.getDefaultBuilder().trail(firework.getBoolean("trail"));
+                settings.getDefaultBuilder().flicker(firework.getBoolean("flicker"));
+            }
+            settings.getLevelUpMessage().addAll(pluginConfig.getConfig().getStringList("level-up-message"));
+            if(swordConfig.has(n + ".max-level")){
+                settings.setMaxLevel(swordConfig.get(n + ".max-level", Integer.class, 10));
+            } else{
+                settings.setMaxLevel(levelConfig.get("max-level", Integer.class, 10));
+            }
+            if(swordConfig.has(concat(n, "levels"))) {
+                for (String levelKey : swordConfig.getConfigurationSection(n + ".levels").getKeys(false)) {
+                    int lvl = Integer.parseInt(levelKey);
+                    levelKey = "levels." + levelKey;
+                    int lvlXp = swordConfig.get(concat(n, levelKey) + ".xp", Integer.class);
+                    List<String> commands = swordConfig.getConfig().getStringList(concat(n, levelKey) + ".commands");
+                    ConfigurationSection fireworkSection = swordConfig.getConfigurationSection(concat(n, levelKey) + ".cosmetics.firework");
+                    Level levelObject;
+                    if (fireworkSection.getBoolean("enabled")) {
+                        FireworkBuilder fireworkBuilder = new FireworkBuilder();
+                        fireworkBuilder.amount(fireworkSection.getInt("amount"));
+                        fireworkBuilder.playerOnly(fireworkSection.getBoolean("playerOnly"));
+                        fireworkBuilder.range(fireworkSection.getInt("range"));
+                        fireworkSection.getStringList("colors").forEach(fireworkBuilder::addColor);
+                        fireworkSection.getStringList("fade-colors").forEach(fireworkBuilder::addFadeColor);
+                        fireworkBuilder.trail(fireworkSection.getBoolean("trail"));
+                        fireworkBuilder.flicker(fireworkSection.getBoolean("flicker"));
+                        levelObject = new Level(settings, lvl, lvlXp, commands, fireworkBuilder);
+                    } else {
+                        levelObject = new Level(settings, lvl, lvlXp, commands, settings.getDefaultBuilder());
+                    }
+                    if (settings.getExampleLevel() == null) {
+                        settings.setExampleLevel(levelObject);
+                    }
+                    settings.getLevelMap().put(lvl, levelObject);
+                }
+                for (int i = 1; i <= settings.getMaxLevelInt(); i++) {
+                    if (!settings.getLevelMap().containsKey(i)) {
+                        if (settings.getExampleLevel() != null) {
+                            settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
+                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                        } else {
+                            settings.getLevelMap().put(i, new Level(settings, i, 100,
+                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                        }
+                    }
+                }
+            } else {
+                for (String levelKey : levelConfig.getConfigurationSection("levels").getKeys(false)) {
+                    int lvl = Integer.parseInt(levelKey);
+                    levelKey = "levels." + levelKey;
+                    int lvlXp = levelConfig.get(levelKey + ".xp", Integer.class);
+                    List<String> commands = levelConfig.getConfig().getStringList(levelKey + ".commands");
+                    ConfigurationSection fireworkSection = levelConfig.getConfigurationSection(levelKey + ".cosmetics.firework");
+                    Level levelObject;
+                    if (fireworkSection.getBoolean("enabled")) {
+                        FireworkBuilder fireworkBuilder = new FireworkBuilder();
+                        fireworkBuilder.amount(fireworkSection.getInt("amount"));
+                        fireworkBuilder.playerOnly(fireworkSection.getBoolean("playerOnly"));
+                        fireworkBuilder.range(fireworkSection.getInt("range"));
+                        fireworkSection.getStringList("colors").forEach(fireworkBuilder::addColor);
+                        fireworkSection.getStringList("fade-colors").forEach(fireworkBuilder::addFadeColor);
+                        fireworkBuilder.trail(fireworkSection.getBoolean("trail"));
+                        fireworkBuilder.flicker(fireworkSection.getBoolean("flicker"));
+                        levelObject = new Level(settings, lvl, lvlXp, commands, fireworkBuilder);
+                    } else {
+                        levelObject = new Level(settings, lvl, lvlXp, commands, settings.getDefaultBuilder());
+                    }
+                    if (settings.getExampleLevel() == null) {
+                        settings.setExampleLevel(levelObject);
+                    }
+                    settings.getLevelMap().put(lvl, levelObject);
+                }
+                for (int i = 1; i <= settings.getMaxLevelInt(); i++) {
+                    if (!settings.getLevelMap().containsKey(i)) {
+                        if (settings.getExampleLevel() != null) {
+                            settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
+                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                        } else {
+                            settings.getLevelMap().put(i, new Level(settings, i, 100,
+                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                        }
+                    }
+                }
+            }
+
             this.settingsMap.put(n, settings);
             EnhancedPicks.getInstance().getLogger().info(settings.toString());
         }
@@ -200,138 +395,5 @@ public class PItemManager {
 
     private String concat(String s, String s1) {
         return s + "." + s1;
-    }
-
-    @Getter
-    @Setter
-    public static class PItemSettings {
-
-        private final PItemType      type;
-        private final List<PSkill>   skillList;
-        private final List<PEnchant> enchantList;
-        private       String         key;
-        private       String         name;
-        private       int            startXp;
-        private       int            startLevel;
-        private       int            startPoints;
-        private       int            pointsPerLevel;
-        private       List<String>   nukerBlocks;
-
-        public PItemSettings(String key, PItemType type) {
-            this.key = key;
-            this.name = key;
-            this.type = type;
-            this.skillList = new ArrayList<>();
-            this.enchantList = new ArrayList<>();
-            this.nukerBlocks = new ArrayList<>();
-            this.startXp = 0;
-            this.startLevel = 0;
-            this.startPoints = 1;
-            this.pointsPerLevel = 1;
-        }
-
-        public void addNukerBlocks(String s) {
-            nukerBlocks.add(s);
-        }
-
-        public void addSkill(PSkill skill) {
-            if (!skillList.contains(skill))
-                skillList.add(skill);
-        }
-
-        public void addEnchant(PEnchant enchant) {
-            if (!enchantList.contains(enchant))
-                enchantList.add(enchant);
-        }
-
-        public <P extends Event> PItem<P> generate(Class<P> pClass) {
-            EnhancedPicks plugin = EnhancedPicks.getInstance();
-            Level level = plugin.getLevelManager().getLevel(this.startLevel);
-            if (level == null) {
-                level = EnhancedPicks.getInstance().getLevelManager().getLevel(1);
-            }
-            ItemBuilder builder = ItemBuilder.wrap(new ItemStack(type.getType()));
-            PItem<P> pItem = null;
-            switch (type) {
-                case PICK:
-                    if (!pClass.equals(BlockBreakEvent.class)) {
-                        return null;
-                    }
-                    pItem = new PItem<>(pClass, this.name, type, builder.build());
-                    pItem.setAction((p, e) -> {
-                        BlockBreakEvent blockBreakEvent = (BlockBreakEvent) e;
-                        p.setBlocksBroken(p.getBlocksBroken() + 1);
-                        int xp = BlockValue.getXp(blockBreakEvent.getBlock());
-                        p.incrementXp(xp, blockBreakEvent.getPlayer());
-                        p.activateEnchants(blockBreakEvent);
-                        p.update(blockBreakEvent.getPlayer());
-                    });
-                    break;
-                case SWORD:
-                    if (!pClass.equals(EntityDamageByEntityEvent.class)) {
-                        return null;
-                    }
-                    pItem = new PItem<>(pClass, this.name, type, builder.build());
-                    pItem.setAction((p, e) -> {
-                        EntityDamageByEntityEvent attackEvent = (EntityDamageByEntityEvent) e;
-                        if(attackEvent.getEntity() instanceof LivingEntity) {
-                            LivingEntity le = (LivingEntity) attackEvent.getEntity();
-                            if(le.getHealth() <= attackEvent.getFinalDamage()) {
-                                int xp = MobValue.getXp(attackEvent.getEntityType());
-                                p.incrementXp(xp, (Player) attackEvent.getDamager());
-                            }
-                        }
-                        p.activateEnchants(attackEvent);
-                        p.update((Player) attackEvent.getDamager());
-                    });
-                    break;
-            }
-            pItem.setLevel(level);
-            pItem.setPoints(startPoints);
-            pItem.setPointsPerLevel(pointsPerLevel);
-            nukerBlocks.forEach(pItem::addNukerBlocks);
-            for (PEnchant pEnchant : this.enchantList) {
-                PEnchant clone = pEnchant.cloneEnchant();
-                clone.setLevel(pEnchant.getLevel());
-                clone.setMaxLevel(pEnchant.getMaxLevel());
-                pItem.addEnchant(clone);
-            }
-            this.skillList.forEach(pItem::addAvailableSkill);
-            for (PEnchant pEnchant : pItem.getEnchants()) {
-                pEnchant.apply(pItem);
-            }
-            pItem.setPItemSettings(this.key);
-            pItem.updateMeta();
-            return pItem;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder("\n");
-            builder.append("  =====PItemSettings=====").append("\n")
-                    .append("  Key: ").append(key).append("\n")
-                    .append("  Name: ").append(name).append("\n")
-                    .append("  Type: ").append(type.name()).append("\n")
-                    .append("  Start XP: ").append(startXp).append("\n")
-                    .append("  Start Level: ").append(startLevel).append("\n")
-                    .append("  Start Points: ").append(startPoints).append("\n")
-                    .append("  Points per level: ").append(pointsPerLevel).append("\n")
-                    .append("  Skills: \n");
-            for (PSkill pSkill : this.skillList) {
-                builder.append("    Name: ").append(pSkill.getName()).append("\n")
-                        .append("    Level: ").append(pSkill.getLevel()).append("\n")
-                        .append("    Cost: ").append(pSkill.getCost()).append("\n")
-                        .append("    Permission: ").append(pSkill.getPerm()).append("\n");
-            }
-            builder.append("  Enchants: \n");
-            for (PEnchant pEnchant : this.enchantList) {
-                builder.append("    Name: ").append(pEnchant.getName()).append("\n")
-                        .append("    Display Name: ").append(pEnchant.getDisplayName()).append("\n")
-                        .append("    Level: ").append(pEnchant.getLevel()).append("\n")
-                        .append("    Max Level: ").append(pEnchant.getMaxLevel()).append("\n");
-            }
-            builder.append("  =====PItemSettings=====").append("\n");
-            return builder.toString();
-        }
     }
 }

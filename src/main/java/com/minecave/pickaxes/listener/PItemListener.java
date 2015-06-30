@@ -3,7 +3,7 @@ package com.minecave.pickaxes.listener;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
-import com.minecave.pickaxes.item.PItemManager;
+import com.minecave.pickaxes.item.PItemSettings;
 import com.minecave.pickaxes.item.PItemType;
 import com.minecave.pickaxes.kit.Kit;
 import com.minecave.pickaxes.skill.PSkill;
@@ -47,10 +47,10 @@ public class PItemListener implements Listener {
             }
             if (plugin.getKitManager().getKitMap().containsKey(split[1])) {
                 Kit kit = plugin.getKitManager().getKitMap().get(split[1]);
-                Collection<PItemManager.PItemSettings> settings = plugin.getPItemManager().getSettings(kit.getPSettingsKey());
+                Collection<PItemSettings> settings = plugin.getPItemManager().getSettings(kit.getPSettingsKey());
                 if (settings != null && !settings.isEmpty()) {
                     if(kit.isPick()) {
-                        for (PItemManager.PItemSettings setting : settings) {
+                        for (PItemSettings setting : settings) {
                             if(setting.getType() == PItemType.PICK) {
                                 PItem<BlockBreakEvent> pItem = setting.generate(BlockBreakEvent.class);
                                 ItemStack stack = pItem.getItem();
@@ -65,7 +65,7 @@ public class PItemListener implements Listener {
                         }
                     }
                     if(kit.isSword()) {
-                        for (PItemManager.PItemSettings setting : settings) {
+                        for (PItemSettings setting : settings) {
                             if(setting.getType() == PItemType.SWORD) {
                                 PItem<EntityDamageByEntityEvent> pItem = setting.generate(EntityDamageByEntityEvent.class);
                                 ItemStack stack = pItem.getItem();
