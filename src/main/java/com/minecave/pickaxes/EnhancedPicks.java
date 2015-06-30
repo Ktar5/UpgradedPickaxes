@@ -37,6 +37,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * NOTE: This plugin has a hard dependency on com.minecave.MineSell
+ * This is prevent damage done to MineSell villagers
+ * (which for some reason only acid affects, but nonetheless needed to be patched)
+ */
 @Getter
 public class EnhancedPicks extends JavaPlugin {
 
