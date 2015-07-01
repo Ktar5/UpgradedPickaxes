@@ -98,8 +98,17 @@ public class Nuker extends PSkill {
             Collection<ItemStack> items = loc.getBlock().getDrops(player.getItemInHand());
             ItemStack[] array = new ItemStack[items.size()];
             int i = 0;
-            for(ItemStack stack : items) {
-                stack.setType(OreConversion.convertToItem(stack.getType()));
+            for (ItemStack stack : items) {
+                if (OreConversion.canConvert(stack.getType())
+                    || OreConversion.canConvert(loc.getBlock().getType())
+                    || OreConversion.isItem(stack.getType())) {
+                    Material converted = OreConversion.convertToItem(stack.getType());
+                    stack.setType(converted);
+                    if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                        int extra = Nuker.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                        stack.setAmount(stack.getAmount() + extra);
+                    }
+                }
                 array[i++] = stack;
             }
             player.getInventory().addItem(array);

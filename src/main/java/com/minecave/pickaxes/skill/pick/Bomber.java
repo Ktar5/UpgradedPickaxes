@@ -49,7 +49,7 @@ public class Bomber extends PSkill {
         TNTPrimed tnt = location.getWorld().spawn(location.clone().add(0, 0.2, 0), TNTPrimed.class);
         tnt.setFuseTicks(ticks + 1);
         tnt.setVelocity(to);
-        int amount = (int) (random.nextInt(boomblocks / 2) + (boomblocks / 2));
+        int amount = random.nextInt(boomblocks / 2) + (boomblocks / 2);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -69,7 +69,16 @@ public class Bomber extends PSkill {
                     ItemStack[] array = new ItemStack[items.size()];
                     int i = 0;
                     for (ItemStack stack : items) {
-                        stack.setType(OreConversion.convertToItem(stack.getType()));
+                        if (OreConversion.canConvert(stack.getType())
+                            || OreConversion.canConvert(loc.getBlock().getType())
+                            || OreConversion.isItem(stack.getType())) {
+                            Material converted = OreConversion.convertToItem(stack.getType());
+                            stack.setType(converted);
+                            if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                                int extra = Bomber.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                                stack.setAmount(stack.getAmount() + extra);
+                            }
+                        }
                         array[i++] = stack;
                     }
                     int xp = BlockValue.getXp(loc.getBlock());

@@ -65,7 +65,16 @@ public class Lightning extends PSkill {
                             ItemStack[] array = new ItemStack[items.size()];
                             int i = 0;
                             for(ItemStack stack : items) {
-                                stack.setType(OreConversion.convertToItem(stack.getType()));
+                                if (OreConversion.canConvert(stack.getType())
+                                    || OreConversion.canConvert(loc.getBlock().getType())
+                                    || OreConversion.isItem(stack.getType())) {
+                                    Material converted = OreConversion.convertToItem(stack.getType());
+                                    stack.setType(converted);
+                                    if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                                        int extra = Lightning.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                                        stack.setAmount(stack.getAmount() + extra);
+                                    }
+                                }
                                 array[i++] = stack;
                             }
                             player.getInventory().addItem(array);

@@ -98,7 +98,7 @@ public class TnTEnchant extends PEnchant {
                 .filter(ent -> ent instanceof LivingEntity && !(ent instanceof Player))
                 .forEach(ent -> {
                     ent.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
-                    ((LivingEntity) ent).damage(0.5D * this.getLevel());
+                    ((LivingEntity) ent).damage(0.5D * this.getLevel(), player);
                 });
     }
 

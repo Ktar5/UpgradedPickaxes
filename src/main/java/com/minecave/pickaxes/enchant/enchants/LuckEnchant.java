@@ -19,6 +19,9 @@ public class LuckEnchant extends PEnchant {
 
     @Override
     public void activate(BlockBreakEvent event) {
+        if(this.getLevel() == 0) {
+            return;
+        }
         BlockDrop drop = BlockDrop.random(this.getLevel());
         if(drop != null) {
             drop.give(event.getPlayer());
@@ -27,7 +30,18 @@ public class LuckEnchant extends PEnchant {
 
     @Override
     public void activate(EntityDamageByEntityEvent event) {
+        if(this.getLevel() == 0) {
+            return;
+        }
         Player player = (Player) event.getDamager();
+        MobDrop drop = MobDrop.random(this.getLevel());
+        drop.give(player);
+    }
+
+    public void activate(Player player) {
+        if(this.getLevel() == 0) {
+            return;
+        }
         MobDrop drop = MobDrop.random(this.getLevel());
         drop.give(player);
     }

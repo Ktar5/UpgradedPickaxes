@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public abstract class PSkill {
@@ -97,5 +98,17 @@ public abstract class PSkill {
 
     public long getTimeLeft(Player player) {
         return cooldown - getTimeDiff(player);
+    }
+
+    public int itemsDropped(int fortuneLevel){
+        if(fortuneLevel == 0) {
+            return 0;
+        }
+        int var3 = ThreadLocalRandom.current().nextInt(fortuneLevel + 2) - 1;
+
+        if (var3 < 0)
+            var3 = 0;
+
+        return var3 + 1;
     }
 }

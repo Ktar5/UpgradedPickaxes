@@ -3,6 +3,7 @@ package com.minecave.pickaxes.listener;
 import com.minecave.minesell.nms.ShopVillager;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.MobValue;
+import com.minecave.pickaxes.enchant.enchants.LuckEnchant;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.player.PlayerInfo;
 import com.minecave.pickaxes.skill.sword.Acid;
@@ -52,7 +53,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void creatureSpawn(CreatureSpawnEvent event) {
-        if(event.getEntity() instanceof Endermite) {
+        if (event.getEntity() instanceof Endermite) {
             event.setCancelled(true);
             event.getEntity().remove();
         }
@@ -61,15 +62,15 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
         Entity nonDamager = event.getEntity();
-        if(event.getDamager() instanceof Player && !(event.getEntity() instanceof Player)) {
+        if (event.getDamager() instanceof Player && !(event.getEntity() instanceof Player)) {
             //rage
             Player player = (Player) event.getDamager();
-            if(plugin.getPSkillManager().getPSkill(Rage.class).getRagePlayers().contains(player)) {
-                if(event.getEntity() instanceof LivingEntity &&
+            if (plugin.getPSkillManager().getPSkill(Rage.class).getRagePlayers().contains(player)) {
+                if (event.getEntity() instanceof LivingEntity &&
                         !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager)) {
                     LivingEntity le = (LivingEntity) event.getEntity();
                     le.setMetadata("player", new FixedMetadataValue(plugin, player.getUniqueId().toString()));
-                    le.damage(le.getMaxHealth() * 2);
+                    le.damage(le.getMaxHealth() * 2, player);
                 }
             }
             return;
@@ -99,7 +100,9 @@ public class PlayerListener implements Listener {
                         entity.getCustomName().equals("acid") &&
                         !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager)) {
                     event.getEntity().setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
-                    event.setDamage(((LivingEntity) event.getEntity()).getMaxHealth() * 2);
+                    LivingEntity le = (LivingEntity) event.getEntity();
+                    le.damage(le.getMaxHealth() * 2, (Player) entity.getShooter());
+                    event.setDamage(0);
                 }
             } else if (event.getDamager() instanceof Fireball) {
                 Fireball entity = (Fireball) event.getDamager();
@@ -111,7 +114,7 @@ public class PlayerListener implements Listener {
                             .forEach(e -> {
                                 LivingEntity le = (LivingEntity) e;
                                 le.setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
-                                le.damage(((LivingEntity) e).getMaxHealth() * 2);
+                                le.damage(((LivingEntity) e).getMaxHealth() * 2, (Player) entity.getShooter());
                             });
                     Location location = entity.getLocation();
                     Bukkit.getOnlinePlayers().forEach(player -> {
@@ -149,6 +152,7 @@ public class PlayerListener implements Listener {
                         if (pItem != null) {
                             int xp = MobValue.getXp(event.getEntityType());
                             pItem.incrementXp(xp, player);
+                            ((LuckEnchant) pItem.getEnchant("luck")).activate(player);
                         }
                         event.getDrops().clear();
                     }
@@ -170,7 +174,7 @@ public class PlayerListener implements Listener {
                         .forEach(e -> {
                             LivingEntity le = (LivingEntity) e;
                             le.setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
-                            le.damage(((LivingEntity) e).getMaxHealth() * 2);
+                            le.damage(((LivingEntity) e).getMaxHealth() * 2, (Player) entity.getShooter());
                         });
             }
         }
@@ -184,7 +188,7 @@ public class PlayerListener implements Listener {
                         .forEach(e -> {
                             LivingEntity le = (LivingEntity) e;
                             le.setMetadata("player", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
-                            le.damage(((LivingEntity) e).getMaxHealth() * 2);
+                            le.damage(((LivingEntity) e).getMaxHealth() * 2, (Player) entity.getShooter());
                         });
                 Location location = entity.getLocation();
                 Bukkit.getOnlinePlayers().forEach(player -> {
@@ -205,7 +209,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onEntityTeleport(PlayerTeleportEvent event) {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
-            if(plugin.getPSkillManager().getPSkill(Acid.class).hasPlayer(event.getPlayer())) {
+            if (plugin.getPSkillManager().getPSkill(Acid.class).hasPlayer(event.getPlayer())) {
                 event.setCancelled(true);
                 return;
             }

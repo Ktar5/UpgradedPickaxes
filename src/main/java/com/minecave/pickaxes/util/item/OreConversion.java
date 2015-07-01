@@ -10,6 +10,7 @@ package com.minecave.pickaxes.util.item;
 
 
 import org.bukkit.Material;
+import org.bukkit.material.Dye;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,12 @@ public class OreConversion {
         temp.put(GOLD_ORE, GOLD_INGOT);
         temp.put(DIAMOND_ORE, DIAMOND);
         temp.put(EMERALD_ORE, EMERALD);
+        temp.put(REDSTONE_ORE, REDSTONE);
+        temp.put(GLOWING_REDSTONE_ORE, REDSTONE);
+        temp.put(QUARTZ_ORE, QUARTZ);
+        temp.put(LAPIS_ORE, new Dye(4).getItemType());
+        temp.put(GLOWSTONE, GLOWSTONE_DUST);
+        temp.put(SEA_LANTERN, SEA_LANTERN);
         temp.forEach((m1, m2) -> {
             oreToItem.put(m1, m2);
             itemToOre.put(m2, m1);
@@ -41,5 +48,13 @@ public class OreConversion {
             return oreToItem.get(material);
         }
         return material;
+    }
+
+    public static boolean canConvert(Material material) {
+        return oreToItem.containsKey(material);
+    }
+
+    public static boolean isItem(Material material) {
+        return itemToOre.containsKey(material);
     }
 }
