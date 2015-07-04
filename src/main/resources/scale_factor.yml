@@ -1,0 +1,12 @@
+Message_Inv_Full: "&c&lYour inventory is full!"
+delete_item_if_inv_full: true
+Inv_full_remind_interval: 150
+Scale_Factors:
+  redstone: 4
+  lapis: 4
+  diamond: 1
+  emerald: 1
+  lapis_block: 1
+  redstone_block: 4
+  diamond_block: 1
+  emerald_block: 1

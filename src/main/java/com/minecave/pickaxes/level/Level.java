@@ -17,8 +17,10 @@ import com.minecave.pickaxes.util.message.Strings;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +65,17 @@ public class Level {
             messages.add(Strings.color(builder.build()));
         }
         for (String s : this.commands) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replace("$player$", player.getName()));
+            if(s.startsWith("give")) {
+                String[] split = s.split(" ");
+                int slot = player.getInventory().first(Material.matchMaterial(split[2]));
+                if(slot != -1) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s.replace("$player$", player.getName()));
+                } else {
+                    player.getWorld().dropItemNaturally(player.getLocation(),
+                                                        new ItemStack(Material.matchMaterial(split[2]),
+                                                                      Integer.parseInt(split[3])));
+                }
+            }
         }
         if (!pItemSetting.getBlackList().contains(this.id)) {
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0F, 1.0F);

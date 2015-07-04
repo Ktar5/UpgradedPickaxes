@@ -1,5 +1,6 @@
 package com.minecave.pickaxes.enchant.enchants;
 
+import com.minecave.minesell.nms.ShopVillager_v1_8_R3;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.enchant.PEnchant;
@@ -8,6 +9,8 @@ import com.minecave.pickaxes.util.item.OreConversion;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -17,6 +20,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -55,29 +59,57 @@ public class TnTEnchant extends PEnchant {
         int curCount = this.getLevel() * 2;
         boolean broken = false;
         for (Block b : getRegionBlocks(location, rad * (Math.random() * 2))) {
+            if (b.equals(location.getBlock())) {
+                continue;
+            }
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                continue;
+            }
             if (curCount <= 0) {
                 break;
             }
             Location loc = b.getLocation();
-            if (!wg.canBuild(event.getPlayer(), loc) ||
-                    loc.getBlock().getType() == Material.BEDROCK ||
-                    loc.getBlock().getType() == Material.AIR) {
+            if (!wg.canBuild(event.getPlayer(), loc.getBlock()) ||
+                loc.getBlock().getType() == Material.BEDROCK ||
+                loc.getBlock().getType() == Material.AIR) {
                 continue;
             }
             Collection<ItemStack> items = loc.getBlock().getDrops();
             ItemStack[] array = new ItemStack[items.size()];
             int i = 0;
             for (ItemStack stack : items) {
-                stack.setType(OreConversion.convertToItem(stack.getType()));
+                if (OreConversion.canConvert(stack.getType())
+                    || OreConversion.canConvert(loc.getBlock().getType())
+                    || OreConversion.isItem(stack.getType())) {
+                    Material converted = OreConversion.convertToItem(stack.getType());
+                    stack.setType(converted);
+                    if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                        int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                        Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
+                        if (scale != null) {
+                            extra *= scale;
+                        }
+                        if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
+                            extra = (int) Math.round(extra / 10D);
+                            if (--extra < 0) {
+                                extra = 0;
+                            }
+                        }
+                        stack.setAmount(stack.getAmount() + extra);
+                    }
+                }
                 array[i++] = stack;
             }
             int xp = BlockValue.getXp(loc.getBlock());
             pItem.addBlockBroken();
             pItem.incrementXp(xp, player);
             pItem.updateManually(player, player.getItemInHand());
-            player.getInventory().addItem(array);
+            Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
+            if (!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+            }
             player.updateInventory();
-            loc.getBlock().setType(Material.AIR);
+            b.setType(Material.AIR);
             if (ThreadLocalRandom.current().nextBoolean() && !broken) {
                 broken = true;
                 player.playSound(b.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
@@ -87,47 +119,103 @@ public class TnTEnchant extends PEnchant {
         }
     }
 
+    public int itemsDropped(int fortuneLevel) {
+        if (fortuneLevel == 0) {
+            return 0;
+        }
+        int var3 = ThreadLocalRandom.current().nextInt(fortuneLevel + 2) - 1;
+
+        if (var3 < 0)
+            var3 = 0;
+
+        return var3 + 1;
+    }
+
     @Override
     public void activate(EntityDamageByEntityEvent event) {
         if (this.getLevel() <= 0) {
             return;
         }
+        if (event.getEntity() instanceof LivingEntity &&
+            ((LivingEntity) event.getEntity()).getHealth() <= 0) {
+            return;
+        }
         Player player = (Player) event.getDamager();
         int radius = this.getLevel() * 2;
-        player.getNearbyEntities(radius, radius, radius).stream()
-                .filter(ent -> ent instanceof LivingEntity && !(ent instanceof Player))
-                .forEach(ent -> {
-                    ent.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
-                    ((LivingEntity) ent).damage(0.5D * this.getLevel(), player);
-                });
+        for (Entity ent : player.getNearbyEntities(radius, radius, radius)) {
+            if (ent.equals(event.getEntity())) {
+                continue;
+            }
+            if (((CraftEntity) ent).getHandle() instanceof ShopVillager_v1_8_R3) {
+                continue;
+            }
+            if (ent instanceof LivingEntity && !(ent instanceof Player)) {
+                ent.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
+                ent.setMetadata("skipTNT", new FixedMetadataValue(EnhancedPicks.getInstance(), true));
+                ((LivingEntity) ent).damage(0.5D * this.getLevel(), player);
+                Bukkit.getScheduler().runTaskLater(EnhancedPicks.getInstance(), () -> {
+                    if (ent.hasMetadata("skipTNT")) {
+                        ent.removeMetadata("skipTNT", EnhancedPicks.getInstance());
+                    }
+                }, 20l);
+            }
+        }
     }
 
     @Override
     public TnTEnchant cloneEnchant() {
         TnTEnchant tnt = new TnTEnchant();
         tnt.setLevel(this.getLevel());
+        tnt.setStartLevel(this.getStartLevel());
         tnt.setMaxLevel(this.getMaxLevel());
         return tnt;
     }
 
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {
+        int neg = 1;
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            neg = -1;
+        }
         ArrayList<Block> blocks = new ArrayList<>();
-        for (double x = 0; x <= radius; x++) {
-            for (double z = 0; z <= radius; z++) {
-                for (double y = 0 / 2; y <= radius / 2; y++) {
-                    if (blocks.size() == this.getLevel()) {
-                        return blocks;
+        while (blocks.size() != this.getLevel() * 5 && radius <= radius + 4) {
+            if (neg == -1) {
+                for (double x = 0; x >= radius * neg; x--) {
+                    for (double z = 0; z >= radius * neg; z--) {
+                        for (double y = 0 / 2; y >= -(radius / 2); y--) {
+                            if (blocks.size() == this.getLevel() * 5) {
+                                return blocks;
+                            }
+                            Location l = loc1.clone().add(x, y, z);
+                            if (!l.getChunk().isLoaded()) {
+                                continue;
+                            }
+                            Block b = l.getBlock();
+                            if (b.getType() != Material.AIR && b.getType().isBlock()) {
+                                blocks.add(b);
+                            }
+                        }
                     }
-                    Location l = loc1.clone().add(x, y, z);
-                    if (!l.getChunk().isLoaded()) {
-                        continue;
-                    }
-                    Block b = l.getBlock();
-                    if (b.getType() != Material.AIR && b.getType().isBlock()) {
-                        blocks.add(b);
+                }
+            } else {
+                for (double x = 0; x <= radius; x++) {
+                    for (double z = 0; z <= radius; z++) {
+                        for (double y = 0; y >= -(radius / 2); y--) {
+                            if (blocks.size() == this.getLevel() * 5) {
+                                return blocks;
+                            }
+                            Location l = loc1.clone().add(x, y, z);
+                            if (!l.getChunk().isLoaded()) {
+                                continue;
+                            }
+                            Block b = l.getBlock();
+                            if (b.getType() != Material.AIR && b.getType().isBlock()) {
+                                blocks.add(b);
+                            }
+                        }
                     }
                 }
             }
+            radius += 2;
         }
         return blocks;
     }

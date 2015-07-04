@@ -43,7 +43,7 @@ public class PItem<E extends Event> {
     private final String        name;
     private final PItemType     type;
     private       ItemStack     item;
-    private final UUID          uuid;
+    private       UUID          uuid;
     private       String        pItemSettings;
     private       PItemSettings settingsObject;
     private       List<String>  nukerBlocks;
@@ -153,11 +153,11 @@ public class PItem<E extends Event> {
             totalXp = xp;
         }
         displayName = displayName.replace("{name}", Strings.color(name) + ChatColor.RESET)
-                .replace("{level}", String.valueOf(level.getId()))
-                .replace("{xp}", String.valueOf(xp))
-                .replace("{nextLevelXpTotal}", String.valueOf(totalXp))
-                .replace("{xpDiff}", String.valueOf(getXpToNextLevel()))
-                .replace("{blocks}", String.valueOf(blocksBroken));
+                                 .replace("{level}", String.valueOf(level.getId()))
+                                 .replace("{xp}", String.valueOf(xp))
+                                 .replace("{nextLevelXpTotal}", String.valueOf(totalXp))
+                                 .replace("{xpDiff}", String.valueOf(getXpToNextLevel()))
+                                 .replace("{blocks}", String.valueOf(blocksBroken));
         return Strings.color(displayName);
     }
 
@@ -297,7 +297,7 @@ public class PItem<E extends Event> {
             purSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append("-");
         }
         String curSkill = this.getCurrentSkill() == null ? "null" :
-                plugin.getPSkillManager().getPSkillKey(this.getCurrentSkill());
+                          plugin.getPSkillManager().getPSkillKey(this.getCurrentSkill());
         String blocksBroken = String.valueOf(this.getBlocksBroken());
         StringBuilder enchants = new StringBuilder("");
         for (PEnchant pEnchant : this.getEnchants()) {
@@ -306,18 +306,19 @@ public class PItem<E extends Event> {
                     .append(pEnchant.getMaxLevel()).append("-");
         }
         return builder.append(type).append(",")
-                .append(pItemSettings).append(",")
-                .append(item.getDurability()).append(",")
-                .append(xp).append(",")
-                .append(points).append(",")
-                .append(curLevel).append(",")
-                .append(maxLevel).append(",")
-                .append(availSkills.toString()).append(",")
-                .append(purSkills.toString()).append(",")
-                .append(curSkill).append(",")
-                .append(blocksBroken).append(",")
-                .append(enchants.toString()).append(";")
-                .toString();
+                      .append(pItemSettings).append(",")
+                      .append(item.getDurability()).append(",")
+                      .append(xp).append(",")
+                      .append(points).append(",")
+                      .append(curLevel).append(",")
+                      .append(maxLevel).append(",")
+                      .append(availSkills.toString()).append(",")
+                      .append(purSkills.toString()).append(",")
+                      .append(curSkill).append(",")
+                      .append(blocksBroken).append(",")
+                      .append(enchants.toString()).append(",")
+                      .append(uuid.toString()).append(";")
+                      .toString();
 
     }
 
@@ -339,9 +340,9 @@ public class PItem<E extends Event> {
         }
         lore.add("Custom Enchants: ");
         List<String> list = this.enchants.stream()
-                .filter(enchant -> !(enchant instanceof NormalEnchant) && enchant.getLevel() > 0)
-                .map(enchant -> ChatColor.AQUA + enchant.toString())
-                .collect(Collectors.toList());
+                                         .filter(enchant -> !(enchant instanceof NormalEnchant) && enchant.getLevel() > 0)
+                                         .map(enchant -> ChatColor.AQUA + enchant.toString())
+                                         .collect(Collectors.toList());
         if (list.isEmpty()) {
             lore.add("None");
         } else {
@@ -371,6 +372,51 @@ public class PItem<E extends Event> {
     }
 
     public void subtractPoints(int cost) {
-        this.points -= points;
+        this.points -= cost;
+    }
+
+    public boolean canSpend(int points) {
+        return this.points >= points;
+    }
+
+    public String toStringWUUID() {
+        StringBuilder builder = new StringBuilder("");
+        String type = this.getType().name();
+        String pItemSettings = this.getPItemSettings();
+        String xp = String.valueOf(this.getXp());
+        String points = String.valueOf(this.getPoints());
+        String curLevel = String.valueOf(this.getLevel().getId());
+        String maxLevel = String.valueOf(this.getMaxLevel().getId());
+        StringBuilder availSkills = new StringBuilder("");
+        for (PSkill pSkill : this.getAvailableSkills()) {
+            availSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append("-");
+        }
+        StringBuilder purSkills = new StringBuilder("");
+        for (PSkill pSkill : this.getPurchasedSkills()) {
+            purSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append("-");
+        }
+        String curSkill = this.getCurrentSkill() == null ? "null" :
+                          plugin.getPSkillManager().getPSkillKey(this.getCurrentSkill());
+        String blocksBroken = String.valueOf(this.getBlocksBroken());
+        StringBuilder enchants = new StringBuilder("");
+        for (PEnchant pEnchant : this.getEnchants()) {
+            enchants.append(pEnchant.getName().toLowerCase()).append(":")
+                    .append(pEnchant.getLevel()).append(":")
+                    .append(pEnchant.getMaxLevel()).append("-");
+        }
+        return builder.append(uuid.toString()).append(",")
+                      .append(type).append(",")
+                      .append(pItemSettings).append(",")
+                      .append(item.getDurability()).append(",")
+                      .append(xp).append(",")
+                      .append(points).append(",")
+                      .append(curLevel).append(",")
+                      .append(maxLevel).append(",")
+                      .append(availSkills.toString()).append(",")
+                      .append(purSkills.toString()).append(",")
+                      .append(curSkill).append(",")
+                      .append(blocksBroken).append(",")
+                      .append(enchants.toString()).append(";")
+                      .toString();
     }
 }

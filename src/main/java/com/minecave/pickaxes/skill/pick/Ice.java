@@ -17,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -62,6 +63,16 @@ public class Ice extends PSkill {
                         stack.setType(converted);
                         if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
                             int extra = Ice.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                            Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
+                            if(scale != null) {
+                                extra *= scale;
+                            }
+                            if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+                                extra = (int) Math.round(extra / 10D);
+                                if(--extra < 0) {
+                                    extra = 0;
+                                }
+                            }
                             stack.setAmount(stack.getAmount() + extra);
                         }
                     }
@@ -71,7 +82,10 @@ public class Ice extends PSkill {
                 pItem.incrementXp(xp, player);
                 pItem.addBlockBroken();
                 pItem.update(player);
-                player.getInventory().addItem(array);
+                Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
+                if(!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                    leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                }
                 player.updateInventory();
                 block.setType(Material.ICE);
                 broken.add(block);

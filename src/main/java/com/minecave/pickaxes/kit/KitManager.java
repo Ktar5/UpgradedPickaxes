@@ -38,7 +38,7 @@ public class KitManager {
             }
             Kit kit = new Kit(kitName, key, pick, sword);
             plugin.getLogger().info(kit.toString());
-            this.kitMap.put(kit.getName(), kit);
+            this.kitMap.put(kit.getName().toLowerCase(), kit);
         }
     }
 }

@@ -11,16 +11,11 @@ package com.minecave.pickaxes.item;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.skill.PSkill;
-import com.minecave.pickaxes.util.item.ItemSerialization;
-import com.minecave.pickaxes.util.nbt.EPAttributeStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -39,377 +34,571 @@ public class PItemSerializer {
     public static final String ENCHANTS        = "22cbcd3e-4bcf-4333-9da4-f79a94cdf386";
     public static final String DURABILITY      = "9cbc9c58-4984-423f-9cff-4666b25d8aa8";
 
-    public static Inventory deserializeInventory(byte[] data) {
-        try {
-            return ItemSerialization.fromBlob(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Bukkit.createInventory(null, 9);
-    }
-
-    public static <E extends Event> byte[] serialPItems(List<PItem<E>> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-        ItemStack[] items = new ItemStack[list.size()];
-        int i = 0;
-        for (PItem<?> p : list) {
-            items[i++] = PItemSerializer.serializePItem(p);
-            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(p.getUuid().toString());
-        }
-        return ItemSerialization.toBlob(ItemSerialization.getInventoryFromArray(items));
-    }
-
-    public static PItem<?> deserializePItem(ItemStack item) {
-        EnhancedPicks plugin = EnhancedPicks.getInstance();
-        EPAttributeStorage storage;
-
-        //TYPE
-        storage = EPAttributeStorage.newTarget(item, TYPE);
-        PItemType pItemType = PItemType.valueOf(storage.getData("PICK"));
-
-        //PITEM_SETTINGS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), PITEM_SETTINGS);
-        String pItemSettingsKey = storage.getData("");
-        if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
-            return null;
-        }
-        Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
-        if(settingsCollection == null) {
-            return null;
-        }
-        PItemSettings pItemSettings = null;
-        for(PItemSettings ps : settingsCollection) {
-            if(pItemType == ps.getType()) {
-                pItemSettings = ps;
-            }
-        }
-        if (pItemSettings == null || pItemSettings.getType() != pItemType) {
-            return null;
-        }
-        PItem<?> pItem = null;
-        switch (pItemType) {
-            case PICK:
-                pItem = pItemSettings.generate(BlockBreakEvent.class);
-                break;
-            case SWORD:
-                pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
-                break;
-        }
-        if (pItem == null) {
-            return null;
-        }
-        plugin.getPItemManager().addPItem(pItem);
-
-        //XP
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), XP);
-        pItem.setXp(Integer.parseInt(storage.getData("0")));
-
-        //POINTS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), POINTS);
-        pItem.setPoints(Integer.parseInt(storage.getData("1")));
-
-        //CUR_LEVEL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
-        pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(storage.getData("1"))));
-
-        //MAX_LEVEL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
-        pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(storage.getData("10"))));
-
-        //AVAILABLE_SKILL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
-        String availSkills = storage.getData("");
-        if (availSkills != null && !availSkills.equals("")) {
-            String[] skillSplit = availSkills.split(";");
-            for (String key : skillSplit) {
-                pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
-            }
-        }
-        for (PSkill pSkill : pItemSettings.getSkillList()) {
-            if(!pItem.getAvailableSkills().contains(pSkill)) {
-                pItem.addAvailableSkill(pSkill);
-            }
-        }
-
-        //PURCHASED_SKILL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
-        String purSkills = storage.getData("");
-        if (purSkills != null && !purSkills.equals("")) {
-            String[] skillSplit = purSkills.split(";");
-            for (String key : skillSplit) {
-                pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
-            }
-        }
-
-        //CUR_SKILL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_SKILL);
-        String curSkill = storage.getData("");
-        if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
-            pItem.setCurrentSkill(null);
-        } else {
-            pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
-        }
-
-        //BLOCKS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), BLOCKS);
-        pItem.setBlocksBroken(Integer.parseInt(storage.getData("0")));
-
-        //ENCHANTS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
-        String aEnchants = storage.getData("");
-        if (aEnchants != null && !aEnchants.equals("")) {
-            String[] aEnchantSplit = aEnchants.split(";");
-            for (String enchant : aEnchantSplit) {
-                String[] enchantSplit = enchant.split(":");
-                if (enchantSplit.length != 3) {
-                    continue;
-                }
-                PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
-                if (pEnchant != null) {
-                    if (!pItem.hasEnchant(pEnchant.getName())) {
-                        pEnchant = pEnchant.cloneEnchant();
-                        pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
-                        pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
-                        pItem.addEnchant(pEnchant);
-                    } else {
-                        pEnchant = pItem.getEnchant(pEnchant.getName());
-                        pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
-                        pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
-                    }
-                }
-            }
-        }
-        for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
-            if(pItem.getEnchant(pEnchant.getName()) == null) {
-                PEnchant clone = pEnchant.cloneEnchant();
-                clone.setLevel(pEnchant.getLevel());
-                clone.setMaxLevel(pEnchant.getMaxLevel());
-                pItem.addEnchant(clone);
-            }
-        }
-
-        //DURABILITY
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), DURABILITY);
-        short dura = Short.parseShort(storage.getData("0"));
-
-        ItemStack temp = storage.getTarget();
-        temp.setDurability(dura);
-        ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
-        clone.setData(temp.getData());
-        clone.setDurability(temp.getDurability());
-        pItem.setItem(clone);
-        pItem.getItem().setDurability(dura);
-
-        return pItem;
-    }
-
-    public static <T extends Event> ItemStack serializePItem(PItem<T> pItem) {
-        EnhancedPicks plugin = EnhancedPicks.getInstance();
-        EPAttributeStorage storage;
-        Map<String, String> tagMap = new HashMap<>();
-
-        //TYPE
-        storage = EPAttributeStorage.newTarget(pItem.getItem(), TYPE);
-        storage.setData(pItem.getType().name());
-
-        //PITEM_SETTINGS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), PITEM_SETTINGS);
-        storage.setData(pItem.getPItemSettings());
-
-        //XP
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), XP);
-        storage.setData(String.valueOf(pItem.getXp()));
-
-        //POINTS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), POINTS);
-        storage.setData(String.valueOf(pItem.getPoints()));
-
-        //CUR_LEVEL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_LEVEL);
-        storage.setData(String.valueOf(pItem.getLevel().getId()));
-
-        //MAX_LEVEL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), MAX_LEVEL);
-        storage.setData(String.valueOf(pItem.getMaxLevel().getId()));
-
-        //AVAILABLE_SKILL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), AVAILABLE_SKILL);
-        StringBuilder availSkills = new StringBuilder("");
-        for (PSkill pSkill : pItem.getAvailableSkills()) {
-            availSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append(";");
-        }
-        storage.setData(availSkills.toString());
-
-        //PURCHASED_SKILL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), PURCHASED_SKILL);
-        StringBuilder purSkills = new StringBuilder("");
-        for (PSkill pSkill : pItem.getPurchasedSkills()) {
-            purSkills.append(plugin.getPSkillManager().getPSkillKey(pSkill)).append(";");
-        }
-        storage.setData(purSkills.toString());
-
-        //CUR_SKILL
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), CUR_SKILL);
-        storage.setData(pItem.getCurrentSkill() == null ? "null" :
-                plugin.getPSkillManager().getPSkillKey(pItem.getCurrentSkill()));
-
-        //BLOCKS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), BLOCKS);
-        storage.setData(String.valueOf(pItem.getBlocksBroken()));
-
-        //ENCHANTS
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), ENCHANTS);
-        StringBuilder enchants = new StringBuilder("");
-        for (PEnchant pEnchant : pItem.getEnchants()) {
-            enchants.append(pEnchant.getName().toLowerCase()).append(":")
-                    .append(pEnchant.getLevel()).append(":")
-                    .append(pEnchant.getMaxLevel()).append(";");
-        }
-        storage.setData(enchants.toString());
-
-        //DURABILITY
-        storage = EPAttributeStorage.newTarget(storage.getTarget(), DURABILITY);
-        storage.setData(String.valueOf(pItem.getItem().getDurability()));
-
-        return storage.getTarget();
-    }
-
     public static String base64PItem(PItem<?> pItem) throws UnsupportedEncodingException {
-        if(pItem == null) {
+        if (pItem == null) {
             return null;
         }
         return Base64.getEncoder().encodeToString(pItem.toString().getBytes("utf-8"));
     }
 
+    public static String base64PItemWUUID(PItem<?> pItem) throws UnsupportedEncodingException {
+        if (pItem == null) {
+            return null;
+        }
+        return Base64.getEncoder().encodeToString(pItem.toStringWUUID().getBytes("utf-8"));
+    }
+
+
     public static PItem<?> singlePItemBase64(String base64) throws UnsupportedEncodingException {
-        if(base64 == null || base64.equals("")) {
+        if (base64 == null || base64.equals("")) {
+            return null;
+        }
+        EnhancedPicks plugin = EnhancedPicks.getInstance();
+        String decoded = new String(Base64.getDecoder().decode(base64), "utf-8");
+        if(decoded.endsWith(";")) {
+            decoded = decoded.substring(0, decoded.length() - 2);
+        }
+        String[] data = decoded.split(",");
+        String type;
+        String pItemSettingsKey;
+        String durability;
+        String xp;
+        String points;
+        String curLevel;
+        String maxLevel;
+        String availSkills;
+        String purSkills;
+        String curSkill;
+        String blocksBroken;
+        String aEnchants;
+        String uuid;
+        PItemType pItemType;
+        PItemSettings pItemSettings;
+        PItem<?> pItem = null;
+        PEnchant clone;
+        ItemStack temp;
+        ItemStack cloneStack;
+        switch (data.length) {
+            case 12:
+                type = data[0];
+                pItemSettingsKey = data[1];
+                durability = data[2];
+                xp = data[3];
+                points = data[4];
+                curLevel = data[5];
+                maxLevel = data[6];
+                availSkills = data[7];
+                purSkills = data[8];
+                curSkill = data[9];
+                blocksBroken = data[10];
+                aEnchants = data[11];
+
+                pItemType = PItemType.valueOf(type);
+                if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                    return null;
+                }
+                Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+                if (settingsCollection == null) {
+                    return null;
+                }
+                pItemSettings = null;
+                for (PItemSettings ps : settingsCollection) {
+                    if (pItemType == ps.getType()) {
+                        pItemSettings = ps;
+                    }
+                }
+                if (pItemSettings == null) {
+                    return null;
+                }
+                pItem = null;
+                switch (pItemType) {
+                    case PICK:
+                        pItem = pItemSettings.generate(BlockBreakEvent.class);
+                        break;
+                    case SWORD:
+                        pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                        break;
+                }
+                if (pItem == null) {
+                    return null;
+                }
+                pItem.getItem().setDurability(Short.parseShort(durability));
+
+                pItem.setXp(Integer.parseInt(xp));
+                pItem.setPoints(Integer.parseInt(points));
+                pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+                pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
+
+                if (availSkills != null && !availSkills.equals("")) {
+                    String[] skillSplit = availSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+                for (PSkill pSkill : pItemSettings.getSkillList()) {
+                    if (!pItem.getAvailableSkills().contains(pSkill)) {
+                        pItem.addAvailableSkill(pSkill);
+                    }
+                }
+
+                if (purSkills != null && !purSkills.equals("")) {
+                    String[] skillSplit = purSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+
+                if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                    pItem.setCurrentSkill(null);
+                } else {
+                    pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+                }
+
+                pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+                if (aEnchants != null && !aEnchants.equals("")) {
+                    String[] aEnchantSplit = aEnchants.split("-");
+                    for (String enchant : aEnchantSplit) {
+                        String[] enchantSplit = enchant.split(":");
+                        if (enchantSplit.length != 3) {
+                            continue;
+                        }
+                        PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                        if (pEnchant != null) {
+                            if (!pItem.hasEnchant(pEnchant.getName())) {
+                                pEnchant = pEnchant.cloneEnchant();
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                pItem.addEnchant(pEnchant);
+                            } else {
+                                pEnchant = pItem.getEnchant(pEnchant.getName());
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                            }
+                            pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
+                        }
+                    }
+                }
+                for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                    if (pItem.getEnchant(pEnchant.getName()) == null) {
+                        clone = pEnchant.cloneEnchant();
+                        clone.setLevel(pEnchant.getLevel());
+                        clone.setMaxLevel(pEnchant.getMaxLevel());
+                        pItem.addEnchant(clone);
+                    }
+                }
+                temp = pItem.getItem();
+                cloneStack = new ItemStack(temp.getType(), temp.getAmount());
+                cloneStack.setData(temp.getData());
+                cloneStack.setDurability(temp.getDurability());
+                pItem.setItem(cloneStack);
+
+                EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                break;
+            case 13:
+                type = data[0];
+                pItemSettingsKey = data[1];
+                durability = data[2];
+                xp = data[3];
+                points = data[4];
+                curLevel = data[5];
+                maxLevel = data[6];
+                availSkills = data[7];
+                purSkills = data[8];
+                curSkill = data[9];
+                blocksBroken = data[10];
+                aEnchants = data[11];
+                uuid = data[12];
+
+                pItemType = PItemType.valueOf(type);
+                if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                    return null;
+                }
+                settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+                if (settingsCollection == null) {
+                    return null;
+                }
+                pItemSettings = null;
+                for (PItemSettings ps : settingsCollection) {
+                    if (pItemType == ps.getType()) {
+                        pItemSettings = ps;
+                    }
+                }
+                if (pItemSettings == null) {
+                    return null;
+                }
+                pItem = null;
+                switch (pItemType) {
+                    case PICK:
+                        pItem = pItemSettings.generate(BlockBreakEvent.class);
+                        break;
+                    case SWORD:
+                        pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                        break;
+                }
+                if (pItem == null) {
+                    return null;
+                }
+                if(plugin.getPItemManager().getPItemMap().containsKey(uuid)) {
+                    return null;
+                }
+                pItem.setUuid(UUID.fromString(uuid));
+                pItem.getItem().setDurability(Short.parseShort(durability));
+
+                pItem.setXp(Integer.parseInt(xp));
+                pItem.setPoints(Integer.parseInt(points));
+                pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+                pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
+
+                if (availSkills != null && !availSkills.equals("")) {
+                    String[] skillSplit = availSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+                for (PSkill pSkill : pItemSettings.getSkillList()) {
+                    if (!pItem.getAvailableSkills().contains(pSkill)) {
+                        pItem.addAvailableSkill(pSkill);
+                    }
+                }
+
+                if (purSkills != null && !purSkills.equals("")) {
+                    String[] skillSplit = purSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+
+                if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                    pItem.setCurrentSkill(null);
+                } else {
+                    pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+                }
+
+                pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+                if (aEnchants != null && !aEnchants.equals("")) {
+                    String[] aEnchantSplit = aEnchants.split("-");
+                    for (String enchant : aEnchantSplit) {
+                        String[] enchantSplit = enchant.split(":");
+                        if (enchantSplit.length != 3) {
+                            continue;
+                        }
+                        PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                        if (pEnchant != null) {
+                            if (!pItem.hasEnchant(pEnchant.getName())) {
+                                pEnchant = pEnchant.cloneEnchant();
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                pItem.addEnchant(pEnchant);
+                            } else {
+                                pEnchant = pItem.getEnchant(pEnchant.getName());
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                            }
+                            pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
+                        }
+                    }
+                }
+                for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                    if (pItem.getEnchant(pEnchant.getName()) == null) {
+                        clone = pEnchant.cloneEnchant();
+                        clone.setLevel(pEnchant.getLevel());
+                        clone.setMaxLevel(pEnchant.getMaxLevel());
+                        pItem.addEnchant(clone);
+                    }
+                }
+                temp = pItem.getItem();
+                cloneStack = new ItemStack(temp.getType(), temp.getAmount());
+                cloneStack.setData(temp.getData());
+                cloneStack.setDurability(temp.getDurability());
+                pItem.setItem(cloneStack);
+
+                EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                break;
+        }
+        return pItem;
+    }
+
+    public static PItem<?> singlePItemBase64WUUID(String base64) throws UnsupportedEncodingException {
+        if (base64 == null || base64.equals("")) {
             return null;
         }
         EnhancedPicks plugin = EnhancedPicks.getInstance();
         String decoded = new String(Base64.getDecoder().decode(base64), "utf-8");
         String[] data = decoded.split(",");
-        if (data.length != 12) {
-            throw new IllegalArgumentException("Base64 String contains invalid serialized PItem.");
-        }
-        String type = data[0];
-        String pItemSettingsKey = data[1];
-        String durability = data[2];
-        String xp = data[3];
-        String points = data[4];
-        String curLevel = data[5];
-        String maxLevel = data[6];
-        String availSkills = data[7];
-        String purSkills = data[8];
-        String curSkill = data[9];
-        String blocksBroken = data[10];
-        String aEnchants = data[11];
-
-        PItemType pItemType = PItemType.valueOf(type);
-        if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
-            return null;
-        }
-        Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
-        if(settingsCollection == null) {
-            return null;
-        }
-        PItemSettings pItemSettings = null;
-        for(PItemSettings ps : settingsCollection) {
-            if(pItemType == ps.getType()) {
-                pItemSettings = ps;
-            }
-        }
-        if(pItemSettings == null) {
-            return null;
-        }
+        String type;
+        String pItemSettingsKey;
+        String durability;
+        String xp;
+        String points;
+        String curLevel;
+        String maxLevel;
+        String availSkills;
+        String purSkills;
+        String curSkill;
+        String blocksBroken;
+        String aEnchants;
+        String uuid;
+        PItemType pItemType;
+        PItemSettings pItemSettings;
         PItem<?> pItem = null;
-        switch (pItemType) {
-            case PICK:
-                pItem = pItemSettings.generate(BlockBreakEvent.class);
-                break;
-            case SWORD:
-                pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
-                break;
-        }
-        if (pItem == null) {
-            return null;
-        }
-        pItem.getItem().setDurability(Short.parseShort(durability));
+        PEnchant clone;
+        ItemStack temp;
+        ItemStack cloneStack;
+        switch (data.length) {
+            case 12:
+                type = data[0];
+                pItemSettingsKey = data[1];
+                durability = data[2];
+                xp = data[3];
+                points = data[4];
+                curLevel = data[5];
+                maxLevel = data[6];
+                availSkills = data[7];
+                purSkills = data[8];
+                curSkill = data[9];
+                blocksBroken = data[10];
+                aEnchants = data[11];
 
-        pItem.setXp(Integer.parseInt(xp));
-        pItem.setPoints(Integer.parseInt(points));
-        pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
-        pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
-
-        if (availSkills != null && !availSkills.equals("")) {
-            String[] skillSplit = availSkills.split("-");
-            for (String key : skillSplit) {
-                pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
-            }
-        }
-        for (PSkill pSkill : pItemSettings.getSkillList()) {
-            if(!pItem.getAvailableSkills().contains(pSkill)) {
-                pItem.addAvailableSkill(pSkill);
-            }
-        }
-
-        if (purSkills != null && !purSkills.equals("")) {
-            String[] skillSplit = purSkills.split("-");
-            for (String key : skillSplit) {
-                pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
-            }
-        }
-
-        if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
-            pItem.setCurrentSkill(null);
-        } else {
-            pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
-        }
-
-        pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
-
-        if (aEnchants != null && !aEnchants.equals("")) {
-            String[] aEnchantSplit = aEnchants.split("-");
-            for (String enchant : aEnchantSplit) {
-                String[] enchantSplit = enchant.split(":");
-                if (enchantSplit.length != 3) {
-                    continue;
+                pItemType = PItemType.valueOf(type);
+                if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                    return null;
                 }
-                PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
-                if (pEnchant != null) {
-                    if (!pItem.hasEnchant(pEnchant.getName())) {
-                        pEnchant = pEnchant.cloneEnchant();
-                        pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
-                        pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
-                        pItem.addEnchant(pEnchant);
-                    } else {
-                        pEnchant = pItem.getEnchant(pEnchant.getName());
-                        pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
-                        pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+                if (settingsCollection == null) {
+                    return null;
+                }
+                pItemSettings = null;
+                for (PItemSettings ps : settingsCollection) {
+                    if (pItemType == ps.getType()) {
+                        pItemSettings = ps;
                     }
                 }
-            }
-        }
-        for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
-            if(pItem.getEnchant(pEnchant.getName()) == null) {
-                PEnchant clone = pEnchant.cloneEnchant();
-                clone.setLevel(pEnchant.getLevel());
-                clone.setMaxLevel(pEnchant.getMaxLevel());
-                pItem.addEnchant(clone);
-            }
-        }
-        ItemStack temp = pItem.getItem();
-        ItemStack clone = new ItemStack(temp.getType(), temp.getAmount());
-        clone.setData(temp.getData());
-        clone.setDurability(temp.getDurability());
-        pItem.setItem(clone);
+                if (pItemSettings == null) {
+                    return null;
+                }
+                pItem = null;
+                switch (pItemType) {
+                    case PICK:
+                        pItem = pItemSettings.generate(BlockBreakEvent.class);
+                        break;
+                    case SWORD:
+                        pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                        break;
+                }
+                if (pItem == null) {
+                    return null;
+                }
+                pItem.getItem().setDurability(Short.parseShort(durability));
 
-        EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                pItem.setXp(Integer.parseInt(xp));
+                pItem.setPoints(Integer.parseInt(points));
+                pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+                pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
+
+                if (availSkills != null && !availSkills.equals("")) {
+                    String[] skillSplit = availSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+                for (PSkill pSkill : pItemSettings.getSkillList()) {
+                    if (!pItem.getAvailableSkills().contains(pSkill)) {
+                        pItem.addAvailableSkill(pSkill);
+                    }
+                }
+
+                if (purSkills != null && !purSkills.equals("")) {
+                    String[] skillSplit = purSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+
+                if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                    pItem.setCurrentSkill(null);
+                } else {
+                    pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+                }
+
+                pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+                if (aEnchants != null && !aEnchants.equals("")) {
+                    String[] aEnchantSplit = aEnchants.split("-");
+                    for (String enchant : aEnchantSplit) {
+                        String[] enchantSplit = enchant.split(":");
+                        if (enchantSplit.length != 3) {
+                            continue;
+                        }
+                        PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                        if (pEnchant != null) {
+                            if (!pItem.hasEnchant(pEnchant.getName())) {
+                                pEnchant = pEnchant.cloneEnchant();
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                pItem.addEnchant(pEnchant);
+                            } else {
+                                pEnchant = pItem.getEnchant(pEnchant.getName());
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                            }
+                            pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
+                        }
+                    }
+                }
+                for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                    if (pItem.getEnchant(pEnchant.getName()) == null) {
+                        clone = pEnchant.cloneEnchant();
+                        clone.setLevel(pEnchant.getLevel());
+                        clone.setMaxLevel(pEnchant.getMaxLevel());
+                        pItem.addEnchant(clone);
+                    }
+                }
+                temp = pItem.getItem();
+                cloneStack = new ItemStack(temp.getType(), temp.getAmount());
+                cloneStack.setData(temp.getData());
+                cloneStack.setDurability(temp.getDurability());
+                pItem.setItem(cloneStack);
+
+                EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                break;
+            case 13:
+                type = data[0];
+                pItemSettingsKey = data[1];
+                durability = data[2];
+                xp = data[3];
+                points = data[4];
+                curLevel = data[5];
+                maxLevel = data[6];
+                availSkills = data[7];
+                purSkills = data[8];
+                curSkill = data[9];
+                blocksBroken = data[10];
+                aEnchants = data[11];
+                uuid = data[12];
+
+                pItemType = PItemType.valueOf(type);
+                if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                    return null;
+                }
+                settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+                if (settingsCollection == null) {
+                    return null;
+                }
+                pItemSettings = null;
+                for (PItemSettings ps : settingsCollection) {
+                    if (pItemType == ps.getType()) {
+                        pItemSettings = ps;
+                    }
+                }
+                if (pItemSettings == null) {
+                    return null;
+                }
+                pItem = null;
+                switch (pItemType) {
+                    case PICK:
+                        pItem = pItemSettings.generate(BlockBreakEvent.class);
+                        break;
+                    case SWORD:
+                        pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                        break;
+                }
+                if (pItem == null) {
+                    return null;
+                }
+                pItem.setUuid(UUID.fromString(uuid));
+                pItem.getItem().setDurability(Short.parseShort(durability));
+
+                pItem.setXp(Integer.parseInt(xp));
+                pItem.setPoints(Integer.parseInt(points));
+                pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+                pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
+
+                if (availSkills != null && !availSkills.equals("")) {
+                    String[] skillSplit = availSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+                for (PSkill pSkill : pItemSettings.getSkillList()) {
+                    if (!pItem.getAvailableSkills().contains(pSkill)) {
+                        pItem.addAvailableSkill(pSkill);
+                    }
+                }
+
+                if (purSkills != null && !purSkills.equals("")) {
+                    String[] skillSplit = purSkills.split("-");
+                    for (String key : skillSplit) {
+                        pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                    }
+                }
+
+                if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                    pItem.setCurrentSkill(null);
+                } else {
+                    pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+                }
+
+                pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+                if (aEnchants != null && !aEnchants.equals("")) {
+                    String[] aEnchantSplit = aEnchants.split("-");
+                    for (String enchant : aEnchantSplit) {
+                        String[] enchantSplit = enchant.split(":");
+                        if (enchantSplit.length != 3) {
+                            continue;
+                        }
+                        PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                        if (pEnchant != null) {
+                            if (!pItem.hasEnchant(pEnchant.getName())) {
+                                pEnchant = pEnchant.cloneEnchant();
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                pItem.addEnchant(pEnchant);
+                            } else {
+                                pEnchant = pItem.getEnchant(pEnchant.getName());
+                                pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                            }
+                            pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
+                        }
+                    }
+                }
+                for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                    if (pItem.getEnchant(pEnchant.getName()) == null) {
+                        clone = pEnchant.cloneEnchant();
+                        clone.setLevel(pEnchant.getLevel());
+                        clone.setMaxLevel(pEnchant.getMaxLevel());
+                        pItem.addEnchant(clone);
+                    }
+                }
+                temp = pItem.getItem();
+                cloneStack = new ItemStack(temp.getType(), temp.getAmount());
+                cloneStack.setData(temp.getData());
+                cloneStack.setDurability(temp.getDurability());
+                pItem.setItem(cloneStack);
+
+                EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                break;
+        }
         return pItem;
     }
 
-    public static <E extends Event> String base64PItems(Collection<PItem<E>> pItems) throws UnsupportedEncodingException {
+
+    public static String base64PItemsWUUID(Collection<PItem<?>> pItems) throws UnsupportedEncodingException {
+        if (pItems == null || pItems.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder("");
+        for (PItem<?> pItem : pItems) {
+            builder.append(pItem.toStringWUUID());
+            EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
+        }
+        return Base64.getEncoder().encodeToString(builder.toString().getBytes("utf-8"));
+    }
+
+    public static <E extends Event> String base64PItems(List<PItem<E>> pItems) throws UnsupportedEncodingException {
         if (pItems == null || pItems.isEmpty()) {
             return "";
         }
@@ -430,39 +619,321 @@ public class PItemSerializer {
         String decoded = new String(Base64.getDecoder().decode(base64), "utf-8");
         String[] items = decoded.split(";");
         for (String item : items) {
-            String[] data = item.split(",");
-            if (data.length != 12) {
-                throw new IllegalArgumentException("Base64 String contains invalid serialized PItem.");
+            if(item.endsWith(";")) {
+                item = item.substring(0, item.length() - 2);
             }
-            String type = data[0];
-            String pItemSettingsKey = data[1];
-            String durability = data[2];
-            String xp = data[3];
-            String points = data[4];
-            String curLevel = data[5];
-            String maxLevel = data[6];
-            String availSkills = data[7];
-            String purSkills = data[8];
-            String curSkill = data[9];
-            String blocksBroken = data[10];
-            String aEnchants = data[11];
+            String[] data = item.split(",");
+            String type;
+            String pItemSettingsKey;
+            String durability;
+            String xp;
+            String points;
+            String curLevel;
+            String maxLevel;
+            String availSkills;
+            String purSkills;
+            String curSkill;
+            String blocksBroken;
+            String aEnchants;
+            String uuid;
+            PItemType pItemType;
+            PItemSettings pItemSettings;
+            PItem<?> pItem;
+            PEnchant clone;
+            ItemStack temp;
+            ItemStack cloneStack;
+            switch (data.length) {
+                case 12:
+                    type = data[0];
+                    pItemSettingsKey = data[1];
+                    durability = data[2];
+                    xp = data[3];
+                    points = data[4];
+                    curLevel = data[5];
+                    maxLevel = data[6];
+                    availSkills = data[7];
+                    purSkills = data[8];
+                    curSkill = data[9];
+                    blocksBroken = data[10];
+                    aEnchants = data[11];
+
+                    pItemType = PItemType.valueOf(type);
+                    if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                        continue;
+                    }
+                    Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+                    if (settingsCollection == null) {
+                        continue;
+                    }
+                    pItemSettings = null;
+                    for (PItemSettings ps : settingsCollection) {
+                        if (pItemType == ps.getType()) {
+                            pItemSettings = ps;
+                        }
+                    }
+                    if (pItemSettings == null) {
+                        continue;
+                    }
+                    pItem = null;
+                    switch (pItemType) {
+                        case PICK:
+                            pItem = pItemSettings.generate(BlockBreakEvent.class);
+                            break;
+                        case SWORD:
+                            pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                            break;
+                    }
+                    if (pItem == null) {
+                        continue;
+                    }
+                    pItem.getItem().setDurability(Short.parseShort(durability));
+
+                    pItem.setXp(Integer.parseInt(xp));
+                    pItem.setPoints(Integer.parseInt(points));
+                    pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+                    pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
+
+                    if (availSkills != null && !availSkills.equals("")) {
+                        String[] skillSplit = availSkills.split("-");
+                        for (String key : skillSplit) {
+                            pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                        }
+                    }
+                    for (PSkill pSkill : pItemSettings.getSkillList()) {
+                        if (!pItem.getAvailableSkills().contains(pSkill)) {
+                            pItem.addAvailableSkill(pSkill);
+                        }
+                    }
+
+                    if (purSkills != null && !purSkills.equals("")) {
+                        String[] skillSplit = purSkills.split("-");
+                        for (String key : skillSplit) {
+                            pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                        }
+                    }
+
+                    if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                        pItem.setCurrentSkill(null);
+                    } else {
+                        pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+                    }
+
+                    pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+                    if (aEnchants != null && !aEnchants.equals("")) {
+                        String[] aEnchantSplit = aEnchants.split("-");
+                        for (String enchant : aEnchantSplit) {
+                            String[] enchantSplit = enchant.split(":");
+                            if (enchantSplit.length != 3) {
+                                continue;
+                            }
+                            PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                            if (pEnchant != null) {
+                                if (!pItem.hasEnchant(pEnchant.getName())) {
+                                    pEnchant = pEnchant.cloneEnchant();
+                                    pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                    pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                    pItem.addEnchant(pEnchant);
+                                } else {
+                                    pEnchant = pItem.getEnchant(pEnchant.getName());
+                                    pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                    pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                }
+                                pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
+                            }
+                        }
+                    }
+                    for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                        if (pItem.getEnchant(pEnchant.getName()) == null) {
+                            clone = pEnchant.cloneEnchant();
+                            clone.setLevel(pEnchant.getLevel());
+                            clone.setMaxLevel(pEnchant.getMaxLevel());
+                            pItem.addEnchant(clone);
+                        }
+                    }
+                    temp = pItem.getItem();
+                    cloneStack = new ItemStack(temp.getType(), temp.getAmount());
+                    cloneStack.setData(temp.getData());
+                    cloneStack.setDurability(temp.getDurability());
+                    pItem.setItem(cloneStack);
+
+                    pItemList.add(pItem);
+                    EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                    break;
+                case 13:
+                    type = data[0];
+                    pItemSettingsKey = data[1];
+                    durability = data[2];
+                    xp = data[3];
+                    points = data[4];
+                    curLevel = data[5];
+                    maxLevel = data[6];
+                    availSkills = data[7];
+                    purSkills = data[8];
+                    curSkill = data[9];
+                    blocksBroken = data[10];
+                    aEnchants = data[11];
+                    uuid = data[12];
+
+                    pItemType = PItemType.valueOf(type);
+                    if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
+                        continue;
+                    }
+                    settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
+                    if (settingsCollection == null) {
+                        continue;
+                    }
+                    pItemSettings = null;
+                    for (PItemSettings ps : settingsCollection) {
+                        if (pItemType == ps.getType()) {
+                            pItemSettings = ps;
+                        }
+                    }
+                    if (pItemSettings == null) {
+                        continue;
+                    }
+                    pItem = null;
+                    switch (pItemType) {
+                        case PICK:
+                            pItem = pItemSettings.generate(BlockBreakEvent.class);
+                            break;
+                        case SWORD:
+                            pItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
+                            break;
+                    }
+                    if (pItem == null) {
+                        continue;
+                    }
+                    if(plugin.getPItemManager().getPItemMap().containsKey(uuid)) {
+                        continue;
+                    }
+                    pItem.setUuid(UUID.fromString(uuid));
+                    pItem.getItem().setDurability(Short.parseShort(durability));
+
+                    pItem.setXp(Integer.parseInt(xp));
+                    pItem.setPoints(Integer.parseInt(points));
+                    pItem.setLevel(pItemSettings.getLevel(Integer.parseInt(curLevel)));
+                    pItem.setMaxLevel(pItemSettings.getLevel(Integer.parseInt(maxLevel)));
+
+                    if (availSkills != null && !availSkills.equals("")) {
+                        String[] skillSplit = availSkills.split("-");
+                        for (String key : skillSplit) {
+                            pItem.addAvailableSkill(plugin.getPSkillManager().getPSkill(key));
+                        }
+                    }
+                    for (PSkill pSkill : pItemSettings.getSkillList()) {
+                        if (!pItem.getAvailableSkills().contains(pSkill)) {
+                            pItem.addAvailableSkill(pSkill);
+                        }
+                    }
+
+                    if (purSkills != null && !purSkills.equals("")) {
+                        String[] skillSplit = purSkills.split("-");
+                        for (String key : skillSplit) {
+                            pItem.addPurchasedSkill(plugin.getPSkillManager().getPSkill(key));
+                        }
+                    }
+
+                    if (curSkill == null || curSkill.equals("") || curSkill.equals("null")) {
+                        pItem.setCurrentSkill(null);
+                    } else {
+                        pItem.setCurrentSkill(plugin.getPSkillManager().getPSkill(curSkill));
+                    }
+
+                    pItem.setBlocksBroken(Integer.parseInt(blocksBroken));
+
+                    if (aEnchants != null && !aEnchants.equals("")) {
+                        String[] aEnchantSplit = aEnchants.split("-");
+                        for (String enchant : aEnchantSplit) {
+                            String[] enchantSplit = enchant.split(":");
+                            if (enchantSplit.length != 3) {
+                                continue;
+                            }
+                            PEnchant pEnchant = plugin.getPEnchantManager().getEnchant(enchantSplit[0].toLowerCase());
+                            if (pEnchant != null) {
+                                if (!pItem.hasEnchant(pEnchant.getName())) {
+                                    pEnchant = pEnchant.cloneEnchant();
+                                    pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                    pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                    pItem.addEnchant(pEnchant);
+                                } else {
+                                    pEnchant = pItem.getEnchant(pEnchant.getName());
+                                    pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
+                                    pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
+                                }
+                                pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
+                            }
+                        }
+                    }
+                    for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
+                        if (pItem.getEnchant(pEnchant.getName()) == null) {
+                            clone = pEnchant.cloneEnchant();
+                            clone.setLevel(pEnchant.getLevel());
+                            clone.setMaxLevel(pEnchant.getMaxLevel());
+                            pItem.addEnchant(clone);
+                        }
+                    }
+                    temp = pItem.getItem();
+                    cloneStack = new ItemStack(temp.getType(), temp.getAmount());
+                    cloneStack.setData(temp.getData());
+                    cloneStack.setDurability(temp.getDurability());
+                    pItem.setItem(cloneStack);
+
+                    pItemList.add(pItem);
+                    EnhancedPicks.getInstance().getPItemManager().addPItem(pItem);
+                    break;
+            }
+        }
+        return pItemList;
+    }
+
+    public static List<PItem<?>> pItemsBase64WUUID(String base64) throws UnsupportedEncodingException {
+        if (base64 == null || base64.equals("")) {
+            return Collections.emptyList();
+        }
+        EnhancedPicks plugin = EnhancedPicks.getInstance();
+        List<PItem<?>> pItemList = new ArrayList<>();
+        String decoded = new String(Base64.getDecoder().decode(base64), "utf-8");
+        String[] items = decoded.split(";");
+        for (String item : items) {
+            String[] data = item.split(",");
+            if (data.length != 13) {
+                plugin.getLogger().warning("Base64 String contains invalid serialized PItem.");
+                continue;
+            }
+            String uuid = data[0];
+            String type = data[1];
+            String pItemSettingsKey = data[2];
+            String durability = data[3];
+            String xp = data[4];
+            String points = data[5];
+            String curLevel = data[6];
+            String maxLevel = data[7];
+            String availSkills = data[8];
+            String purSkills = data[9];
+            String curSkill = data[10];
+            String blocksBroken = data[11];
+            String aEnchants = data[12];
+            if (plugin.getPItemManager().getPItemMap().containsKey(uuid)) {
+                continue;
+            }
 
             PItemType pItemType = PItemType.valueOf(type);
             if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
-                return null;
+                continue;
             }
             Collection<PItemSettings> settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
-            if(settingsCollection == null) {
-                return null;
+            if (settingsCollection == null) {
+                continue;
             }
             PItemSettings pItemSettings = null;
-            for(PItemSettings ps : settingsCollection) {
-                if(pItemType == ps.getType()) {
+            for (PItemSettings ps : settingsCollection) {
+                if (pItemType == ps.getType()) {
                     pItemSettings = ps;
                 }
             }
-            if(pItemSettings == null) {
-                return null;
+            if (pItemSettings == null) {
+                continue;
             }
             PItem<?> pItem = null;
             switch (pItemType) {
@@ -474,8 +945,9 @@ public class PItemSerializer {
                     break;
             }
             if (pItem == null) {
-                return null;
+                continue;
             }
+            pItem.setUuid(UUID.fromString(uuid));
             pItem.getItem().setDurability(Short.parseShort(durability));
 
             pItem.setXp(Integer.parseInt(xp));
@@ -490,7 +962,7 @@ public class PItemSerializer {
                 }
             }
             for (PSkill pSkill : pItemSettings.getSkillList()) {
-                if(!pItem.getAvailableSkills().contains(pSkill)) {
+                if (!pItem.getAvailableSkills().contains(pSkill)) {
                     pItem.addAvailableSkill(pSkill);
                 }
             }
@@ -529,11 +1001,12 @@ public class PItemSerializer {
                             pEnchant.setLevel(Integer.parseInt(enchantSplit[1]));
                             pEnchant.setMaxLevel(Integer.parseInt(enchantSplit[2]));
                         }
+                        pEnchant.setStartLevel(pItemSettings.getEnchant(pEnchant.getName()).getStartLevel());
                     }
                 }
             }
             for (PEnchant pEnchant : pItemSettings.getEnchantList()) {
-                if(pItem.getEnchant(pEnchant.getName()) == null) {
+                if (pItem.getEnchant(pEnchant.getName()) == null) {
                     PEnchant clone = pEnchant.cloneEnchant();
                     clone.setLevel(pEnchant.getLevel());
                     clone.setMaxLevel(pEnchant.getMaxLevel());

@@ -46,4 +46,8 @@ public class PlayerManager {
         get(player).save();
         remove(player);
     }
+
+    public void softSave(Player player) {
+        get(player).softSave();
+    }
 }

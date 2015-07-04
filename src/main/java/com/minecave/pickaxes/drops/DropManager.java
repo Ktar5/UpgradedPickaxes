@@ -15,7 +15,6 @@ import lombok.Data;
 import lombok.Value;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,11 +25,11 @@ import java.util.Map;
 public class DropManager {
 
     private EnhancedPicks plugin;
-    private Map<Material, BlockValue> blockValues = new HashMap<>();
-    private Map<EntityType, MobValue> mobValues   = new HashMap<>();
-    private List<BlockDrop>           blockDrops  = new ArrayList<>();
-    private List<MobDrop>             mobDrops    = new ArrayList<>();
-    private Multiplier                multiplier;
+    private Map<Material, BlockValue>              blockValues = new HashMap<>();
+    private Map<String, MobValue> mobValues   = new HashMap<>();
+    private List<BlockDrop>                        blockDrops  = new ArrayList<>();
+    private List<MobDrop>                          mobDrops    = new ArrayList<>();
+    private Multiplier multiplier;
 
     public DropManager() {
         this.plugin = EnhancedPicks.getInstance();
@@ -61,10 +60,9 @@ public class DropManager {
         }
         section = config.getConfigurationSection("mob");
         for (String s : section.getKeys(false)) {
-            EntityType entity = EntityType.valueOf(s);
             int xp = section.getInt(s);
-            MobValue value = new MobValue(xp, entity);
-            mobValues.put(entity, value);
+            MobValue value = new MobValue(xp);
+            mobValues.put(s, value);
         }
 
         config = plugin.getConfig("drops");

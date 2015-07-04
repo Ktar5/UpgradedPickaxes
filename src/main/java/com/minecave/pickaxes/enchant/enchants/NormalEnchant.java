@@ -21,10 +21,16 @@ public class NormalEnchant extends PEnchant {
     @Getter
     private Enchantment enchantment;
 
+    @SuppressWarnings("ConstantConditions")
     public NormalEnchant(Enchantment enchantment) {
         super(enchantment.getName(), Strings.fixEnchantment(enchantment));
         this.enchantment = enchantment;
         this.setMaxLevel(enchantment.getMaxLevel());
+        if(VanillaPick.has(enchantment)) {
+            super.loadConfig(VanillaPick.get(enchantment).name().toLowerCase());
+        } else if(VanillaSword.has(enchantment)) {
+            super.loadConfig(VanillaSword.get(enchantment).name().toLowerCase());
+        }
     }
 
     public NormalEnchant(NormalEnchant normalEnchant) {
@@ -93,6 +99,24 @@ public class NormalEnchant extends PEnchant {
             }
             return null;
         }
+
+        public static boolean has(Enchantment enchantment) {
+            for (VanillaSword vanilla : values()) {
+                if (vanilla.getEnchantment().getName().equals(enchantment.getName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static VanillaSword get(Enchantment enchantment) {
+            for (VanillaSword vanilla : values()) {
+                if (vanilla.getEnchantment().getName().equals(enchantment.getName())) {
+                    return vanilla;
+                }
+            }
+            return null;
+        }
     }
 
     public enum VanillaPick {
@@ -122,6 +146,24 @@ public class NormalEnchant extends PEnchant {
             for (VanillaPick vanilla : values()) {
                 if (vanilla.toString().equalsIgnoreCase(s) ||
                         vanilla.getEnchantment().getName().equalsIgnoreCase(s)) {
+                    return vanilla;
+                }
+            }
+            return null;
+        }
+
+        public static boolean has(Enchantment enchantment) {
+            for (VanillaPick vanilla : values()) {
+                if (vanilla.getEnchantment().getName().equals(enchantment.getName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static VanillaPick get(Enchantment enchantment) {
+            for (VanillaPick vanilla : values()) {
+                if (vanilla.getEnchantment().getName().equals(enchantment.getName())) {
                     return vanilla;
                 }
             }

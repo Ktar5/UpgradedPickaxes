@@ -27,6 +27,7 @@ import java.util.Map;
 public abstract class PEnchant {
 
     private int    level;
+    private int    startLevel;
     private int    maxLevel;
     private String name;
     private String displayName;
@@ -36,12 +37,14 @@ public abstract class PEnchant {
         this.name = name;
         this.displayName = displayName;
         this.level = 0;
+        this.startLevel = 0;
         this.maxLevel = 3;
     }
 
     public PEnchant(PEnchant copy) {
         this(copy.getName(), copy.getDisplayName());
         this.level = copy.getLevel();
+        this.startLevel = copy.getStartLevel() == 0 ? this.level : this.startLevel;
         this.maxLevel = copy.getMaxLevel();
     }
 
@@ -58,6 +61,10 @@ public abstract class PEnchant {
 
     public int getCost() {
         return getLevelCost(this.level);
+    }
+
+    public int getNextCost() {
+        return getLevelCost(this.level + 1);
     }
 
     public abstract void activate(BlockBreakEvent event);
@@ -78,7 +85,7 @@ public abstract class PEnchant {
     }
 
     public void decreaseLevel(Player player, PItem pItem) {
-        if (level == 0) {
+        if (level == startLevel) {
             player.sendMessage(ChatColor.RED + "That enchantment is already at level 0.");
             return;
         }

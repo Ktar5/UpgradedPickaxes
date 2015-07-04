@@ -53,6 +53,10 @@ public class LuckEnchant extends PEnchant {
 
     @Override
     public LuckEnchant cloneEnchant() {
-        return new LuckEnchant();
+        LuckEnchant luck = new LuckEnchant();
+        luck.setLevel(this.getLevel());
+        luck.setStartLevel(this.getStartLevel());
+        luck.setMaxLevel(this.getMaxLevel());
+        return luck;
     }
 }

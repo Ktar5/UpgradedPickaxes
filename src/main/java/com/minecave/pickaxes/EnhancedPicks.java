@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
+import com.earth2me.essentials.Essentials;
 import com.minecave.pickaxes.commands.GiveCommand;
 import com.minecave.pickaxes.commands.PickCommand;
 import com.minecave.pickaxes.commands.PointsCommand;
@@ -28,11 +29,14 @@ import com.minecave.pickaxes.util.nbt.*;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +57,11 @@ public class EnhancedPicks extends JavaPlugin {
     private        PItemManager              pItemManager;
     private        PlayerManager             playerManager;
     private        KitManager                kitManager;
+    private        Essentials                essentials;
     private int costPerLevel = 5;
+    private List<String>           whitelistWorlds;
+    private Map<Material, Integer> scaleFactors;
+    private List<Material>         gems;
 
     public static EnhancedPicks getInstance() {
         return instance;
@@ -63,6 +71,15 @@ public class EnhancedPicks extends JavaPlugin {
     public void onEnable() {
         instance = this;
         configMap = new HashMap<>();
+        scaleFactors = new HashMap<>();
+        whitelistWorlds = new ArrayList<>();
+        gems = new ArrayList<Material>() {{
+            add(Material.DIAMOND);
+            add(Material.COAL);
+            add(Material.IRON_ORE);
+            add(Material.GOLD_ORE);
+            add(Material.EMERALD);
+        }};
         saveDefaultConfig();
 
         saveDefaultConfig("config");
@@ -75,7 +92,21 @@ public class EnhancedPicks extends JavaPlugin {
         saveDefaultConfig("picks");
         saveDefaultConfig("swords");
         saveDefaultConfig("kits");
+        saveDefaultConfig("scale_factor");
+
+        ConfigurationSection scaleSection = getConfig("scale_factor").getConfigurationSection("Scale_Factors");
+        scaleSection.getKeys(false).forEach(s -> scaleFactors.put(s.equals("lapis") ? Material.INK_SACK : Material.matchMaterial(s), scaleSection.getInt(s)));
+
+        getConfig("config").getConfig().getStringList("world-whitelist").forEach(whitelistWorlds::add);
         costPerLevel = getConfig("config").get("costPerLevel", Integer.class, 5);
+
+        if (getServer().getPluginManager().isPluginEnabled("Essentials")) {
+            essentials = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
+        } else {
+            this.getLogger().severe("Essentials not found or enabled. Disabling...");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         kitManager = new KitManager();
         pSkillManager = new PSkillManager();
@@ -119,7 +150,7 @@ public class EnhancedPicks extends JavaPlugin {
         }
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this /*your plugin instance*/,
-                ListenerPriority.NORMAL, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS) {
+                                                                                 ListenerPriority.NORMAL, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 if (event.getPacketType() == PacketType.Play.Server.SET_SLOT) {
@@ -209,21 +240,33 @@ public class EnhancedPicks extends JavaPlugin {
         Bukkit.getOnlinePlayers().forEach(playerManager::load);
 
         getServer().getScheduler().runTaskTimer(this, () -> Bukkit.getOnlinePlayers().stream()
-                .filter(p -> p.getItemInHand() != null).forEach(p -> {
+                                                                  .filter(p -> p.getItemInHand() != null).forEach(p -> {
                     PItem<?> pItem = pItemManager.getPItem(p.getItemInHand());
                     if (pItem != null) {
                         String displayName = pItem.buildName();
+                        pItem.setItem(p.getItemInHand());
                         ActionBar.sendActionBar(p, displayName);
+                        pItem.updateMeta();
+                        pItem.updateManually(p, p.getItemInHand());
                     }
                 }), 20l, 20l);
+
+        getServer().getScheduler().runTaskTimer(this, () ->
+                Bukkit.getOnlinePlayers().forEach(p -> getServer().getScheduler().runTaskAsynchronously(EnhancedPicks.this, () ->
+                        playerManager.softSave(p))), 20L * 10, 20 * 60); //5 minute backups
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getOnlinePlayers().forEach(p -> {
-            p.closeInventory();
-            playerManager.save(p);
-        });
+        if (playerManager != null) {
+            Bukkit.getOnlinePlayers().forEach(p -> {
+                p.closeInventory();
+                playerManager.save(p);
+            });
+        }
+        if (pItemManager != null) {
+            pItemManager.getSettingsMap().clear();
+        }
     }
 
     public void saveDefaultConfig(String name) {

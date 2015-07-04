@@ -23,7 +23,7 @@ public class FireballSkill extends PSkill {
     @Override
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (!this.wg.canBuild(event.getPlayer(), player.getEyeLocation())) {
+        if (!this.wg.canBuild(event.getPlayer(), player.getEyeLocation().getBlock())) {
             return;
         }
         Location spawn = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());

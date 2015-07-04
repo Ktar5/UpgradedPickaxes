@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -55,12 +56,12 @@ public class Bomber extends PSkill {
             public void run() {
                 tnt.remove();
                 Location location = tnt.getLocation();
-                if (!wg.canBuild(event.getPlayer(), location)) {
+                if (!wg.canBuild(event.getPlayer(), location.getBlock())) {
                     return;
                 }
                 for (Block b : getRegionBlocks(location, amount)) {
                     Location loc = b.getLocation();
-                    if (!wg.canBuild(event.getPlayer(), loc) ||
+                    if (!wg.canBuild(event.getPlayer(), loc.getBlock()) ||
                             loc.getBlock().getType() == Material.BEDROCK ||
                             loc.getBlock().getType() == Material.AIR) {
                         continue;
@@ -76,6 +77,16 @@ public class Bomber extends PSkill {
                             stack.setType(converted);
                             if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
                                 int extra = Bomber.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                                Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
+                                if(scale != null) {
+                                    extra *= scale;
+                                }
+                                if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+                                    extra = (int) Math.round(extra / 10D);
+                                    if(--extra < 0) {
+                                        extra = 0;
+                                    }
+                                }
                                 stack.setAmount(stack.getAmount() + extra);
                             }
                         }
@@ -85,7 +96,10 @@ public class Bomber extends PSkill {
                     pItem.incrementXp(xp, player);
                     pItem.addBlockBroken();
                     pItem.update(player);
-                    player.getInventory().addItem(array);
+                    Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
+                    if(!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                        leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                    }
                     player.updateInventory();
                     loc.getBlock().setType(Material.AIR);
                 }

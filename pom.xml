@@ -47,6 +47,10 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>ess-repo</id>
+            <url>http://repo.ess3.net/content/groups/essentials</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -79,6 +83,11 @@
             <groupId>com.minecave</groupId>
             <artifactId>minesell</artifactId>
             <version>1.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.ess3</groupId>
+            <artifactId>Essentials</artifactId>
+            <version>2.14-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

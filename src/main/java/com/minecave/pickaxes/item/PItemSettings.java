@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Getter
 @Setter
@@ -84,6 +85,15 @@ public class PItemSettings {
             enchantList.add(enchant);
     }
 
+    public boolean hasEnchant(String name) {
+        for (PEnchant pEnchant : this.enchantList) {
+            if(pEnchant.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public <P extends Event> PItem<P> generate(Class<P> pClass) {
         Level level = this.getLevel(this.startLevel);
         if (level == null) {
@@ -116,7 +126,7 @@ public class PItemSettings {
                     if (attackEvent.getEntity() instanceof LivingEntity) {
                         LivingEntity le = (LivingEntity) attackEvent.getEntity();
                         if (le.getHealth() <= attackEvent.getFinalDamage()) {
-                            int xp = MobValue.getXp(attackEvent.getEntityType());
+                            int xp = MobValue.getXp(attackEvent.getEntity());
                             p.incrementXp(xp, (Player) attackEvent.getDamager());
                         }
                     }
@@ -133,6 +143,7 @@ public class PItemSettings {
             PEnchant clone = pEnchant.cloneEnchant();
             clone.setLevel(pEnchant.getLevel());
             clone.setMaxLevel(pEnchant.getMaxLevel());
+            clone.setStartLevel(pEnchant.getStartLevel());
             pItem.addEnchant(clone);
         }
         this.skillList.forEach(pItem::addAvailableSkill);
@@ -183,5 +194,18 @@ public class PItemSettings {
 
     public int getMaxLevelInt() {
         return this.maxLevel;
+    }
+
+    public Supplier<String> compress() {
+        return () -> toString().replace("\n", "..");
+    }
+
+    public PEnchant getEnchant(String name) {
+        for (PEnchant pEnchant : this.enchantList) {
+            if(pEnchant.getName().equals(name)) {
+                return pEnchant;
+            }
+        }
+        return null;
     }
 }

@@ -1,7 +1,7 @@
 name: ${plugin.name}
 version: ${version}
 main: ${plugin.mainClass}
-depend: [WorldGuard, MineSell]
+depend: [WorldGuard, MineSell, Essentials]
 commands:
   pick:
     description: Opens up your pick UI. Use points arg to spend points on this item.
@@ -16,7 +16,7 @@ commands:
     aliases: [givepick, givesword, pitem]
   ppoints:
     description: Give points to a player to spend on picks/swords.
-    usage: /<command> give [player] [points]
+    usage: /<command> [player] [points]
     permission: pickaxes.admin
 permissions:
   pickaxes.*:

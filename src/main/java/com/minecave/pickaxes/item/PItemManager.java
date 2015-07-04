@@ -73,7 +73,9 @@ public class PItemManager {
                     pEnchant.setMaxLevel(maxLevelInt);
                 }
                 if (pickConfig.has(startLevel)) {
-                    pEnchant.setLevel(pickConfig.get(startLevel, Integer.class, enchant.getLevel()));
+                    int sLevel = pickConfig.get(startLevel, Integer.class, enchant.getLevel());
+                    pEnchant.setLevel(sLevel);
+                    pEnchant.setStartLevel(sLevel);
                 }
                 settings.addEnchant(pEnchant);
             }
@@ -85,7 +87,7 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
-            
+
             ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
             boolean perLevel = firework.getBoolean("determinePerLevel");
             if (!perLevel) {
@@ -102,12 +104,12 @@ public class PItemManager {
                 settings.getDefaultBuilder().flicker(firework.getBoolean("flicker"));
             }
             settings.getLevelUpMessage().addAll(pluginConfig.getConfig().getStringList("level-up-message"));
-            if(pickConfig.has(n + ".max-level")){
+            if (pickConfig.has(n + ".max-level")) {
                 settings.setMaxLevel(pickConfig.get(n + ".max-level", Integer.class, 10));
             } else {
                 settings.setMaxLevel(levelConfig.get("max-level", Integer.class, 10));
             }
-            if(pickConfig.has(concat(n, "levels"))) {
+            if (pickConfig.has(concat(n, "levels"))) {
                 for (String levelKey : pickConfig.getConfigurationSection(n + ".levels").getKeys(false)) {
                     int lvl = Integer.parseInt(levelKey);
                     levelKey = "levels." + levelKey;
@@ -137,10 +139,10 @@ public class PItemManager {
                     if (!settings.getLevelMap().containsKey(i)) {
                         if (settings.getExampleLevel() != null) {
                             settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
-                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                                                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
                         } else {
                             settings.getLevelMap().put(i, new Level(settings, i, 100,
-                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                                                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
                         }
                     }
                 }
@@ -174,17 +176,23 @@ public class PItemManager {
                     if (!settings.getLevelMap().containsKey(i)) {
                         if (settings.getExampleLevel() != null) {
                             settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
-                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                                                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
                         } else {
                             settings.getLevelMap().put(i, new Level(settings, i, 100,
-                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                                                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
                         }
                     }
                 }
             }
 
             this.settingsMap.put(n, settings);
-            EnhancedPicks.getInstance().getLogger().info(settings.toString());
+            if (pluginConfig.has("debug") && pluginConfig.get("debug", Boolean.class, false)) {
+                if (pluginConfig.has("compressedDebug") && !pluginConfig.get("compressedDebug", Boolean.class, false)) {
+                    EnhancedPicks.getInstance().getLogger().info(settings.toString());
+                } else {
+                    EnhancedPicks.getInstance().getLogger().info(settings.compress());
+                }
+            }
         }
         //SWORDS
         CustomConfig swordConfig = plugin.getConfig("swords");
@@ -215,7 +223,9 @@ public class PItemManager {
                     pEnchant.setMaxLevel(swordConfig.get(maxLevel, Integer.class, enchant.getMaxLevel()));
                 }
                 if (swordConfig.has(startLevel)) {
-                    pEnchant.setLevel(swordConfig.get(startLevel, Integer.class, enchant.getLevel()));
+                    int sLevel = swordConfig.get(startLevel, Integer.class, enchant.getLevel());
+                    pEnchant.setLevel(sLevel);
+                    pEnchant.setStartLevel(sLevel);
                 }
                 settings.addEnchant(pEnchant);
             }
@@ -227,7 +237,7 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
-            
+
             ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
             boolean perLevel = firework.getBoolean("determinePerLevel");
             if (!perLevel) {
@@ -244,12 +254,12 @@ public class PItemManager {
                 settings.getDefaultBuilder().flicker(firework.getBoolean("flicker"));
             }
             settings.getLevelUpMessage().addAll(pluginConfig.getConfig().getStringList("level-up-message"));
-            if(swordConfig.has(n + ".max-level")){
+            if (swordConfig.has(n + ".max-level")) {
                 settings.setMaxLevel(swordConfig.get(n + ".max-level", Integer.class, 10));
-            } else{
+            } else {
                 settings.setMaxLevel(levelConfig.get("max-level", Integer.class, 10));
             }
-            if(swordConfig.has(concat(n, "levels"))) {
+            if (swordConfig.has(concat(n, "levels"))) {
                 for (String levelKey : swordConfig.getConfigurationSection(n + ".levels").getKeys(false)) {
                     int lvl = Integer.parseInt(levelKey);
                     levelKey = "levels." + levelKey;
@@ -279,10 +289,10 @@ public class PItemManager {
                     if (!settings.getLevelMap().containsKey(i)) {
                         if (settings.getExampleLevel() != null) {
                             settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
-                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                                                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
                         } else {
                             settings.getLevelMap().put(i, new Level(settings, i, 100,
-                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                                                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
                         }
                     }
                 }
@@ -316,17 +326,23 @@ public class PItemManager {
                     if (!settings.getLevelMap().containsKey(i)) {
                         if (settings.getExampleLevel() != null) {
                             settings.getLevelMap().put(i, new Level(settings, i, settings.getExampleLevel().getXp(),
-                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
+                                                                    settings.getExampleLevel().getCommands(), settings.getExampleLevel().getFireworkBuilder()));
                         } else {
                             settings.getLevelMap().put(i, new Level(settings, i, 100,
-                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
+                                                                    Collections.singletonList("give $player$ diamond 1"), settings.getDefaultBuilder()));
                         }
                     }
                 }
             }
 
             this.settingsMap.put(n, settings);
-            EnhancedPicks.getInstance().getLogger().info(settings.toString());
+            if (pluginConfig.has("debug") && pluginConfig.get("debug", Boolean.class, false)) {
+                if (pluginConfig.has("compressedDebug") && !pluginConfig.get("compressedDebug", Boolean.class, false)) {
+                    EnhancedPicks.getInstance().getLogger().info(settings.toString());
+                } else {
+                    EnhancedPicks.getInstance().getLogger().info(settings.compress());
+                }
+            }
         }
     }
 
@@ -357,10 +373,7 @@ public class PItemManager {
 
     @SuppressWarnings("unchecked")
     public <P extends Event> PItem<P> getPItem(Class<P> pClass, ItemStack item) {
-        if (item == null) {
-            return null;
-        }
-        if (!item.hasItemMeta()) {
+        if (item == null || !item.hasItemMeta()) {
             return null;
         }
         ItemMeta meta = item.getItemMeta();
@@ -369,6 +382,9 @@ public class PItemManager {
             return null;
         }
         for (String l : lore) {
+            if (!l.contains(ChatColor.COLOR_CHAR + "U")) {
+                continue;
+            }
             l = l.replace(ChatColor.COLOR_CHAR + "", "");
             if (l.startsWith("UUID:")) {
                 String u = l.replace("UUID:", "");
@@ -386,6 +402,10 @@ public class PItemManager {
     }
 
     public void addPItem(PItem<?> pItem) {
+        this.pItemMap.putIfAbsent(pItem.getUuid().toString(), pItem);
+    }
+
+    public void addPItemForce(PItem<?> pItem) {
         this.pItemMap.put(pItem.getUuid().toString(), pItem);
     }
 

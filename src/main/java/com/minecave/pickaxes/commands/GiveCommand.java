@@ -95,7 +95,7 @@ public class GiveCommand implements CommandExecutor {
                     pEnchant.apply(pItem);
                 }
                 player.getInventory().addItem(stack);
-                plugin.getPItemManager().addPItem(pItem);
+                plugin.getPItemManager().addPItemForce(pItem);
                 break;
             case SWORD:
                 PItem<EntityDamageByEntityEvent> eItem = pItemSettings.generate(EntityDamageByEntityEvent.class);
@@ -105,7 +105,7 @@ public class GiveCommand implements CommandExecutor {
                     pEnchant.apply(eItem);
                 }
                 player.getInventory().addItem(stack);
-                plugin.getPItemManager().addPItem(eItem);
+                plugin.getPItemManager().addPItemForce(eItem);
                 break;
         }
         return true;

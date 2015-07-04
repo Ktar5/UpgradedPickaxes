@@ -11,27 +11,36 @@ package com.minecave.pickaxes.drops;
 import com.minecave.pickaxes.EnhancedPicks;
 import lombok.Data;
 import lombok.Getter;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Skeleton;
 
 @Data
 public class MobValue {
 
 
     @Getter
-    private int        xp;
-    @Getter
-    private EntityType type;
+    private int                     xp;
 
-    public MobValue(int xp, EntityType type) {
+    public MobValue(int xp) {
         this.xp = xp;
-        this.type = type;
     }
 
-    public static int getXp(EntityType type) {
-        if (!EnhancedPicks.getInstance().getDropManager().getMobValues().containsKey(type) ||
-                EnhancedPicks.getInstance().getDropManager().getMobValues().get(type) == null) {
+    public static int getXp(Entity entity) {
+        String type = entity.getType().name();
+        if(entity instanceof Skeleton) {
+            Skeleton.SkeletonType skele = ((Skeleton) entity).getSkeletonType();
+            switch(skele) {
+                case WITHER:
+                    type = "WITHER_SKELETON";
+                    break;
+                default:
+                    break;
+            }
+        }
+        MobValue value = EnhancedPicks.getInstance().getDropManager().getMobValues().get(type);
+        if (value == null) {
             return 1;
         }
-        return EnhancedPicks.getInstance().getDropManager().getMobValues().get(type).getXp();
+        return value.getXp();
     }
 }

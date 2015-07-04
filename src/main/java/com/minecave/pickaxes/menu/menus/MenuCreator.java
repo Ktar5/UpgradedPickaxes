@@ -33,7 +33,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Wool;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MenuCreator {
@@ -49,10 +48,10 @@ public class MenuCreator {
             switch (i) {
                 case 1:
                     ItemStack chest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
-                            .name(ChatColor.YELLOW + "Pick Chest")
-                            .lore(" ",
-                                    ChatColor.GRAY + "Click to view all your current pickaxes.")
-                            .build();
+                                                 .name(ChatColor.YELLOW + "Pick Chest")
+                                                 .lore(" ",
+                                                       ChatColor.GRAY + "Click to view all your current pickaxes.")
+                                                 .build();
                     Item item = BasicItem.create(chest, (p, c) -> {
                         ScrollingMenu menu = createPickMenu(p);
                         if (menu != null) {
@@ -64,10 +63,10 @@ public class MenuCreator {
                     break;
                 case 3:
                     ItemStack upgrades = ItemBuilder.wrap(new ItemStack(Material.ENCHANTED_BOOK))
-                            .name(ChatColor.YELLOW + "Upgrades")
-                            .lore(" ",
-                                    ChatColor.GRAY + "Click to manage your Pick's upgrades.")
-                            .build();
+                                                    .name(ChatColor.YELLOW + "Upgrades")
+                                                    .lore(" ",
+                                                          ChatColor.GRAY + "Click to manage your Pick's upgrades.")
+                                                    .build();
                     item = BasicItem.create(upgrades, (p, c) -> {
                         Menu menu = createUpgradesMenu(p);
                         if (menu != null) {
@@ -79,10 +78,10 @@ public class MenuCreator {
                     break;
                 case 5:
                     ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.GOLD_INGOT))
-                            .name(ChatColor.YELLOW + "Skills")
-                            .lore(" ",
-                                    ChatColor.GRAY + "Click to manage your Pick's skills.")
-                            .build();
+                                                  .name(ChatColor.YELLOW + "Skills")
+                                                  .lore(" ",
+                                                        ChatColor.GRAY + "Click to manage your Pick's skills.")
+                                                  .build();
                     item = BasicItem.create(skills, (p, c) -> {
                         Menu menu = createSkillsMenu(p);
                         if (menu != null) {
@@ -95,20 +94,20 @@ public class MenuCreator {
                 case 7:
                     PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
                     String curItemPoints = pItem == null ? "You don't have a pick/sword inhand." :
-                            ChatColor.GRAY + "Current item point: " + ChatColor.WHITE + pItem.getPoints();
+                                           ChatColor.GRAY + "Current item point: " + ChatColor.WHITE + pItem.getPoints();
                     ItemStack itemPoints = ItemBuilder.wrap(new ItemStack(Material.DIAMOND))
-                            .name(ChatColor.GOLD + "Item Points")
-                            .lore(" ", curItemPoints)
-                            .build();
+                                                      .name(ChatColor.GOLD + "Item Points")
+                                                      .lore(" ", curItemPoints)
+                                                      .build();
                     item = BasicItem.createFiller(itemPoints);
                     mainPick.setItem(i, item);
                     break;
                 case 8:
                     PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
                     ItemStack unusedPoints = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
-                            .name(ChatColor.GOLD + "Unspent Points")
-                            .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints())
-                            .build();
+                                                        .name(ChatColor.GOLD + "Unspent Points")
+                                                        .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints())
+                                                        .build();
                     item = BasicItem.createFiller(unusedPoints);
                     mainPick.setItem(i, item);
                     break;
@@ -128,10 +127,10 @@ public class MenuCreator {
             switch (i) {
                 case 1:
                     ItemStack chest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
-                            .name(ChatColor.YELLOW + "Sword Chest")
-                            .lore(" ",
-                                    ChatColor.GRAY + "Click to view all your current swords.")
-                            .build();
+                                                 .name(ChatColor.YELLOW + "Sword Chest")
+                                                 .lore(" ",
+                                                       ChatColor.GRAY + "Click to view all your current swords.")
+                                                 .build();
                     Item item = BasicItem.create(chest, (p, c) -> {
                         ScrollingMenu menu = createSwordMenu(p);
                         if (menu != null) {
@@ -143,10 +142,10 @@ public class MenuCreator {
                     break;
                 case 3:
                     ItemStack upgrades = ItemBuilder.wrap(new ItemStack(Material.ENCHANTED_BOOK))
-                            .name(ChatColor.YELLOW + "Upgrades")
-                            .lore(" ",
-                                    ChatColor.GRAY + "Click to manage your Sword's upgrades.")
-                            .build();
+                                                    .name(ChatColor.YELLOW + "Upgrades")
+                                                    .lore(" ",
+                                                          ChatColor.GRAY + "Click to manage your Sword's upgrades.")
+                                                    .build();
                     item = BasicItem.create(upgrades, (p, c) -> {
                         Menu menu = createUpgradesMenu(p);
                         if (menu != null) {
@@ -158,10 +157,10 @@ public class MenuCreator {
                     break;
                 case 5:
                     ItemStack skills = ItemBuilder.wrap(new ItemStack(Material.GOLD_INGOT))
-                            .name(ChatColor.YELLOW + "Skills")
-                            .lore(" ",
-                                    ChatColor.GRAY + "Click to manage your Sword's skills.")
-                            .build();
+                                                  .name(ChatColor.YELLOW + "Skills")
+                                                  .lore(" ",
+                                                        ChatColor.GRAY + "Click to manage your Sword's skills.")
+                                                  .build();
                     item = BasicItem.create(skills, (p, c) -> {
                         Menu menu = createSkillsMenu(p);
                         if (menu != null) {
@@ -174,21 +173,50 @@ public class MenuCreator {
                 case 7:
                     PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
                     String curItemPoints = pItem == null ? "You don't have a pick/sword inhand." :
-                            ChatColor.GRAY + "Current item point: " + ChatColor.WHITE + pItem.getPoints();
+                                           ChatColor.GRAY + "Current item point: " + ChatColor.WHITE + pItem.getPoints();
                     ItemStack itemPoints = ItemBuilder.wrap(new ItemStack(Material.DIAMOND))
-                            .name(ChatColor.GOLD + "Item Points")
-                            .lore(" ", curItemPoints)
-                            .build();
+                                                      .name(ChatColor.GOLD + "Item Points")
+                                                      .lore(" ", curItemPoints)
+                                                      .build();
                     item = BasicItem.createFiller(itemPoints);
                     mainSword.setItem(i, item);
                     break;
                 case 8:
+                    pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
                     PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
                     ItemStack unusedPoints = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
-                            .name(ChatColor.GOLD + "Unspent Points")
-                            .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints())
-                            .build();
-                    item = BasicItem.createFiller(unusedPoints);
+                                                        .name(ChatColor.GOLD + "Unspent Points")
+                                                        .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints(),
+                                                              pItem == null ? ChatColor.RED + "Hold an enhanced item to add points." :
+                                                              ChatColor.GREEN + "Left click to add 1 point.",
+                                                              pItem != null ? ChatColor.DARK_GREEN + "Right click to add up to 5 points." : "")
+                                                        .build();
+                    item = BasicItem.create(unusedPoints, (p, c) -> {
+                        boolean failed = false;
+                        if (pItem != null) {
+                            switch (c) {
+                                case LEFT:
+                                case SHIFT_LEFT:
+                                    if (info.subtractPoints(1)) {
+                                        pItem.addPoints(1);
+                                    } else {
+                                        failed = true;
+                                    }
+                                    break;
+                                case RIGHT:
+                                case SHIFT_RIGHT:
+                                    if (info.subtractPoints(5)) {
+                                        pItem.addPoints(5);
+                                    } else {
+                                        failed = true;
+                                    }
+                                    break;
+                            }
+                            if (!failed) {
+                                p.sendMessage(ChatColor.GOLD + "Current item point: " + ChatColor.WHITE + pItem.getPoints());
+                            }
+                        }
+                    });
                     mainSword.setItem(i, item);
                     break;
                 default:
@@ -245,13 +273,14 @@ public class MenuCreator {
         menu.setLowerInventoryListener((p, i) -> {
             ItemStack stack = p.getInventory().getItem(i);
             PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance()
-                    .getPItemManager().getPItem(BlockBreakEvent.class, stack);
+                                                        .getPItemManager().getPItem(BlockBreakEvent.class, stack);
             if (pItem == null) {
                 return;
             }
             if (pItem.getEClass() == BlockBreakEvent.class && pItem.getType() == PItemType.PICK) {
                 p.getInventory().setItem(i, null);
                 info.addPickaxe(pItem);
+                pItem.getEnchants().forEach(pe -> pe.apply(pItem));
                 Menu newMenu = createPickMenu(p);
                 if (newMenu != null) {
                     newMenu.setParent(menu.getParent());
@@ -297,7 +326,7 @@ public class MenuCreator {
                     p.getInventory().setItem(emptySlot, sword.getItem());
                     sword.setItem(p.getInventory().getItem(emptySlot));
                     sword.updateManually(p, p.getInventory().getItem(emptySlot));
-                    Menu newMenu = createPickMenu(p);
+                    Menu newMenu = createSwordMenu(p);
                     if (newMenu != null) {
                         newMenu.setParent(menu.getParent());
                         menu.setParent(null);
@@ -311,14 +340,14 @@ public class MenuCreator {
         menu.setLowerInventoryListener((p, i) -> {
             ItemStack stack = p.getInventory().getItem(i);
             PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance()
-                    .getPItemManager().getPItem(EntityDamageByEntityEvent.class, stack);
+                                                                  .getPItemManager().getPItem(EntityDamageByEntityEvent.class, stack);
             if (pItem == null) {
                 return;
             }
-            if (pItem.getEClass() == EntityDamageByEntityEvent.class && pItem.getType() == PItemType.PICK) {
+            if (pItem.getEClass() == EntityDamageByEntityEvent.class && pItem.getType() == PItemType.SWORD) {
                 p.getInventory().setItem(i, null);
                 info.addSword(pItem);
-                Menu newMenu = createPickMenu(p);
+                Menu newMenu = createSwordMenu(p);
                 if (newMenu != null) {
                     newMenu.setParent(menu.getParent());
                     menu.setParent(null);
@@ -371,23 +400,28 @@ public class MenuCreator {
             PEnchant enchant = pItem.getEnchants().get(i - 1);
             itemList.add(AIR);
 
-            int cost = enchant.getCost();
-            int prevCost = enchant.getLevelCost(enchant.getLevel() - 1);
+            int cost = enchant.getNextCost();
+            int prevCost = enchant.getCost();
 
             ItemStack redWool = new Wool(DyeColor.RED).toItemStack(1);
             ItemMeta meta = redWool.getItemMeta();
-            meta.setLore(Collections.singletonList(enchant.getLevel() == 0 ? "" :
-                    ChatColor.GOLD + "You get " + prevCost + " points back."));
-            meta.setDisplayName(enchant.getLevel() > 0 ?
-                    ChatColor.RED + "Click to remove a level." :
-                    ChatColor.DARK_RED + "Level 0. Cannot decrease.");
+            if (enchant.getLevel() > enchant.getStartLevel()) {
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GOLD + "You get " + prevCost + " points back.");
+                lore.add(ChatColor.DARK_GREEN + "Prev level: " + ChatColor.WHITE + (enchant.getLevel() - 1));
+                meta.setLore(lore);
+            }
+            meta.setDisplayName(enchant.getLevel() > enchant.getStartLevel() ?
+                                ChatColor.RED + "Click to remove a level." :
+                                ChatColor.DARK_RED + "Start Level " +
+                                enchant.getStartLevel() + ". Cannot decrease.");
             redWool.setItemMeta(meta);
             itemList.add(BasicItem.create(redWool, (p, c) -> {
-                if (enchant.getLevel() > 0) {
+                if (enchant.getLevel() > enchant.getStartLevel()) {
                     pItem.setItem(p.getItemInHand());
                     enchant.decreaseLevel(p, pItem);
                     for (PEnchant pEnchant : pItem.getEnchants()) {
-                        if(pEnchant instanceof NormalEnchant) {
+                        if (pEnchant instanceof NormalEnchant) {
                             pEnchant.apply(pItem);
                         }
                     }
@@ -402,35 +436,36 @@ public class MenuCreator {
             book.setItemMeta(meta);
             itemList.add(BasicItem.createFiller(book));
 
-            ItemStack greenWool = new Wool(DyeColor.GREEN).toItemStack(enchant.getCost());
+            ItemStack greenWool = new Wool(DyeColor.GREEN).toItemStack(cost);
             meta = greenWool.getItemMeta();
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GOLD + "Costs " + cost + " points.");
+            lore.add(ChatColor.GOLD + "Costs " + ChatColor.WHITE + cost + ChatColor.GOLD + " points.");
+            if (enchant.getLevel() < enchant.getMaxLevel()) {
+                lore.add(ChatColor.DARK_GREEN + "Next level: " + ChatColor.WHITE + (enchant.getLevel() + 1));
+            }
             lore.add(ChatColor.DARK_GREEN + "Max level: " + ChatColor.WHITE + String.valueOf(enchant.getMaxLevel()));
             meta.setLore(lore);
             meta.setDisplayName(enchant.getLevel() < enchant.getMaxLevel() ?
-                    ChatColor.GREEN + "Click to add a level." :
-                    ChatColor.DARK_GREEN + "Max level. Cannot increase.");
+                                ChatColor.GREEN + "Click to add a level." :
+                                ChatColor.DARK_GREEN + "Max level. Cannot increase.");
             greenWool.setItemMeta(meta);
             itemList.add(BasicItem.create(greenWool, (p, c) -> {
                 if (enchant.getLevel() >= 0) {
-                    if (enchant.getLevel() < enchant.getMaxLevel() &&
-                            enchant.getCost() <= pItem.getPoints()) {
+                    if (!pItem.canSpend(enchant.getNextCost())) {
+                        player.sendMessage(ChatColor.RED + "You don't have enough points on this item.");
+                        player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
+                    } else if (enchant.getLevel() < enchant.getMaxLevel()) {
                         pItem.setItem(p.getItemInHand());
                         enchant.increaseLevel(p, pItem);
                         for (PEnchant pEnchant : pItem.getEnchants()) {
-                            if(pEnchant instanceof NormalEnchant) {
+                            if (pEnchant instanceof NormalEnchant) {
                                 pEnchant.apply(pItem);
                             }
                         }
                         updateMenuItems(menu, buildUpgradeItems(menu, player, pItem));
                         pItem.update(p);
-                        return;
                     }
-                    if (enchant.getCost() > pItem.getPoints()) {
-                        player.sendMessage(ChatColor.RED + "You don't have enough points on this item.");
-                        player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
-                    }
+
                 }
             }));
 
@@ -472,16 +507,16 @@ public class MenuCreator {
             boolean purchased = pItem.getPurchasedSkills().contains(skill);
             boolean isHighEnough = skill.highEnough(pItem);
             ItemStack item = new ItemStack(purchased ?
-                    pItem.getCurrentSkill() != null && pItem.getCurrentSkill().equals(skill) ?
-                            Material.REDSTONE : Material.SULPHUR :
-                    Material.STAINED_GLASS_PANE, 1);
+                                           pItem.getCurrentSkill() != null && pItem.getCurrentSkill().equals(skill) ?
+                                           Material.REDSTONE : Material.SULPHUR :
+                                           Material.STAINED_GLASS_PANE, 1);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName((purchased ? ChatColor.GOLD : ChatColor.RED) + skill.getName());
             List<String> lore = new ArrayList<String>() {
                 {
                     add(purchased ? ChatColor.DARK_GREEN + "Click to activate." :
-                            isHighEnough ? ChatColor.DARK_RED + "Click to purchase." :
-                                    ChatColor.DARK_RED + "You need level " + skill.getLevel() + ".");
+                        isHighEnough ? ChatColor.DARK_RED + "Click to purchase." :
+                        ChatColor.DARK_RED + "You need level " + skill.getLevel() + ".");
                     add(purchased ? "" : ChatColor.GOLD + "Cost: " + ChatColor.WHITE + skill.getCost());
                 }
             };
@@ -493,7 +528,7 @@ public class MenuCreator {
                     return;
                 }
                 if (!purchased) {
-                    if (skill.getCost() > pItem.getPoints()) {
+                    if (!pItem.canSpend(skill.getCost())) {
                         player.sendMessage(ChatColor.RED + "You don't have enough points on this item.");
                         player.sendMessage(ChatColor.GOLD + "Current Item Points: " + pItem.getPoints());
                     } else {
