@@ -25,6 +25,7 @@ costPerLevel: 5
 ##
 pick-display-name: "{name} | Level: {level} | Xp: {xp}/{nextLevelXpTotal} | Next Level in: {xpDiff} | Blocks Broken: {blocks}"
 sword-display-name: "{name} | Level: {level} | Xp: {xp}/{nextLevelXpTotal} | Next Level in: {xpDiff}"
+chest-pitem-error: "&0virtual chest item must go."
 debug: true
 compressedDebug: false
 world-whitelist:

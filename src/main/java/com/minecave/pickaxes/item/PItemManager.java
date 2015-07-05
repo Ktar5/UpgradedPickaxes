@@ -87,6 +87,22 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
+            if(pickConfig.has(concat(n, "presetSkills"))) {
+                for (String s : pickConfig.getConfig().getStringList(concat(n, "presetSkills"))) {
+                    PSkill skill = plugin.getPSkillManager().getPSkill(s);
+                    if (skill == null) {
+                        EnhancedPicks.getInstance().getLogger().warning(s + " skill does not exist.");
+                        continue;
+                    }
+                    settings.addPresetSkill(skill);
+                }
+            }
+            if(pickConfig.has(concat(n, "currentSkill"))) {
+                PSkill skill = plugin.getPSkillManager().getPSkill(pickConfig.get(concat(n, "currentSkill"), String.class, ""));
+                if(skill != null) {
+                    settings.setCurrentSkill(skill);
+                }
+            }
 
             ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
             boolean perLevel = firework.getBoolean("determinePerLevel");
@@ -237,6 +253,22 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
+            if(swordConfig.has(concat(n, "presetSkills"))) {
+                for (String s : swordConfig.getConfig().getStringList(concat(n, "presetSkills"))) {
+                    PSkill skill = plugin.getPSkillManager().getPSkill(s);
+                    if (skill == null) {
+                        EnhancedPicks.getInstance().getLogger().warning(s + " skill does not exist.");
+                        continue;
+                    }
+                    settings.addPresetSkill(skill);
+                }
+            }
+            if(swordConfig.has(concat(n, "currentSkill"))) {
+                PSkill skill = plugin.getPSkillManager().getPSkill(swordConfig.get(concat(n, "currentSkill"), String.class, ""));
+                if(skill != null) {
+                    settings.setCurrentSkill(skill);
+                }
+            }
 
             ConfigurationSection firework = pluginConfig.getConfigurationSection("cosmetics.firework");
             boolean perLevel = firework.getBoolean("determinePerLevel");
@@ -361,7 +393,7 @@ public class PItemManager {
         for (String l : lore) {
             l = l.replace(ChatColor.COLOR_CHAR + "", "");
             if (l.startsWith("UUID:")) {
-                String u = l.replace("UUID:", "");
+                String u = l.replace("UUID:", "").trim();
                 if (!pItemMap.containsKey(u)) {
                     continue;
                 }
@@ -387,7 +419,7 @@ public class PItemManager {
             }
             l = l.replace(ChatColor.COLOR_CHAR + "", "");
             if (l.startsWith("UUID:")) {
-                String u = l.replace("UUID:", "");
+                String u = l.replace("UUID:", "").trim();
                 if (!pItemMap.containsKey(u)) {
                     continue;
                 }

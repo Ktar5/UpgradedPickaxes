@@ -11,6 +11,7 @@ import com.minecave.pickaxes.kit.Kit;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.skill.pick.Earthquake;
 import com.minecave.pickaxes.skill.pick.Nuker;
+import com.minecave.pickaxes.util.message.Strings;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -27,6 +28,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -40,6 +43,15 @@ import java.util.Collection;
 public class PItemListener implements Listener {
 
     private EnhancedPicks plugin = EnhancedPicks.getInstance();
+    private String pickChest;
+    private String swordChest;
+    private String errorMessage;
+
+    public PItemListener() {
+        pickChest = ChatColor.stripColor(Strings.color(plugin.getConfig("menus").get("pickaxeMenu", String.class, "Pickaxe Menu")));
+        swordChest = ChatColor.stripColor(Strings.color(plugin.getConfig("menus").get("swordMenu", String.class, "Sword Menu")));
+        errorMessage = Strings.color(plugin.getConfig("config").get("chest-pitem-error", String.class, ""));
+    }
 
     @EventHandler
     public void consoleCommand(ServerCommandEvent event) {
@@ -242,7 +254,7 @@ public class PItemListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         if (!plugin.getWhitelistWorlds().contains(event.getBlock().getWorld().getName())) {
             return;
@@ -304,7 +316,7 @@ public class PItemListener implements Listener {
 
     //ent.setMetadata("skip",
     // new FixedMetadataValue(EnhancedPicks.getInstance(), true));
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamaage(EntityDamageByEntityEvent event) {
         if (!plugin.getWhitelistWorlds().contains(event.getDamager().getWorld().getName())) {
             return;
@@ -313,7 +325,7 @@ public class PItemListener implements Listener {
         if (entity instanceof Player) {
             return;
         }
-        if(((CraftEntity) entity).getHandle() instanceof ShopVillager_v1_8_R3) {
+        if (((CraftEntity) entity).getHandle() instanceof ShopVillager_v1_8_R3) {
             return;
         }
         if (entity.hasMetadata("skipTNT")) {
@@ -353,6 +365,33 @@ public class PItemListener implements Listener {
                 event.setCancelled(true);
                 event.getEntity().remove();
                 earthquake.getFallingBlockList().remove(fallingBlock);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onChestPut(InventoryClickEvent event) {
+        if (event.getWhoClicked().isOp() ||
+            event.getWhoClicked().hasPermission("pickaxes.admin")) {
+            return;
+        }
+        if(event.getInventory().getType() == InventoryType.PLAYER ||
+                event.getInventory().getType() == InventoryType.CRAFTING) {
+            return;
+        }
+        ItemStack clicked = event.getCurrentItem();
+        if (event.getInventory().getType() == InventoryType.CHEST) {
+            String stripped = ChatColor.stripColor(event.getInventory().getTitle());
+            if (!stripped.equals(pickChest) || !stripped.equals(swordChest)) {
+                if (plugin.getPItemManager().getPItem(clicked) != null) {
+                    event.setCancelled(true);
+                    event.getWhoClicked().sendMessage(errorMessage);
+                }
+            }
+        } else {
+            if (plugin.getPItemManager().getPItem(clicked) != null) {
+                event.setCancelled(true);
+                event.getWhoClicked().sendMessage(errorMessage);
             }
         }
     }

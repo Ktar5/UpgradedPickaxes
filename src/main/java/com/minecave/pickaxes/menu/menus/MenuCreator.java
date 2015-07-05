@@ -44,6 +44,7 @@ public class MenuCreator {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("mainPickMenu", String.class, "Main Pick Menu"));
         Menu mainPick = Menu.createMenu(name, 9);
+        mainPick.setCloseNotChildOpen(true);
         for (int i = 0; i < mainPick.size(); i++) {
             switch (i) {
                 case 1:
@@ -55,6 +56,7 @@ public class MenuCreator {
                     Item item = BasicItem.create(chest, (p, c) -> {
                         ScrollingMenu menu = createPickMenu(p);
                         if (menu != null) {
+                            mainPick.setCloseNotChildOpen(false);
                             menu.setParent(mainPick);
                             menu.showTo(p);
                         }
@@ -70,6 +72,7 @@ public class MenuCreator {
                     item = BasicItem.create(upgrades, (p, c) -> {
                         Menu menu = createUpgradesMenu(p);
                         if (menu != null) {
+                            mainPick.setCloseNotChildOpen(false);
                             menu.setParent(mainPick);
                             menu.showTo(p);
                         }
@@ -85,6 +88,7 @@ public class MenuCreator {
                     item = BasicItem.create(skills, (p, c) -> {
                         Menu menu = createSkillsMenu(p);
                         if (menu != null) {
+                            mainPick.setCloseNotChildOpen(false);
                             menu.setParent(mainPick);
                             menu.showTo(p);
                         }
@@ -116,6 +120,7 @@ public class MenuCreator {
                     break;
             }
         }
+        mainPick.setCloseInventoryListener(p -> EnhancedPicks.getInstance().getPlayerManager().get(p).softSaveChests());
         mainPick.showTo(player);
     }
 
@@ -123,6 +128,7 @@ public class MenuCreator {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("mainSwordMenu", String.class, "Main Sword Menu"));
         Menu mainSword = Menu.createMenu(name, 9);
+        mainSword.setCloseNotChildOpen(true);
         for (int i = 0; i < mainSword.size(); i++) {
             switch (i) {
                 case 1:
@@ -134,6 +140,7 @@ public class MenuCreator {
                     Item item = BasicItem.create(chest, (p, c) -> {
                         ScrollingMenu menu = createSwordMenu(p);
                         if (menu != null) {
+                            mainSword.setCloseNotChildOpen(false);
                             menu.setParent(mainSword);
                             menu.showTo(p);
                         }
@@ -149,6 +156,7 @@ public class MenuCreator {
                     item = BasicItem.create(upgrades, (p, c) -> {
                         Menu menu = createUpgradesMenu(p);
                         if (menu != null) {
+                            mainSword.setCloseNotChildOpen(false);
                             menu.setParent(mainSword);
                             menu.showTo(p);
                         }
@@ -164,6 +172,7 @@ public class MenuCreator {
                     item = BasicItem.create(skills, (p, c) -> {
                         Menu menu = createSkillsMenu(p);
                         if (menu != null) {
+                            mainSword.setCloseNotChildOpen(false);
                             menu.setParent(mainSword);
                             menu.showTo(p);
                         }
@@ -224,6 +233,7 @@ public class MenuCreator {
                     break;
             }
         }
+        mainSword.setCloseInventoryListener(p -> EnhancedPicks.getInstance().getPlayerManager().get(p).softSaveChests());
         mainSword.showTo(player);
     }
 
@@ -523,7 +533,7 @@ public class MenuCreator {
             meta.setLore(lore);
             item.setItemMeta(meta);
             itemList.add(BasicItem.create(item, (p, c) -> {
-                if (!isHighEnough) {
+                if (!isHighEnough && !purchased) {
                     p.sendMessage(ChatColor.RED + "You need level " + skill.getLevel());
                     return;
                 }

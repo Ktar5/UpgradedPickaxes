@@ -17,7 +17,6 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 
 public class ItemSerialization {
     public static byte[] toBlob(Inventory inventory) {
@@ -70,13 +69,5 @@ public class ItemSerialization {
             }
         }
         return custom;
-    }
-
-    public static String toBase64(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
-    }
-
-    public static byte[] fromBase64(String base64) {
-        return Base64.getDecoder().decode(base64);
     }
 }

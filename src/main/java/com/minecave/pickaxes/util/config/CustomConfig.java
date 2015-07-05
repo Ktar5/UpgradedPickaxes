@@ -83,6 +83,7 @@ public class CustomConfig {
             EnhancedPicks.getInstance().getLogger().severe(String.format("Couldn't save '%s', because: '%s'", fileName,
                     e.getMessage()));
         }
+        reloadConfig();
     }
 
     public void set(String path, Object value, boolean save) {

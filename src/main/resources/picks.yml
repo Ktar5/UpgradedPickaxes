@@ -45,6 +45,9 @@ lapis:
   skills:
     - 'earthquake'
     - 'ice'
+  presetSkills:
+    - 'ice'
+  currentSkill: 'ice'
   ##defaults to 0 if not added
   startXp: 0
   ##defaults to 1 if not added

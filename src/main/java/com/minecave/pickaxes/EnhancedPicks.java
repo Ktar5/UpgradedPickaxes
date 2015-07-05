@@ -253,7 +253,7 @@ public class EnhancedPicks extends JavaPlugin {
 
         getServer().getScheduler().runTaskTimer(this, () ->
                 Bukkit.getOnlinePlayers().forEach(p -> getServer().getScheduler().runTaskAsynchronously(EnhancedPicks.this, () ->
-                        playerManager.softSave(p))), 20L * 10, 20 * 60); //5 minute backups
+                        playerManager.softSave(p))), 20L * 10, 20 * 60 * 5); //5 minute backups
     }
 
     @Override

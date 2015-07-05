@@ -70,6 +70,7 @@ public class PlayerInfo {
                 }
             }
         }
+        List<String> dupes = new ArrayList<>();
         //check inventory for "dead" items
         for (int i = 0; i < player.getInventory().getContents().length; i++) {
             ItemStack stack = player.getInventory().getItem(i);
@@ -93,54 +94,90 @@ public class PlayerInfo {
                                      .severe(String.format("Player: %s, Slot: %d. Dead pItem located.", player.getName(), i));
                         player.getInventory().setItem(i, null);
                     }
-
+                } else {
+                    if (invUUIDs.contains(pItem.getUuid().toString())) {
+                        if (!dupes.contains(pItem.getUuid().toString())) {
+                            dupes.add(pItem.getUuid().toString());
+                        } else {
+                            //dupe
+                            player.getInventory().setItem(i, null);
+                        }
+                    }
                 }
             }
         }
         //load items in player's virtual chests
         if (config.has("pickData")) {
-            try {
-                List<PItem<?>> pickaxes = PItemSerializer.pItemsBase64(config.get("pickData", String.class));
-                if (pickaxes != null) {
-                    List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
-                    for (PItem<?> pItem : pickaxes) {
+            if(config.getConfig().isList("pickData"))
+            {
+                List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
+                for(String s : config.getConfig().getStringList("pickData")) {
+                    try {
+                        PItem<?> pItem = PItemSerializer.singlePItemBase64(s);
                         if (pItem == null) {
                             continue;
                         }
                         PItem<BlockBreakEvent> pick = (PItem<BlockBreakEvent>) pItem;
                         pickList.add(pick);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
-                    pickList.forEach(p -> {
-                        if (!invUUIDs.contains(p.getUuid().toString())) {
-                            this.addPickaxe(p);
-                        }
-                    });
                 }
+                pickList.forEach(this::addPickaxe);
+            } else { //assume string
+                try {
+                    List<PItem<?>> pickaxes = PItemSerializer.pItemsBase64(config.get("pickData", String.class));
+                    if (pickaxes != null) {
+                        List<PItem<BlockBreakEvent>> pickList = new ArrayList<>();
+                        for (PItem<?> pItem : pickaxes) {
+                            if (pItem == null) {
+                                continue;
+                            }
+                            PItem<BlockBreakEvent> pick = (PItem<BlockBreakEvent>) pItem;
+                            pickList.add(pick);
+                        }
+                        pickList.forEach(this::addPickaxe);
+                    }
 
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         }
         if (config.has("swordData")) {
-            try {
-                List<PItem<?>> swords = PItemSerializer.pItemsBase64(config.get("swordData", String.class));
-                if (swords != null) {
-                    List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
-                    for (PItem<?> pItem : swords) {
+            if(config.getConfig().isList("swordData"))
+            {
+                List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
+                for(String s : config.getConfig().getStringList("swordData")) {
+                    try {
+                        PItem<?> pItem = PItemSerializer.singlePItemBase64(s);
                         if (pItem == null) {
                             continue;
                         }
                         PItem<EntityDamageByEntityEvent> sword = (PItem<EntityDamageByEntityEvent>) pItem;
                         swordList.add(sword);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
-                    swordList.forEach(p -> {
-                        if (!invUUIDs.contains(p.getUuid().toString())) {
-                            this.addSword(p);
-                        }
-                    });
                 }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                swordList.forEach(this::addSword);
+            } else { //assume string
+                try {
+                    List<PItem<?>> swords = PItemSerializer.pItemsBase64(config.get("swordData", String.class));
+                    if (swords != null) {
+                        List<PItem<EntityDamageByEntityEvent>> swordList = new ArrayList<>();
+                        for (PItem<?> pItem : swords) {
+                            if (pItem == null) {
+                                continue;
+                            }
+                            PItem<EntityDamageByEntityEvent> sword = (PItem<EntityDamageByEntityEvent>) pItem;
+                            swordList.add(sword);
+                        }
+                        swordList.forEach(this::addSword);
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         }
         if (config.has("unspentPoints")) {
@@ -169,7 +206,6 @@ public class PlayerInfo {
             if (item != null) {
                 PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(item);
                 if (pItem != null) {
-                    EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
                     try {
                         String encoded = PItemSerializer.base64PItem(pItem);
                         inventory.append(String.valueOf(i)).append("%").append(encoded).append("&");
@@ -177,17 +213,17 @@ public class PlayerInfo {
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
+                    EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
                 }
             }
         }
+        config.set("invData", "");
+        config.set("invData", inventory.toString());
         try {
             config.set("pickData", PItemSerializer.base64PItems(this.pickaxes));
             config.set("swordData", PItemSerializer.base64PItems(this.swords));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
-        if (!inventory.toString().equals("")) {
-            config.set("invData", inventory.toString());
         }
         config.set("unspentPoints", this.unspentPoints);
         config.saveConfig();
@@ -200,7 +236,7 @@ public class PlayerInfo {
             if (item != null) {
                 PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(item);
                 if (pItem != null) {
-                    EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
+//                    EnhancedPicks.getInstance().getPItemManager().getPItemMap().remove(pItem.getUuid().toString());
                     try {
                         String encoded = PItemSerializer.base64PItem(pItem);
                         inventory.append(String.valueOf(i)).append("%").append(encoded).append("&");
@@ -211,11 +247,21 @@ public class PlayerInfo {
                 }
             }
         }
-        if (!inventory.toString().equals("")) {
-            config.set("invData", inventory.toString());
+        config.set("invData", "");
+        config.set("invData", inventory.toString());
 //            player.sendMessage("Saved your enhanced inventory items.");
+        config.saveConfig();
+    }
+
+    public void softSaveChests() {
+        try {
+            config.set("pickData", PItemSerializer.base64PItemsNoRemove(this.pickaxes));
+            config.set("swordData", PItemSerializer.base64PItemsNoRemove(this.swords));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
         config.saveConfig();
+//        this.player.sendMessage(ChatColor.DARK_GREEN + "Saved your virtual enhanced item chests.");
     }
 
     public void addSword(PItem<EntityDamageByEntityEvent> sword) {

@@ -51,6 +51,8 @@ public class PItemSettings {
     private FireworkBuilder     defaultBuilder;
     private List<Integer>       blackList;
     private List<String>        levelUpMessage;
+    private List<PSkill>        presetSkills;
+    private PSkill              currentSkill;
 
     public PItemSettings(String key, PItemType type) {
         this.key = key;
@@ -59,6 +61,7 @@ public class PItemSettings {
         this.skillList = new ArrayList<>();
         this.enchantList = new ArrayList<>();
         this.nukerBlocks = new ArrayList<>();
+        this.presetSkills = new ArrayList<>();
         this.startXp = 0;
         this.startLevel = 0;
         this.startPoints = 1;
@@ -80,6 +83,12 @@ public class PItemSettings {
             skillList.add(skill);
     }
 
+    public void addPresetSkill(PSkill skill) {
+        if(!presetSkills.contains(skill)) {
+            presetSkills.add(skill);
+        }
+    }
+
     public void addEnchant(PEnchant enchant) {
         if (!enchantList.contains(enchant))
             enchantList.add(enchant);
@@ -87,7 +96,7 @@ public class PItemSettings {
 
     public boolean hasEnchant(String name) {
         for (PEnchant pEnchant : this.enchantList) {
-            if(pEnchant.getName().equals(name)) {
+            if (pEnchant.getName().equals(name)) {
                 return true;
             }
         }
@@ -147,6 +156,10 @@ public class PItemSettings {
             pItem.addEnchant(clone);
         }
         this.skillList.forEach(pItem::addAvailableSkill);
+        this.presetSkills.forEach(pItem::addPurchasedSkill);
+        if(this.currentSkill != null) {
+            pItem.setCurrentSkill(this.currentSkill);
+        }
         for (PEnchant pEnchant : pItem.getEnchants()) {
             pEnchant.apply(pItem);
         }
@@ -159,26 +172,26 @@ public class PItemSettings {
     public String toString() {
         StringBuilder builder = new StringBuilder("\n");
         builder.append("  =====PItemSettings=====").append("\n")
-                .append("  Key: ").append(key).append("\n")
-                .append("  Name: ").append(name).append("\n")
-                .append("  Type: ").append(type.name()).append("\n")
-                .append("  Start XP: ").append(startXp).append("\n")
-                .append("  Start Level: ").append(startLevel).append("\n")
-                .append("  Start Points: ").append(startPoints).append("\n")
-                .append("  Points per level: ").append(pointsPerLevel).append("\n")
-                .append("  Skills: \n");
+               .append("  Key: ").append(key).append("\n")
+               .append("  Name: ").append(name).append("\n")
+               .append("  Type: ").append(type.name()).append("\n")
+               .append("  Start XP: ").append(startXp).append("\n")
+               .append("  Start Level: ").append(startLevel).append("\n")
+               .append("  Start Points: ").append(startPoints).append("\n")
+               .append("  Points per level: ").append(pointsPerLevel).append("\n")
+               .append("  Skills: \n");
         for (PSkill pSkill : this.skillList) {
             builder.append("    Name: ").append(pSkill.getName()).append("\n")
-                    .append("    Level: ").append(pSkill.getLevel()).append("\n")
-                    .append("    Cost: ").append(pSkill.getCost()).append("\n")
-                    .append("    Permission: ").append(pSkill.getPerm()).append("\n");
+                   .append("    Level: ").append(pSkill.getLevel()).append("\n")
+                   .append("    Cost: ").append(pSkill.getCost()).append("\n")
+                   .append("    Permission: ").append(pSkill.getPerm()).append("\n");
         }
         builder.append("  Enchants: \n");
         for (PEnchant pEnchant : this.enchantList) {
             builder.append("    Name: ").append(pEnchant.getName()).append("\n")
-                    .append("    Display Name: ").append(pEnchant.getDisplayName()).append("\n")
-                    .append("    Level: ").append(pEnchant.getLevel()).append("\n")
-                    .append("    Max Level: ").append(pEnchant.getMaxLevel()).append("\n");
+                   .append("    Display Name: ").append(pEnchant.getDisplayName()).append("\n")
+                   .append("    Level: ").append(pEnchant.getLevel()).append("\n")
+                   .append("    Max Level: ").append(pEnchant.getMaxLevel()).append("\n");
         }
         builder.append("  =====PItemSettings=====").append("\n");
         return builder.toString();
@@ -202,7 +215,7 @@ public class PItemSettings {
 
     public PEnchant getEnchant(String name) {
         for (PEnchant pEnchant : this.enchantList) {
-            if(pEnchant.getName().equals(name)) {
+            if (pEnchant.getName().equals(name)) {
                 return pEnchant;
             }
         }

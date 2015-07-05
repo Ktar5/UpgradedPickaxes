@@ -31,6 +31,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Menu implements Listener {
 
@@ -42,6 +43,8 @@ public class Menu implements Listener {
     protected Map<Integer, Item> items = new HashMap<>(); // map for quick lookup
     private Menu parent;
     private BiConsumer<Player, Integer> lowerInventoryListener = null;
+    private Consumer<Player>            closeInventoryListener = null;
+    private boolean                     closeNotChildOpen      = true;
 
     protected Menu(String name, int size) { // allow for sub classes
         this.name = ChatColor.translateAlternateColorCodes('&', name);
@@ -165,10 +168,14 @@ public class Menu implements Listener {
         if (!event.getInventory().equals(inventory))
             return;
 
+        if (closeNotChildOpen && closeInventoryListener != null) {
+            closeInventoryListener.accept((Player) event.getPlayer());
+        }
         if (parent != null) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
+                    parent.setCloseNotChildOpen(true);
                     event.getPlayer().openInventory(parent.inventory);
                 }
             }.runTaskLater(OWNER, 2L);
@@ -181,7 +188,7 @@ public class Menu implements Listener {
             return;
         // RawSlow < topinv size == top inv
         if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
-            if(lowerInventoryListener != null) {
+            if (lowerInventoryListener != null) {
                 lowerInventoryListener.accept((Player) event.getWhoClicked(), event.getSlot());
             }
             event.setCancelled(true);
@@ -218,5 +225,21 @@ public class Menu implements Listener {
 
     public void setLowerInventoryListener(BiConsumer<Player, Integer> lowerInventoryListener) {
         this.lowerInventoryListener = lowerInventoryListener;
+    }
+
+    public Consumer<Player> getCloseInventoryListener() {
+        return this.closeInventoryListener;
+    }
+
+    public void setCloseInventoryListener(Consumer<Player> closeInventoryListener) {
+        this.closeInventoryListener = closeInventoryListener;
+    }
+
+    public boolean isCloseNotChildOpen() {
+        return closeNotChildOpen;
+    }
+
+    public void setCloseNotChildOpen(boolean closeNotChildOpen) {
+        this.closeNotChildOpen = closeNotChildOpen;
     }
 }
