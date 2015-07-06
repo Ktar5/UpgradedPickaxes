@@ -370,6 +370,185 @@ public class MenuCreator {
         return menu;
     }
 
+    public static void createAdminMenu(Player admin, Player target) {
+        Menu adminMenu = Menu.createMenu(ChatColor.GOLD + "Admin Menu", 9);
+        adminMenu.setCloseNotChildOpen(true);
+        for (int i = 0; i < adminMenu.size(); i++) {
+            switch (i) {
+                case 3:
+                    ItemStack targetPick = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE))
+                            .name(ChatColor.YELLOW + target.getName() + " Picks")
+                            .lore(ChatColor.GRAY + "Click to manage the target's picks")
+                            .build();
+                    BasicItem item = BasicItem.create(targetPick, (p, c) -> {
+                        ScrollingMenu menu = createAdminPickMenu(admin, target);
+                        if (menu != null) {
+                            adminMenu.setCloseNotChildOpen(false);
+                            menu.setParent(adminMenu);
+                            menu.showTo(admin);
+                        }
+                    });
+                    adminMenu.setItem(i, item);
+                    break;
+                case 5:
+                    ItemStack targetSword = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD))
+                                                      .name(ChatColor.YELLOW + target.getName() + " Swords")
+                                                      .lore(ChatColor.GRAY + "Click to manage the target's swords")
+                                                      .build();
+                    item = BasicItem.create(targetSword, (p, c) -> {
+                        ScrollingMenu menu = createAdminSwordMenu(admin, target);
+                        if (menu != null) {
+                            adminMenu.setCloseNotChildOpen(false);
+                            menu.setParent(adminMenu);
+                            menu.showTo(admin);
+                        }
+                    });
+                    adminMenu.setItem(i, item);
+                    break;
+                default:
+                    adminMenu.setItem(i, BLACK);
+                    break;
+            }
+        }
+        adminMenu.setCloseInventoryListener(p -> EnhancedPicks.getInstance().getPlayerManager().get(target).softSaveChests());
+        adminMenu.showTo(admin);
+    }
+
+    public static ScrollingMenu createAdminPickMenu(Player admin, Player player) {
+        CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
+        String name = Strings.color(config.get("pickaxeMenu", String.class, "Pickaxe Menu"));
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        if (info == null) {
+            return null;
+        }
+
+        ScrollingMenu menu = ScrollingMenu.create(name);
+        List<PItem<BlockBreakEvent>> picksClone = new ArrayList<>(info.getPickaxes());
+
+        int k = 0;
+        while (!picksClone.isEmpty()) {
+            PItem<BlockBreakEvent> pick = picksClone.remove(0);
+            pick.updateMeta();
+            menu.setItem(k, BasicItem.create(pick.getItem(), (p, c) -> {
+                int emptySlot = -1;
+                for (int i = 0; i < admin.getInventory().getContents().length; i++) {
+                    if (admin.getInventory().getItem(i) == null ||
+                        admin.getInventory().getItem(i).getType() == Material.AIR) {
+                        emptySlot = i;
+                        break;
+                    }
+                }
+                if (emptySlot == -1) {
+                    admin.sendMessage(ChatColor.RED + "You cannot take out a pick with a full inventory.");
+                    admin.closeInventory();
+                } else {
+                    info.removePickaxe(pick);
+                    pick.update(admin);
+                    admin.getInventory().setItem(emptySlot, pick.getItem());
+                    pick.setItem(admin.getInventory().getItem(emptySlot));
+                    pick.updateManually(admin, admin.getInventory().getItem(emptySlot));
+                    Menu newMenu = createAdminPickMenu(admin, player);
+                    if (newMenu != null) {
+                        newMenu.setParent(menu.getParent());
+                        menu.setParent(null);
+                        admin.closeInventory();
+                        newMenu.showTo(admin);
+                    }
+                }
+            }));
+            k++;
+        }
+        menu.setLowerInventoryListener((p, i) -> {
+            ItemStack stack = admin.getInventory().getItem(i);
+            PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance()
+                                                        .getPItemManager().getPItem(BlockBreakEvent.class, stack);
+            if (pItem == null) {
+                return;
+            }
+            if (pItem.getEClass() == BlockBreakEvent.class && pItem.getType() == PItemType.PICK) {
+                admin.getInventory().setItem(i, null);
+                info.addPickaxe(pItem);
+                pItem.getEnchants().forEach(pe -> pe.apply(pItem));
+                Menu newMenu = createAdminPickMenu(admin, player);
+                if (newMenu != null) {
+                    newMenu.setParent(menu.getParent());
+                    menu.setParent(null);
+                    menu.close(admin);
+                    newMenu.showTo(admin);
+                }
+            }
+        });
+        menu.flush();
+        return menu;
+    }
+
+    public static ScrollingMenu createAdminSwordMenu(Player admin, Player player) {
+        CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
+        String name = Strings.color(config.get("swordMenu", String.class, "Sword Menu"));
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        if (info == null) {
+            return null;
+        }
+
+        ScrollingMenu menu = ScrollingMenu.create(name);
+        List<PItem<EntityDamageByEntityEvent>> swordsClone = new ArrayList<>(info.getSwords());
+
+        int k = 0;
+        while (!swordsClone.isEmpty()) {
+            PItem<EntityDamageByEntityEvent> sword = swordsClone.remove(0);
+            sword.updateMeta();
+            menu.setItem(k, BasicItem.create(sword.getItem(), (p, c) -> {
+                int emptySlot = -1;
+                for (int i = 0; i < admin.getInventory().getContents().length; i++) {
+                    if (admin.getInventory().getItem(i) == null ||
+                        admin.getInventory().getItem(i).getType() == Material.AIR) {
+                        emptySlot = i;
+                        break;
+                    }
+                }
+                if (emptySlot == -1) {
+                    admin.sendMessage(ChatColor.RED + "You cannot take out a sword with a full inventory.");
+                    admin.closeInventory();
+                } else {
+                    info.removeSword(sword);
+                    sword.update(admin);
+                    admin.getInventory().setItem(emptySlot, sword.getItem());
+                    sword.setItem(admin.getInventory().getItem(emptySlot));
+                    sword.updateManually(admin, admin.getInventory().getItem(emptySlot));
+                    Menu newMenu = createAdminSwordMenu(admin, player);
+                    if (newMenu != null) {
+                        newMenu.setParent(menu.getParent());
+                        menu.setParent(null);
+                        admin.closeInventory();
+                        newMenu.showTo(admin);
+                    }
+                }
+            }));
+            k++;
+        }
+        menu.setLowerInventoryListener((p, i) -> {
+            ItemStack stack = admin.getInventory().getItem(i);
+            PItem<EntityDamageByEntityEvent> pItem = EnhancedPicks.getInstance()
+                                                                  .getPItemManager().getPItem(EntityDamageByEntityEvent.class, stack);
+            if (pItem == null) {
+                return;
+            }
+            if (pItem.getEClass() == EntityDamageByEntityEvent.class && pItem.getType() == PItemType.SWORD) {
+                admin.getInventory().setItem(i, null);
+                info.addSword(pItem);
+                Menu newMenu = createSwordMenu(admin);
+                if (newMenu != null) {
+                    newMenu.setParent(menu.getParent());
+                    menu.setParent(null);
+                    menu.close(admin);
+                    newMenu.showTo(admin);
+                }
+            }
+        });
+        menu.flush();
+        return menu;
+    }
+
     public static Menu createUpgradesMenu(Player player) {
         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
         if (pItem == null) {

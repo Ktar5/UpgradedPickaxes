@@ -243,7 +243,7 @@ public class PItem<E extends Event> {
         level.levelUp(player, this);
     }
 
-    private int getXpToNextLevel() {
+    public int getXpToNextLevel() {
         return getTotalXp() - this.xp;
     }
 
