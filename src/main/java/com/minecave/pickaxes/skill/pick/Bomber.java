@@ -1,31 +1,30 @@
 package com.minecave.pickaxes.skill.pick;
 
+import com.minecave.minesell.MineSell;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.item.OreConversion;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author Timothy Andis
  */
-public class Bomber extends PSkill {
+public class Bomber extends PSkill implements Listener {
 
     protected Random random = new Random();
     private int boomblocks;
@@ -35,6 +34,7 @@ public class Bomber extends PSkill {
         super(name, cooldown, level, cost, perm);
         this.boomblocks = boomblocks;
         this.ticks = seconds ? ticks * 20 : ticks;
+        MineSell.getInstance().getServer().getPluginManager().registerEvents(this, MineSell.getInstance());
     }
 
     @Override
@@ -50,40 +50,106 @@ public class Bomber extends PSkill {
         TNTPrimed tnt = location.getWorld().spawn(location.clone().add(0, 0.2, 0), TNTPrimed.class);
         tnt.setFuseTicks(ticks + 1);
         tnt.setVelocity(to);
-        int amount = random.nextInt(boomblocks / 2) + (boomblocks / 2);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                tnt.remove();
-                Location location = tnt.getLocation();
-                if (!wg.canBuild(event.getPlayer(), location.getBlock())) {
+        tnt.setMetadata("bomber", new FixedMetadataValue(MineSell.getInstance(), player.getUniqueId().toString()));
+//        int amount = random.nextInt(boomblocks / 2) + (boomblocks / 2);
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                float radius = tnt.getYield();
+//                tnt.remove();
+//                Location location = tnt.getLocation();
+//                if (!wg.canBuild(event.getPlayer(), location.getBlock())) {
+//                    return;
+//                }
+//
+//                for (Block b : getRegionBlocks(location, radius)) {
+//                    Location loc = b.getLocation();
+//                    if (!wg.canBuild(event.getPlayer(), loc.getBlock()) ||
+//                            loc.getBlock().getType() == Material.BEDROCK ||
+//                            loc.getBlock().getType() == Material.AIR) {
+//                        continue;
+//                    }
+//                    Collection<ItemStack> items = loc.getBlock().getDrops();
+//                    ItemStack[] array = new ItemStack[items.size()];
+//                    int i = 0;
+//                    for (ItemStack stack : items) {
+//                        if (OreConversion.canConvert(stack.getType())
+//                            || OreConversion.canConvert(loc.getBlock().getType())
+//                            || OreConversion.isItem(stack.getType())) {
+//                            Material converted = OreConversion.convertToItem(stack.getType());
+//                            stack.setType(converted);
+//                            if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+//                                int extra = Bomber.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+//                                Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
+//                                if(scale != null) {
+//                                    extra *= scale;
+//                                }
+//                                if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+//                                    extra = (int) Math.round(extra / 10D);
+//                                    if(--extra < 0) {
+//                                        extra = 0;
+//                                    }
+//                                }
+//                                stack.setAmount(stack.getAmount() + extra);
+//                            }
+//                        }
+//                        array[i++] = stack;
+//                    }
+//                    int xp = BlockValue.getXp(loc.getBlock());
+//                    pItem.incrementXp(xp, player);
+//                    pItem.addBlockBroken();
+//                    pItem.update(player);
+//                    Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
+//                    if(!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+//                        leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+//                    }
+//                    player.updateInventory();
+//                    loc.getBlock().setType(Material.AIR);
+//                }
+//                player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
+//                player.playEffect(location, Effect.LARGE_SMOKE, 1);
+//            }
+//        }.runTaskLater(EnhancedPicks.getInstance(), ticks);
+//        this.add(player);
+    }
+
+    @EventHandler
+    public void onExplode(EntityExplodeEvent event) {
+        if (event.getEntityType() == EntityType.PRIMED_TNT || event.getEntity() instanceof TNTPrimed) {
+            if (!event.getEntity().hasMetadata("bomber")) {
+                return;
+            }
+            Player player = Bukkit.getPlayer(UUID.fromString(event.getEntity().getMetadata("bomber").get(0).asString()));
+            if (player != null && player.isOnline()) {
+                PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
+                if (pItem == null) {
+                    event.setCancelled(true);
                     return;
                 }
-                for (Block b : getRegionBlocks(location, amount)) {
-                    Location loc = b.getLocation();
-                    if (!wg.canBuild(event.getPlayer(), loc.getBlock()) ||
-                            loc.getBlock().getType() == Material.BEDROCK ||
-                            loc.getBlock().getType() == Material.AIR) {
+                for (Block block : event.blockList()) {
+                    if (!wg.canBuild(player, block) ||
+                        block.getType() == Material.BEDROCK ||
+                        block.getType() == Material.AIR) {
                         continue;
                     }
-                    Collection<ItemStack> items = loc.getBlock().getDrops();
+                    Collection<ItemStack> items = block.getDrops();
                     ItemStack[] array = new ItemStack[items.size()];
                     int i = 0;
                     for (ItemStack stack : items) {
                         if (OreConversion.canConvert(stack.getType())
-                            || OreConversion.canConvert(loc.getBlock().getType())
+                            || OreConversion.canConvert(block.getType())
                             || OreConversion.isItem(stack.getType())) {
                             Material converted = OreConversion.convertToItem(stack.getType());
                             stack.setType(converted);
-                            if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                            if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
                                 int extra = Bomber.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
                                 Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
-                                if(scale != null) {
+                                if (scale != null) {
                                     extra *= scale;
                                 }
-                                if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+                                if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
                                     extra = (int) Math.round(extra / 10D);
-                                    if(--extra < 0) {
+                                    if (--extra < 0) {
                                         extra = 0;
                                     }
                                 }
@@ -92,22 +158,22 @@ public class Bomber extends PSkill {
                         }
                         array[i++] = stack;
                     }
-                    int xp = BlockValue.getXp(loc.getBlock());
+                    int xp = BlockValue.getXp(block);
                     pItem.incrementXp(xp, player);
                     pItem.addBlockBroken();
                     pItem.update(player);
                     Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
-                    if(!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                    if (!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
                         leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
                     }
                     player.updateInventory();
-                    loc.getBlock().setType(Material.AIR);
+                    block.setType(Material.AIR);
                 }
-                player.playSound(location, Sound.EXPLODE, 1.0F, 1.0F);
-                player.playEffect(location, Effect.LARGE_SMOKE, 1);
+                player.playSound(event.getEntity().getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
+                player.playEffect(event.getEntity().getLocation(), Effect.EXPLOSION_HUGE, 1);
+                event.setCancelled(true);
             }
-        }.runTaskLater(EnhancedPicks.getInstance(), ticks);
-        this.add(player);
+        }
     }
 
     public ArrayList<Block> getRegionBlocks(Location loc1, double radius) {

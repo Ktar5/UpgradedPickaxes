@@ -18,6 +18,10 @@ commands:
     description: Give points to a player to spend on picks/swords.
     usage: /<command> [player] [points]
     permission: pickaxes.admin
+  padmin:
+    description: Opens the target's virtual enhanced items chests.
+    usage: /<command> [player]
+    permission: pickaxes.admin
 permissions:
   pickaxes.*:
     description: Gives access to all enhanced pickaxes commands.

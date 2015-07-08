@@ -375,7 +375,7 @@ public class MenuCreator {
         adminMenu.setCloseNotChildOpen(true);
         for (int i = 0; i < adminMenu.size(); i++) {
             switch (i) {
-                case 3:
+                case 2:
                     ItemStack targetPick = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE))
                             .name(ChatColor.YELLOW + target.getName() + " Picks")
                             .lore(ChatColor.GRAY + "Click to manage the target's picks")
@@ -390,7 +390,7 @@ public class MenuCreator {
                     });
                     adminMenu.setItem(i, item);
                     break;
-                case 5:
+                case 6:
                     ItemStack targetSword = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD))
                                                       .name(ChatColor.YELLOW + target.getName() + " Swords")
                                                       .lore(ChatColor.GRAY + "Click to manage the target's swords")
@@ -473,6 +473,7 @@ public class MenuCreator {
                 if (newMenu != null) {
                     newMenu.setParent(menu.getParent());
                     menu.setParent(null);
+
                     menu.close(admin);
                     newMenu.showTo(admin);
                 }
@@ -536,7 +537,7 @@ public class MenuCreator {
             if (pItem.getEClass() == EntityDamageByEntityEvent.class && pItem.getType() == PItemType.SWORD) {
                 admin.getInventory().setItem(i, null);
                 info.addSword(pItem);
-                Menu newMenu = createSwordMenu(admin);
+                Menu newMenu = createAdminSwordMenu(admin, player);
                 if (newMenu != null) {
                     newMenu.setParent(menu.getParent());
                     menu.setParent(null);

@@ -55,7 +55,7 @@ public abstract class PSkill {
 
     public boolean canUse(Player player, PItem item) {
         long seconds = getTimeDiff(player);
-        return cooldown <= seconds && highEnough(item);
+        return cooldown <= seconds; // && highEnough(item);
     }
 
     public long getTimeDiff(Player player) {

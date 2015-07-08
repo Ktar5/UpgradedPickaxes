@@ -8,10 +8,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.earth2me.essentials.Essentials;
-import com.minecave.pickaxes.commands.GiveCommand;
-import com.minecave.pickaxes.commands.PickCommand;
-import com.minecave.pickaxes.commands.PointsCommand;
-import com.minecave.pickaxes.commands.SwordCommand;
+import com.minecave.pickaxes.commands.*;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.enchant.PEnchantManager;
@@ -25,7 +22,6 @@ import com.minecave.pickaxes.player.PlayerManager;
 import com.minecave.pickaxes.skill.PSkillManager;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ActionBar;
-import com.minecave.pickaxes.util.nbt.*;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -124,30 +120,31 @@ public class EnhancedPicks extends JavaPlugin {
         getCommand("pick").setExecutor(new PickCommand());
         getCommand("sword").setExecutor(new SwordCommand());
         getCommand("ppoints").setExecutor(new PointsCommand());
+        getCommand("padmin").setExecutor(new AdminChestCommand());
 
-        try {
-            Class.forName(EPAttributeBuilder.class.getName());
-            Class.forName(EPAttribute.class.getName());
-            Class.forName(EPAttributes.class.getName());
-            Class.forName(EPAttributeStorage.class.getName());
-            Class.forName(EPAttributeType.class.getName());
-            Class.forName(EPNbtFactory.class.getName());
-            Class.forName(EPNBTSerialization.class.getName());
-            Class.forName(EPOperation.class.getName());
-            Class.forName(EPNbtFactory.NbtCompound.class.getName());
-            Class.forName(EPNbtFactory.NbtType.class.getName());
-            Class.forName(EPNbtFactory.NbtList.class.getName());
-            Class.forName(EPNbtFactory.StreamOptions.class.getName());
-            Class.forName(EPNbtFactory.Wrapper.class.getName());
-            Class.forName(EPNbtFactory.LoadMethodSkinUpdate.class.getName());
-            Class.forName(EPNbtFactory.LoadMethodWorldUpdate.class.getName());
-            Class.forName(EPNbtFactory.LoadCompoundMethod.class.getName());
-            Class.forName(EPNbtFactory.CachedNativeWrapper.class.getName());
-            Class.forName(EPNbtFactory.ConvertedMap.class.getName());
-            Class.forName(EPNbtFactory.ConvertedList.class.getName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Class.forName(EPAttributeBuilder.class.getName());
+//            Class.forName(EPAttribute.class.getName());
+//            Class.forName(EPAttributes.class.getName());
+//            Class.forName(EPAttributeStorage.class.getName());
+//            Class.forName(EPAttributeType.class.getName());
+//            Class.forName(EPNbtFactory.class.getName());
+//            Class.forName(EPNBTSerialization.class.getName());
+//            Class.forName(EPOperation.class.getName());
+//            Class.forName(EPNbtFactory.NbtCompound.class.getName());
+//            Class.forName(EPNbtFactory.NbtType.class.getName());
+//            Class.forName(EPNbtFactory.NbtList.class.getName());
+//            Class.forName(EPNbtFactory.StreamOptions.class.getName());
+//            Class.forName(EPNbtFactory.Wrapper.class.getName());
+//            Class.forName(EPNbtFactory.LoadMethodSkinUpdate.class.getName());
+//            Class.forName(EPNbtFactory.LoadMethodWorldUpdate.class.getName());
+//            Class.forName(EPNbtFactory.LoadCompoundMethod.class.getName());
+//            Class.forName(EPNbtFactory.CachedNativeWrapper.class.getName());
+//            Class.forName(EPNbtFactory.ConvertedMap.class.getName());
+//            Class.forName(EPNbtFactory.ConvertedList.class.getName());
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this /*your plugin instance*/,
                                                                                  ListenerPriority.NORMAL, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS) {
