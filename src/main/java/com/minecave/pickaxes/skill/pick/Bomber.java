@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -20,6 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Timothy Andis
@@ -51,6 +53,7 @@ public class Bomber extends PSkill implements Listener {
         tnt.setFuseTicks(ticks + 1);
         tnt.setVelocity(to);
         tnt.setMetadata("bomber", new FixedMetadataValue(MineSell.getInstance(), player.getUniqueId().toString()));
+        this.add(player);
 //        int amount = random.nextInt(boomblocks / 2) + (boomblocks / 2);
 //        new BukkitRunnable() {
 //            @Override
@@ -113,7 +116,7 @@ public class Bomber extends PSkill implements Listener {
 //        this.add(player);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onExplode(EntityExplodeEvent event) {
         if (event.getEntityType() == EntityType.PRIMED_TNT || event.getEntity() instanceof TNTPrimed) {
             if (!event.getEntity().hasMetadata("bomber")) {
@@ -126,48 +129,55 @@ public class Bomber extends PSkill implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                for (Block block : event.blockList()) {
-                    if (!wg.canBuild(player, block) ||
-                        block.getType() == Material.BEDROCK ||
-                        block.getType() == Material.AIR) {
-                        continue;
-                    }
-                    Collection<ItemStack> items = block.getDrops();
-                    ItemStack[] array = new ItemStack[items.size()];
-                    int i = 0;
-                    for (ItemStack stack : items) {
-                        if (OreConversion.canConvert(stack.getType())
-                            || OreConversion.canConvert(block.getType())
-                            || OreConversion.isItem(stack.getType())) {
-                            Material converted = OreConversion.convertToItem(stack.getType());
-                            stack.setType(converted);
-                            if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
-                                int extra = Bomber.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
-                                Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
-                                if (scale != null) {
-                                    extra *= scale;
-                                }
-                                if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
-                                    extra = (int) Math.round(extra / 10D);
-                                    if (--extra < 0) {
-                                        extra = 0;
-                                    }
-                                }
-                                stack.setAmount(stack.getAmount() + extra);
-                            }
+                for (Block sourceBlock : event.blockList()) {
+                    for(int j = 0; j < 2; j++) {
+                        if(j == 1 && ThreadLocalRandom.current().nextInt(10) >= 7) {
+                            continue;
                         }
-                        array[i++] = stack;
+                        Block block = sourceBlock.getRelative(0, -j, 0);
+                        if (!wg.canBuild(player, block) ||
+                            block.getType() == Material.BEDROCK ||
+                            block.getType() == Material.AIR) {
+                            continue;
+                        }
+                        Collection<ItemStack> items = block.getDrops();
+                        ItemStack[] array = new ItemStack[items.size()];
+                        int i = 0;
+                        for (ItemStack stack : items) {
+                            if (OreConversion.canConvert(stack.getType())
+                                || OreConversion.canConvert(block.getType())
+                                || OreConversion.isItem(stack.getType())) {
+                                Material converted = OreConversion.convertToItem(stack.getType());
+                                stack.setType(converted);
+                                if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                                    int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                                    extra *= 2;
+                                    Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
+                                    if (scale != null) {
+                                        extra *= scale;
+                                    }
+                                    if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
+                                    extra = (int) Math.round(extra / 10D);
+                                        if (--extra < 0) {
+                                            extra = 0;
+                                        }
+                                    }
+                                    stack.setAmount(stack.getAmount() + extra);
+                                }
+                            }
+                            array[i++] = stack;
+                        }
+                        int xp = BlockValue.getXp(block);
+                        pItem.incrementXp(xp, player);
+                        pItem.addBlockBroken();
+                        pItem.update(player);
+                        Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
+                        if (!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                            leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                        }
+                        player.updateInventory();
+                        block.setType(Material.AIR);
                     }
-                    int xp = BlockValue.getXp(block);
-                    pItem.incrementXp(xp, player);
-                    pItem.addBlockBroken();
-                    pItem.update(player);
-                    Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
-                    if (!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
-                        leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
-                    }
-                    player.updateInventory();
-                    block.setType(Material.AIR);
                 }
                 player.playSound(event.getEntity().getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
                 player.playEffect(event.getEntity().getLocation(), Effect.EXPLOSION_HUGE, 1);

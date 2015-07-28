@@ -8,6 +8,7 @@
  */
 package com.minecave.pickaxes.item;
 
+import com.minecave.dropparty.custom.IDable;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
@@ -21,6 +22,7 @@ import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -207,7 +209,8 @@ public class PItem<E extends Event> {
                     } else if (type == PItemType.SWORD) {
                         if (enchant instanceof LuckEnchant) {
                             EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
-                            if (e.getEntity() instanceof LivingEntity) {
+                            if (e.getEntity() instanceof LivingEntity &&
+                                !(((CraftEntity) e.getEntity()).getHandle() instanceof IDable)) {
                                 if (((LivingEntity) e.getEntity()).getHealth() <= e.getFinalDamage()) {
                                     enchant.activate((EntityDamageByEntityEvent) event);
                                 }

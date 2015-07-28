@@ -106,7 +106,7 @@ public class Nuker extends PSkill {
                     Material converted = OreConversion.convertToItem(stack.getType());
                     stack.setType(converted);
                     if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
-                        int extra = Nuker.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                        int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
                         Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
                         if(scale != null) {
                             extra *= scale;

@@ -13,7 +13,6 @@ import com.minecave.pickaxes.skill.PSkill;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 public class Shotgun extends PSkill {
@@ -34,14 +33,17 @@ public class Shotgun extends PSkill {
             clone.add(new Vector((Math.random() * 0.5) - 0.25,
                     (Math.random() * 0.5) - 0.25,
                     (Math.random() * 0.5) - 0.25));
-            Snowball snowball = player.launchProjectile(Snowball.class);
+            Snowball snowball = player.getWorld().spawn(player.getEyeLocation(), Snowball.class);
+//            Snowball snowball = player.launchProjectile(Snowball.class);
             snowball.setVelocity(clone);
             snowball.setTicksLived(10);
             snowball.setShooter(player);
             snowball.setCustomName("shotgun");
-            snowball.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
+//            le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
+//            snowball.setMetadata("pitemplayer", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
             snowball.setCustomNameVisible(false);
         }
+        EnhancedPicks.getInstance().getDebugger().debugMessage(player, String.format("Shotgun | Count: %d, Shooter: %s", numberOfSnowballs, player.getUniqueId().toString()));
         this.add(player);
     }
 }

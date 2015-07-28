@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Timothy Andis
@@ -47,39 +48,39 @@ public class Lightning extends PSkill {
         world.strikeLightningEffect(location);
 
         for (int y = 0; y >= -depth; y--) {
-            for (int x = -(distance / 2); x < distance / 2; x++) {
-                for (int z = -(distance / 2); z < distance / 2; z++) {
-                    if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow((distance), 2)) {
-//                        if (ThreadLocalRandom.current().nextInt(10) > 4) {
-                        Location loc = location.clone().add(x, y, z);
-                        if (!this.wg.canBuild(event.getPlayer(), loc.getBlock())) {
-                            continue;
-                        }
-                        if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK) {
-                            continue;
-                        }
-                        int xp = BlockValue.getXp(loc.getBlock());
-                        pItem.incrementXp(xp, player);
-                        pItem.addBlockBroken();
-                        pItem.update(player);
+            for (int x = -(distance / 2) - 2; x < distance / 2 + 2; x++) {
+                for (int z = -(distance / 2) - 2; z < distance / 2 + 2; z++) {
+                    if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow((distance + 2), 2)) {
+                        if (ThreadLocalRandom.current().nextDouble(10) >= 3.4) {
+                            Location loc = location.clone().add(x, y, z);
+                            if (!this.wg.canBuild(event.getPlayer(), loc.getBlock())) {
+                                continue;
+                            }
+                            if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK) {
+                                continue;
+                            }
+                            int xp = BlockValue.getXp(loc.getBlock());
+                            pItem.incrementXp(xp, player);
+                            pItem.addBlockBroken();
+                            pItem.update(player);
                             Collection<ItemStack> items = loc.getBlock().getDrops(player.getItemInHand());
                             ItemStack[] array = new ItemStack[items.size()];
                             int i = 0;
-                            for(ItemStack stack : items) {
+                            for (ItemStack stack : items) {
                                 if (OreConversion.canConvert(stack.getType()) ||
                                     OreConversion.canConvert(loc.getBlock().getType()) ||
                                     OreConversion.isItem(stack.getType())) {
                                     Material converted = OreConversion.convertToItem(stack.getType());
                                     stack.setType(converted);
-                                    if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
-                                        int extra = Lightning.super.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                                    if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                                        int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
                                         Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
-                                        if(scale != null) {
+                                        if (scale != null) {
                                             extra *= scale;
                                         }
-                                        if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+                                        if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
                                             extra = (int) Math.round(extra / 10D);
-                                            if(--extra < 0) {
+                                            if (--extra < 0) {
                                                 extra = 0;
                                             }
                                         }
@@ -88,14 +89,14 @@ public class Lightning extends PSkill {
                                 }
                                 array[i++] = stack;
                             }
-                        Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
-                        if(!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
-                            leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                            Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
+                            if (!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                                leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                            }
+                            loc.getBlock().setType(Material.AIR);
+                            player.updateInventory();
                         }
-                        loc.getBlock().setType(Material.AIR);
-                        player.updateInventory();
                     }
-//                    }
                 }
             }
         }

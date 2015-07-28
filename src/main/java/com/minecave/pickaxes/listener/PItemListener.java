@@ -12,8 +12,11 @@ import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.skill.pick.Earthquake;
 import com.minecave.pickaxes.skill.pick.Nuker;
 import com.minecave.pickaxes.util.message.Strings;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
@@ -28,14 +31,15 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Timothy Andis
@@ -43,14 +47,16 @@ import java.util.Collection;
 public class PItemListener implements Listener {
 
     private EnhancedPicks plugin = EnhancedPicks.getInstance();
-    private String pickChest;
-    private String swordChest;
-    private String errorMessage;
+    private String           pickChest;
+    private String           swordChest;
+    private String           errorMessage;
+    private WorldGuardPlugin wg;
 
     public PItemListener() {
         pickChest = ChatColor.stripColor(Strings.color(plugin.getConfig("menus").get("pickaxeMenu", String.class, "Pickaxe Menu")));
         swordChest = ChatColor.stripColor(Strings.color(plugin.getConfig("menus").get("swordMenu", String.class, "Sword Menu")));
         errorMessage = Strings.color(plugin.getConfig("config").get("chest-pitem-error", String.class, ""));
+        wg = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
     }
 
     @EventHandler
@@ -99,7 +105,10 @@ public class PItemListener implements Listener {
                                     for (PEnchant pEnchant : pItem.getEnchants()) {
                                         pEnchant.apply(pItem);
                                     }
-                                    player.getInventory().addItem(stack);
+                                    Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                                    if(fail != null && !fail.isEmpty()) {
+                                        fail.values().forEach(i -> player.getWorld().dropItem(player.getLocation(), i));
+                                    }
                                     plugin.getPItemManager().addPItem(pItem);
                                     break;
                                 }
@@ -114,7 +123,10 @@ public class PItemListener implements Listener {
                                     for (PEnchant pEnchant : pItem.getEnchants()) {
                                         pEnchant.apply(pItem);
                                     }
-                                    player.getInventory().addItem(stack);
+                                    Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                                    if(fail != null && !fail.isEmpty()) {
+                                        fail.values().forEach(i -> player.getWorld().dropItem(player.getLocation(), i));
+                                    }
                                     plugin.getPItemManager().addPItem(pItem);
                                     break;
                                 }
@@ -170,7 +182,11 @@ public class PItemListener implements Listener {
                                         for (PEnchant pEnchant : pItem.getEnchants()) {
                                             pEnchant.apply(pItem);
                                         }
-                                        player.getInventory().addItem(stack);
+                                        Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                                        if(fail != null && !fail.isEmpty()) {
+                                            final Player finalPlayer = player;
+                                            fail.values().forEach(i -> finalPlayer.getWorld().dropItem(finalPlayer.getLocation(), i));
+                                        }
                                         plugin.getPItemManager().addPItem(pItem);
                                         break;
                                     }
@@ -185,7 +201,11 @@ public class PItemListener implements Listener {
                                         for (PEnchant pEnchant : pItem.getEnchants()) {
                                             pEnchant.apply(pItem);
                                         }
-                                        player.getInventory().addItem(stack);
+                                        Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                                        if(fail != null && !fail.isEmpty()) {
+                                            final Player finalPlayer1 = player;
+                                            fail.values().forEach(i -> finalPlayer1.getWorld().dropItem(finalPlayer1.getLocation(), i));
+                                        }
                                         plugin.getPItemManager().addPItem(pItem);
                                         break;
                                     }
@@ -222,7 +242,11 @@ public class PItemListener implements Listener {
                                             for (PEnchant pEnchant : pItem.getEnchants()) {
                                                 pEnchant.apply(pItem);
                                             }
-                                            player.getInventory().addItem(stack);
+                                            Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                                            if(fail != null && !fail.isEmpty()) {
+                                                final Player finalPlayer2 = player;
+                                                fail.values().forEach(i -> finalPlayer2.getWorld().dropItem(finalPlayer2.getLocation(), i));
+                                            }
                                             plugin.getPItemManager().addPItem(pItem);
                                             break;
                                         }
@@ -237,7 +261,11 @@ public class PItemListener implements Listener {
                                             for (PEnchant pEnchant : pItem.getEnchants()) {
                                                 pEnchant.apply(pItem);
                                             }
-                                            player.getInventory().addItem(stack);
+                                            Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                                            if(fail != null && !fail.isEmpty()) {
+                                                final Player finalPlayer3 = player;
+                                                fail.values().forEach(i -> finalPlayer3.getWorld().dropItem(finalPlayer3.getLocation(), i));
+                                            }
                                             plugin.getPItemManager().addPItem(pItem);
                                             break;
                                         }
@@ -268,6 +296,14 @@ public class PItemListener implements Listener {
         if (inhand == null || inhand.getType() != Material.DIAMOND_PICKAXE) {
             return;
         }
+        Location loc = player.getLocation();
+        if(!plugin.getBlacklistedRegions().isEmpty()) {
+            for (ProtectedRegion protectedRegion : wg.getRegionManager(player.getWorld()).getApplicableRegions(loc)) {
+                if(plugin.getBlacklistedRegions().contains(protectedRegion.getId())) {
+                    return;
+                }
+            }
+        }
         PItem<BlockBreakEvent> pItem = EnhancedPicks.getInstance().getPItemManager()
                                                     .getPItem(BlockBreakEvent.class, player.getItemInHand());
         if (pItem != null) {
@@ -295,6 +331,14 @@ public class PItemListener implements Listener {
         if (inhand == null || inhand.getType() == Material.AIR) {
             return;
         }
+        Location loc = player.getLocation();
+        if(!plugin.getBlacklistedRegions().isEmpty()) {
+            for (ProtectedRegion protectedRegion : wg.getRegionManager(player.getWorld()).getApplicableRegions(loc)) {
+                if(plugin.getBlacklistedRegions().contains(protectedRegion.getId())) {
+                    return;
+                }
+            }
+        }
         PItem<?> pItem = null;
         if (inhand.getType() == PItemType.PICK.getType()) {
             pItem = EnhancedPicks.getInstance().getPItemManager()
@@ -306,8 +350,12 @@ public class PItemListener implements Listener {
         if (pItem != null && pItem.getCurrentSkill() != null) {
             PSkill skill = pItem.getCurrentSkill();
             if (!skill.canUse(player, pItem)) {
-                player.sendMessage(ChatColor.RED + "You cannot use " + skill.getName() +
-                                   " for another " + skill.getTimeLeft(player) + "s.");
+                if (player.hasPermission(skill.getPerm())) {
+                    player.sendMessage(ChatColor.RED + "You cannot use " + skill.getName() +
+                                       " for another " + skill.getTimeLeft(player) + "s.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You do not have permission for this skill.");
+                }
             } else {
                 skill.use(player, event);
             }
@@ -322,6 +370,14 @@ public class PItemListener implements Listener {
             return;
         }
         Entity entity = event.getEntity();
+        Location loc = entity.getLocation();
+        if(!plugin.getBlacklistedRegions().isEmpty()) {
+            for (ProtectedRegion protectedRegion : wg.getRegionManager(loc.getWorld()).getApplicableRegions(loc)) {
+                if(plugin.getBlacklistedRegions().contains(protectedRegion.getId())) {
+                    return;
+                }
+            }
+        }
         if (entity instanceof Player) {
             return;
         }
@@ -370,28 +426,52 @@ public class PItemListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onHopperPickup(InventoryPickupItemEvent event) {
+        ItemStack clicked = event.getItem().getItemStack();
+        if (plugin.getPItemManager().getPItem(clicked) != null) {
+            event.setCancelled(true);
+            Vector v = event.getItem().getVelocity();
+            v.setX(0);
+            v.setY(0);
+            v.setZ(0);
+            event.getItem().setVelocity(v);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onChestPut(InventoryClickEvent event) {
         if (event.getWhoClicked().isOp() ||
             event.getWhoClicked().hasPermission("pickaxes.admin")) {
             return;
         }
-        if(event.getInventory().getType() == InventoryType.PLAYER ||
-                event.getInventory().getType() == InventoryType.CRAFTING) {
+        ItemStack clicked = event.getCurrentItem();
+        if(event.getAction() == InventoryAction.HOTBAR_SWAP &&
+           event.getClick() == ClickType.NUMBER_KEY) {
+            clicked = event.getWhoClicked().getInventory()
+                           .getItem(event.getHotbarButton());
+        }
+        if (event.getInventory().getTitle().toLowerCase().contains("vault")) {
+            if (plugin.getPItemManager().getPItem(clicked) != null) {
+                event.setCancelled(true);
+                event.getWhoClicked().sendMessage(errorMessage);
+            }
             return;
         }
-        ItemStack clicked = event.getCurrentItem();
         if (event.getInventory().getType() == InventoryType.CHEST) {
             String stripped = ChatColor.stripColor(event.getInventory().getTitle());
-            if (!stripped.equals(pickChest) || !stripped.equals(swordChest)) {
+            if (!stripped.equals(pickChest) && !stripped.equals(swordChest)) {
                 if (plugin.getPItemManager().getPItem(clicked) != null) {
                     event.setCancelled(true);
                     event.getWhoClicked().sendMessage(errorMessage);
                 }
             }
         } else {
-            if (plugin.getPItemManager().getPItem(clicked) != null) {
-                event.setCancelled(true);
-                event.getWhoClicked().sendMessage(errorMessage);
+            if (event.getInventory().getType() != InventoryType.PLAYER &&
+                event.getInventory().getType() != InventoryType.CRAFTING) {
+                if (plugin.getPItemManager().getPItem(clicked) != null) {
+                    event.setCancelled(true);
+                    event.getWhoClicked().sendMessage(errorMessage);
+                }
             }
         }
     }

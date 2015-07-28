@@ -48,6 +48,8 @@ public class PlayerManager {
     }
 
     public void softSave(Player player) {
-        get(player).softSave();
+        PlayerInfo info = get(player);
+        info.softSave();
+        info.softSaveChests();
     }
 }

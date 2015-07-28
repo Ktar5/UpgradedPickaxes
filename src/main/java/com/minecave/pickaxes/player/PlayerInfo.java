@@ -13,8 +13,6 @@ import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemSerializer;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import lombok.Getter;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -43,69 +41,6 @@ public class PlayerInfo {
 
     @SuppressWarnings("unchecked")
     public void load() {
-        //load items in player's inventory
-        List<String> invUUIDs = new ArrayList<>();
-        if (config.has("invData")) {
-            String saved = config.get("invData", String.class, "");
-            if (!saved.equals("")) {
-                String[] items = saved.split("&");
-                for (String item : items) {
-                    String[] data = item.split("%");
-                    int i = Integer.parseInt(data[0]);
-                    String encoded = data[1];
-                    try {
-                        PItem<?> pItem = PItemSerializer.singlePItemBase64(encoded);
-                        if (pItem == null) {
-                            continue;
-                        }
-                        EnhancedPicks.getInstance().getPItemManager().addPItemForce(pItem);
-                        invUUIDs.add(pItem.getUuid().toString());
-                        this.player.getInventory().setItem(i, pItem.getItem());
-                        ItemStack stack = player.getInventory().getItem(i);
-                        pItem.setItem(stack);
-                        pItem.updateManually(player, stack);
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        List<String> dupes = new ArrayList<>();
-        //check inventory for "dead" items
-        for (int i = 0; i < player.getInventory().getContents().length; i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            if (stack != null &&
-                (stack.getType() == Material.DIAMOND_PICKAXE ||
-                 stack.getType() == Material.DIAMOND_SWORD)) {
-                if (!stack.hasItemMeta() && !stack.getItemMeta().hasDisplayName() &&
-                    !stack.getItemMeta().hasLore()) {
-                    continue;
-                }
-                boolean isPItem = false;
-                for (String s : stack.getItemMeta().getLore()) {
-                    if (s.replace(ChatColor.COLOR_CHAR + "", "").startsWith("UUID:")) {
-                        isPItem = true;
-                    }
-                }
-                PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(stack);
-                if (pItem == null) {
-                    if (isPItem) {
-                        EnhancedPicks.getInstance().getLogger()
-                                     .severe(String.format("Player: %s, Slot: %d. Dead pItem located.", player.getName(), i));
-                        player.getInventory().setItem(i, null);
-                    }
-                } else {
-                    if (invUUIDs.contains(pItem.getUuid().toString())) {
-                        if (!dupes.contains(pItem.getUuid().toString())) {
-                            dupes.add(pItem.getUuid().toString());
-                        } else {
-                            //dupe
-                            player.getInventory().setItem(i, null);
-                        }
-                    }
-                }
-            }
-        }
         //load items in player's virtual chests
         if (config.has("pickData")) {
             if(config.getConfig().isList("pickData"))
@@ -183,7 +118,31 @@ public class PlayerInfo {
         if (config.has("unspentPoints")) {
             this.unspentPoints = config.get("unspentPoints", Integer.class, 0);
         }
-
+        //load items in player's inventory
+        if (config.has("invData")) {
+            String saved = config.get("invData", String.class, "");
+            if (!saved.equals("")) {
+                String[] items = saved.split("&");
+                for (String item : items) {
+                    String[] data = item.split("%");
+                    int i = Integer.parseInt(data[0]);
+                    String encoded = data[1];
+                    try {
+                        PItem<?> pItem = PItemSerializer.singlePItemBase64(encoded);
+                        if (pItem == null) {
+                            continue;
+                        }
+                        EnhancedPicks.getInstance().getPItemManager().addPItemForce(pItem);
+                        this.player.getInventory().setItem(i, pItem.getItem());
+                        ItemStack stack = player.getInventory().getItem(i);
+                        pItem.setItem(stack);
+                        pItem.updateManually(player, stack);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     public void addPoints(int points) {
@@ -227,6 +186,8 @@ public class PlayerInfo {
         }
         config.set("unspentPoints", this.unspentPoints);
         config.saveConfig();
+        this.pickaxes.clear();
+        this.swords.clear();
     }
 
     public void softSave() {

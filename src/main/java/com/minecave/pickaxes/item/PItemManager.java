@@ -23,6 +23,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 public class PItemManager {
@@ -31,15 +32,21 @@ public class PItemManager {
     @Getter
     private       Map<String, PItem<?>>           pItemMap;
     @Getter
+    private       Map<String, PItem<?>>           pItemListings;
+    @Getter
     private       Multimap<String, PItemSettings> settingsMap;
+    @Getter
+    private       CustomConfig                    listingsConfig;
 
     public PItemManager() {
         plugin = EnhancedPicks.getInstance();
         pItemMap = new HashMap<>();
+        pItemListings = new HashMap<>();
         settingsMap = ArrayListMultimap.create();
 
         CustomConfig pluginConfig = plugin.getConfig("config");
         CustomConfig levelConfig = plugin.getConfig("levels");
+        listingsConfig = plugin.getConfig("listings");
 
         //PICKS
         CustomConfig pickConfig = plugin.getConfig("picks");
@@ -87,7 +94,7 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
-            if(pickConfig.has(concat(n, "presetSkills"))) {
+            if (pickConfig.has(concat(n, "presetSkills"))) {
                 for (String s : pickConfig.getConfig().getStringList(concat(n, "presetSkills"))) {
                     PSkill skill = plugin.getPSkillManager().getPSkill(s);
                     if (skill == null) {
@@ -97,9 +104,9 @@ public class PItemManager {
                     settings.addPresetSkill(skill);
                 }
             }
-            if(pickConfig.has(concat(n, "currentSkill"))) {
+            if (pickConfig.has(concat(n, "currentSkill"))) {
                 PSkill skill = plugin.getPSkillManager().getPSkill(pickConfig.get(concat(n, "currentSkill"), String.class, ""));
-                if(skill != null) {
+                if (skill != null) {
                     settings.setCurrentSkill(skill);
                 }
             }
@@ -253,7 +260,7 @@ public class PItemManager {
                 }
                 settings.addSkill(skill);
             }
-            if(swordConfig.has(concat(n, "presetSkills"))) {
+            if (swordConfig.has(concat(n, "presetSkills"))) {
                 for (String s : swordConfig.getConfig().getStringList(concat(n, "presetSkills"))) {
                     PSkill skill = plugin.getPSkillManager().getPSkill(s);
                     if (skill == null) {
@@ -263,9 +270,9 @@ public class PItemManager {
                     settings.addPresetSkill(skill);
                 }
             }
-            if(swordConfig.has(concat(n, "currentSkill"))) {
+            if (swordConfig.has(concat(n, "currentSkill"))) {
                 PSkill skill = plugin.getPSkillManager().getPSkill(swordConfig.get(concat(n, "currentSkill"), String.class, ""));
-                if(skill != null) {
+                if (skill != null) {
                     settings.setCurrentSkill(skill);
                 }
             }
@@ -376,6 +383,51 @@ public class PItemManager {
                 }
             }
         }
+
+        if(listingsConfig.has("auction-listings")) {
+            for (String s : listingsConfig.getConfig().getStringList("auction-listings")) {
+                try {
+                    PItem<?> pItem = PItemSerializer.singlePItemBase64(s);
+                    if (pItem == null) {
+                        continue;
+                    }
+                    pItemListings.put(pItem.getUuid().toString(), pItem);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void save() {
+        if(!pItemListings.isEmpty()) {
+            List<String> listings = new ArrayList<>();
+            pItemListings.values().forEach(p -> listings.add(p.toString()));
+        }
+    }
+
+    public boolean createListing(PItem<?> pItem) {
+        String uuid = pItem.getUuid().toString();
+        if(!pItemMap.containsKey(uuid)) {
+            return false;
+        }
+        pItemListings.put(uuid, pItem);
+        pItemMap.remove(uuid);
+        return true;
+    }
+
+    public boolean removeListing(PItem<?> pItem) {
+        String uuid = pItem.getUuid().toString();
+        if(!pItemListings.containsKey(uuid)) {
+            return false;
+        }
+        pItemMap.put(uuid, pItem);
+        pItemListings.remove(uuid);
+        return true;
+    }
+
+    public PItem<?> getListing(String uuid) {
+        return pItemListings.get(uuid);
     }
 
     public PItem<?> getPItem(ItemStack item) {
@@ -398,6 +450,31 @@ public class PItemManager {
                     continue;
                 }
                 return this.pItemMap.get(u);
+            }
+        }
+        return null;
+    }
+
+    public String pullUUID(ItemStack item) {
+        if (item == null) {
+            return null;
+        }
+        if (!item.hasItemMeta()) {
+            return null;
+        }
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.getLore();
+        if (lore == null || lore.isEmpty()) {
+            return null;
+        }
+        for (String l : lore) {
+            l = l.replace(ChatColor.COLOR_CHAR + "", "");
+            if (l.startsWith("UUID:")) {
+                String u = l.replace("UUID:", "").trim();
+                if (!pItemMap.containsKey(u)) {
+                    continue;
+                }
+                return u;
             }
         }
         return null;

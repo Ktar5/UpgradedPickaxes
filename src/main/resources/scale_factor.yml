@@ -1,6 +1,8 @@
 Message_Inv_Full: "&c&lYour inventory is full!"
 delete_item_if_inv_full: true
 Inv_full_remind_interval: 150
+#this config value is a hotpatch for the fortune formula in picks
+fortune_scale_factor: 2.0
 Scale_Factors:
   redstone: 4
   lapis: 4

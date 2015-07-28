@@ -55,7 +55,7 @@ public abstract class PSkill {
 
     public boolean canUse(Player player, PItem item) {
         long seconds = getTimeDiff(player);
-        return cooldown <= seconds; // && highEnough(item);
+        return cooldown <= seconds && player.hasPermission(this.perm); // && highEnough(item);
     }
 
     public long getTimeDiff(Player player) {
@@ -100,15 +100,19 @@ public abstract class PSkill {
         return cooldown - getTimeDiff(player);
     }
 
-    public int itemsDropped(int fortuneLevel){
+    public static int itemsDropped(int fortuneLevel){
         if(fortuneLevel == 0) {
             return 0;
         }
         int var3 = ThreadLocalRandom.current().nextInt(fortuneLevel + 2) - 1;
 
+        double factor = EnhancedPicks.getInstance().getConfig("scale_factor").get("fortune_scale_factor", Double.class, 1D);
+
         if (var3 < 0)
             var3 = 0;
-
+        if(factor > 0) {
+            var3 *= factor;
+        }
         return var3 + 1;
     }
 }

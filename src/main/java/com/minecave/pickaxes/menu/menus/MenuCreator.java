@@ -252,7 +252,14 @@ public class MenuCreator {
         while (!picksClone.isEmpty()) {
             PItem<BlockBreakEvent> pick = picksClone.remove(0);
             pick.updateMeta();
-            menu.setItem(k, BasicItem.create(pick.getItem(), (p, c) -> {
+            ItemStack stack;
+            pick.getEnchants().forEach(p -> {
+                if(p instanceof NormalEnchant) {
+                    p.apply(pick);
+                }
+            });
+            stack = pick.getItem();
+            menu.setItem(k, BasicItem.create(stack, (p, c) -> {
                 int emptySlot = -1;
                 for (int i = 0; i < p.getInventory().getContents().length; i++) {
                     if (p.getInventory().getItem(i) == null || p.getInventory().getItem(i).getType() == Material.AIR) {
@@ -319,7 +326,14 @@ public class MenuCreator {
         while (!swordsClone.isEmpty()) {
             PItem<EntityDamageByEntityEvent> sword = swordsClone.remove(0);
             sword.updateMeta();
-            menu.setItem(k, BasicItem.create(sword.getItem(), (p, c) -> {
+            ItemStack stack;
+            sword.getEnchants().forEach(p -> {
+                if(p instanceof NormalEnchant) {
+                    p.apply(sword);
+                }
+            });
+            stack = sword.getItem();
+            menu.setItem(k, BasicItem.create(stack, (p, c) -> {
                 int emptySlot = -1;
                 for (int i = 0; i < p.getInventory().getContents().length; i++) {
                     if (p.getInventory().getItem(i) == null || p.getInventory().getItem(i).getType() == Material.AIR) {

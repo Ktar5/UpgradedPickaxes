@@ -5,6 +5,7 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
+import com.minecave.pickaxes.skill.PSkill;
 import com.minecave.pickaxes.util.item.OreConversion;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
@@ -84,7 +85,7 @@ public class TnTEnchant extends PEnchant {
                     Material converted = OreConversion.convertToItem(stack.getType());
                     stack.setType(converted);
                     if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
-                        int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
+                        int extra = PSkill.itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
                         Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
                         if (scale != null) {
                             extra *= scale;
@@ -119,18 +120,6 @@ public class TnTEnchant extends PEnchant {
         }
     }
 
-    public int itemsDropped(int fortuneLevel) {
-        if (fortuneLevel == 0) {
-            return 0;
-        }
-        int var3 = ThreadLocalRandom.current().nextInt(fortuneLevel + 2) - 1;
-
-        if (var3 < 0)
-            var3 = 0;
-
-        return var3 + 1;
-    }
-
     @Override
     public void activate(EntityDamageByEntityEvent event) {
         if (this.getLevel() <= 0) {
@@ -150,7 +139,8 @@ public class TnTEnchant extends PEnchant {
                 continue;
             }
             if (ent instanceof LivingEntity && !(ent instanceof Player)) {
-                ent.setMetadata("player", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
+                ent.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
+                ent.setMetadata("pitemplayer", new FixedMetadataValue(EnhancedPicks.getInstance(), player.getUniqueId().toString()));
                 ent.setMetadata("skipTNT", new FixedMetadataValue(EnhancedPicks.getInstance(), true));
                 ((LivingEntity) ent).damage(0.5D * this.getLevel(), player);
                 Bukkit.getScheduler().runTaskLater(EnhancedPicks.getInstance(), () -> {

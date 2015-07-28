@@ -28,9 +28,12 @@ sword-display-name: "{name} | Level: {level} | Xp: {xp}/{nextLevelXpTotal} | Nex
 chest-pitem-error: "&0virtual chest item must go."
 debug: true
 compressedDebug: false
+sword-skill-damage: 20
 world-whitelist:
   - "world"
   - "nether"
+region-blacklist:
+  - "someregion"
 cosmetics:
   firework:
     #Does each level control the firework effect? Set to true for in-depth management

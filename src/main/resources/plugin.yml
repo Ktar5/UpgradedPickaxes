@@ -1,7 +1,7 @@
 name: ${plugin.name}
 version: ${version}
 main: ${plugin.mainClass}
-depend: [WorldGuard, MineSell, Essentials]
+depend: [WorldGuard, MineSell, Essentials, DropParty]
 commands:
   pick:
     description: Opens up your pick UI. Use points arg to spend points on this item.
@@ -21,6 +21,10 @@ commands:
   padmin:
     description: Opens the target's virtual enhanced items chests.
     usage: /<command> [player]
+    permission: pickaxes.admin
+  pdebug:
+    description: Turns on debug notifications for enhanced picks.
+    usage: /<command>
     permission: pickaxes.admin
 permissions:
   pickaxes.*:

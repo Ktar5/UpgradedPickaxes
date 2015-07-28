@@ -44,16 +44,16 @@ public class PItemSerializer {
 
     public static PItem<?> singlePItemBase64(String base64) throws UnsupportedEncodingException {
         if (base64 == null || base64.equals("")) {
-            return null;
+            throw new IllegalArgumentException("Serialized PItem is non existant.");
         }
         EnhancedPicks plugin = EnhancedPicks.getInstance();
         String decoded = base64;
         if (decoded.endsWith(";")) {
-            decoded = decoded.substring(0, decoded.length() - 2);
+            decoded = decoded.substring(0, decoded.length() - 1);
         }
         String[] data = decoded.split(",");
         if (data.length != 13) {
-            return null;
+            throw new IllegalArgumentException("Serialized PItem SPLIT is not valid.");
         }
         String type;
         String pItemSettingsKey;
@@ -91,11 +91,11 @@ public class PItemSerializer {
 
         pItemType = PItemType.valueOf(type);
         if (pItemSettingsKey == null || pItemSettingsKey.equals("")) {
-            return null;
+            throw new IllegalArgumentException("Serialized PItem TYPE is not valid.");
         }
         settingsCollection = plugin.getPItemManager().getSettings(pItemSettingsKey);
         if (settingsCollection == null) {
-            return null;
+            throw new IllegalArgumentException("Serialized PItem SETTINGS COLLECTION is not valid.");
         }
         pItemSettings = null;
         for (PItemSettings ps : settingsCollection) {
@@ -104,7 +104,7 @@ public class PItemSerializer {
             }
         }
         if (pItemSettings == null) {
-            return null;
+            throw new IllegalArgumentException("Serialized PItem SETTINGS is not valid.");
         }
         pItem = null;
         switch (pItemType) {
@@ -116,12 +116,21 @@ public class PItemSerializer {
                 break;
         }
         if (pItem == null) {
-            return null;
+            throw new IllegalArgumentException("Serialized PItem is null.");
         }
-        if (plugin.getPItemManager().getPItemMap().containsKey(uuid)) {
-            return null;
+        UUID uuid1 = null;
+        try {
+            uuid1 = UUID.fromString(uuid);
+        } catch (IllegalArgumentException e) {
+            uuid1 = null;
         }
-        pItem.setUuid(UUID.fromString(uuid));
+        while (plugin.getPItemManager().getPItemMap().containsKey(uuid) || uuid1 == null) {
+//            throw new IllegalArgumentException("Serialized PItem UUID already exists.");
+            uuid1 = UUID.randomUUID();
+            uuid = uuid1.toString();
+
+        }
+        pItem.setUuid(uuid1);
         pItem.getItem().setDurability(Short.parseShort(durability));
 
         pItem.setXp(Integer.parseInt(xp));
@@ -231,7 +240,7 @@ public class PItemSerializer {
         String[] items = decoded.split(";");
         for (String item : items) {
             if (item.endsWith(";")) {
-                item = item.substring(0, item.length() - 2);
+                item = item.substring(0, item.length() - 1);
             }
             String[] data = item.split(",");
             if (data.length != 13) {
@@ -300,8 +309,8 @@ public class PItemSerializer {
             if (pItem == null) {
                 continue;
             }
-            if (plugin.getPItemManager().getPItemMap().containsKey(uuid)) {
-                continue;
+            while (plugin.getPItemManager().getPItemMap().containsKey(uuid)) {
+                uuid = UUID.randomUUID().toString();
             }
             pItem.setUuid(UUID.fromString(uuid));
             pItem.getItem().setDurability(Short.parseShort(durability));

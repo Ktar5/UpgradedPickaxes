@@ -12,11 +12,16 @@ import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.skill.PSkill;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Rain extends PSkill {
 
@@ -38,7 +43,10 @@ public class Rain extends PSkill {
     @Override
     public void use(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Location lookingAt = player.getEyeLocation();
+        Set<Material> materialSet = new HashSet<>();
+        materialSet.add(Material.AIR);
+        Block block = player.getTargetBlock(materialSet, 20);
+        Location lookingAt = block.getLocation();
         lookingAt.add(0, arrowHeight, 0);
         new BukkitRunnable() {
             int count = 0;
@@ -48,15 +56,35 @@ public class Rain extends PSkill {
                 if (count >= seconds) {
                     this.cancel();
                 }
-                for (int i = -(arrowCount / 2); i < (arrowCount / 2); i++) {
-                    for (int j = -(arrowCount / 2); j < (arrowCount / 2); j++) {
+//                new BukkitRunnable() {
+//                    int arrows = 0;
+//
+//                    public void run() {
+//                        if (arrows >= arrowCount) {
+//                            this.cancel();
+//                        }
+//                        for (int j = -(arrowCount / 2); j < (arrowCount / 2); j++) {
+//                            Location spawnLocation = lookingAt.clone().add(arrows - (arrowCount / 2), 0, j);
+//                            Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, -1, 0), 1.5f, 12);
+//                            arrow.setBounce(false);
+//                            arrow.setShooter(player);
+//                            arrow.setCustomName("rain");
+//                        }
+//
+//                        arrows++;
+//                    }
+//                }.runTaskTimer(EnhancedPicks.getInstance(), 0L, 5L);
+                int c = (int) Math.sqrt(arrowCount);
+                for (int i = (-c)  * 2; i < c * 2; i += 2) {
+                    for (int j = (-c) * 2; j < c * 2; j += 2) {
                         Location spawnLocation = lookingAt.clone().add(i, 0, j);
-                        Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, -3, 0), 1f, 12);
+                        Arrow arrow = spawnLocation.getWorld().spawnArrow(spawnLocation, new Vector(0, -1, 0), 1.5f, 12);
                         arrow.setBounce(false);
                         arrow.setShooter(player);
                         arrow.setCustomName("rain");
                     }
                 }
+                EnhancedPicks.getInstance().getDebugger().debugMessage(player, String.format("Rain | Count: %d, Shooter: %s", arrowCount, player.getUniqueId().toString()));
                 count += 1;
             }
         }.runTaskTimer(EnhancedPicks.getInstance(), 0L, 20);

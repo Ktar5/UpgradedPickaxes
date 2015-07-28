@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.earth2me.essentials.Essentials;
+import com.minecave.dropparty.custom.IDable;
 import com.minecave.pickaxes.commands.*;
 import com.minecave.pickaxes.drops.DropManager;
 import com.minecave.pickaxes.enchant.PEnchant;
@@ -20,6 +21,7 @@ import com.minecave.pickaxes.listener.PItemListener;
 import com.minecave.pickaxes.listener.PlayerListener;
 import com.minecave.pickaxes.player.PlayerManager;
 import com.minecave.pickaxes.skill.PSkillManager;
+import com.minecave.pickaxes.util.Debugger;
 import com.minecave.pickaxes.util.config.CustomConfig;
 import com.minecave.pickaxes.util.item.ActionBar;
 import lombok.Getter;
@@ -54,10 +56,13 @@ public class EnhancedPicks extends JavaPlugin {
     private        PlayerManager             playerManager;
     private        KitManager                kitManager;
     private        Essentials                essentials;
-    private int costPerLevel = 5;
+    private int    costPerLevel    = 5;
+    private double damageFromSkill = 20D;
     private List<String>           whitelistWorlds;
+    private List<String>           blacklistedRegions;
     private Map<Material, Integer> scaleFactors;
     private List<Material>         gems;
+    private Debugger               debugger;
 
     public static EnhancedPicks getInstance() {
         return instance;
@@ -69,6 +74,8 @@ public class EnhancedPicks extends JavaPlugin {
         configMap = new HashMap<>();
         scaleFactors = new HashMap<>();
         whitelistWorlds = new ArrayList<>();
+        blacklistedRegions = new ArrayList<>();
+        debugger = new Debugger();
         gems = new ArrayList<Material>() {{
             add(Material.DIAMOND);
             add(Material.COAL);
@@ -89,12 +96,21 @@ public class EnhancedPicks extends JavaPlugin {
         saveDefaultConfig("swords");
         saveDefaultConfig("kits");
         saveDefaultConfig("scale_factor");
+        saveDefaultConfig("listings");
+
+        try {
+            Class.forName(IDable.class.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         ConfigurationSection scaleSection = getConfig("scale_factor").getConfigurationSection("Scale_Factors");
         scaleSection.getKeys(false).forEach(s -> scaleFactors.put(s.equals("lapis") ? Material.INK_SACK : Material.matchMaterial(s), scaleSection.getInt(s)));
 
         getConfig("config").getConfig().getStringList("world-whitelist").forEach(whitelistWorlds::add);
+        getConfig("config").getConfig().getStringList("region-blacklist").forEach(blacklistedRegions::add);
         costPerLevel = getConfig("config").get("costPerLevel", Integer.class, 5);
+        damageFromSkill = getConfig("config").get("sword-skill-damage", Double.class, 20D);
 
         if (getServer().getPluginManager().isPluginEnabled("Essentials")) {
             essentials = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
@@ -121,6 +137,7 @@ public class EnhancedPicks extends JavaPlugin {
         getCommand("sword").setExecutor(new SwordCommand());
         getCommand("ppoints").setExecutor(new PointsCommand());
         getCommand("padmin").setExecutor(new AdminChestCommand());
+        getCommand("pdebug").setExecutor(new DebugCommand());
 
 //        try {
 //            Class.forName(EPAttributeBuilder.class.getName());
@@ -249,8 +266,9 @@ public class EnhancedPicks extends JavaPlugin {
                 }), 20l, 20l);
 
         getServer().getScheduler().runTaskTimer(this, () ->
-                Bukkit.getOnlinePlayers().forEach(p -> getServer().getScheduler().runTaskAsynchronously(EnhancedPicks.this, () ->
-                        playerManager.softSave(p))), 20L * 10, 20 * 60 * 5); //5 minute backups
+                                                        Bukkit.getOnlinePlayers().forEach(p -> getServer()
+                                                                .getScheduler().runTaskAsynchronously(EnhancedPicks.this, () -> playerManager.softSave(p))),
+                                                20L * 10, 20 * 60 * 5); //5 minute backups
     }
 
     @Override
@@ -261,9 +279,11 @@ public class EnhancedPicks extends JavaPlugin {
                 playerManager.save(p);
             });
         }
+        pItemManager.save();
         if (pItemManager != null) {
             pItemManager.getSettingsMap().clear();
         }
+        debugger.clear();
     }
 
     public void saveDefaultConfig(String name) {

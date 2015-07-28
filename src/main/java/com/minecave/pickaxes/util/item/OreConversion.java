@@ -9,6 +9,7 @@
 package com.minecave.pickaxes.util.item;
 
 
+import com.minecave.pickaxes.EnhancedPicks;
 import org.bukkit.Material;
 import org.bukkit.material.Dye;
 
@@ -55,6 +56,6 @@ public class OreConversion {
     }
 
     public static boolean isItem(Material material) {
-        return itemToOre.containsKey(material);
+        return itemToOre.containsKey(material) || EnhancedPicks.getInstance().getScaleFactors().containsKey(material);
     }
 }

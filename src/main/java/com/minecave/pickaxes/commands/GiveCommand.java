@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class GiveCommand implements CommandExecutor {
 
@@ -94,7 +95,11 @@ public class GiveCommand implements CommandExecutor {
                 for (PEnchant pEnchant : pItem.getEnchants()) {
                     pEnchant.apply(pItem);
                 }
-                player.getInventory().addItem(stack);
+                Map<Integer, ItemStack> fail = player.getInventory().addItem(stack);
+                if(fail != null && !fail.isEmpty()) {
+                    final Player finalPlayer = player;
+                    fail.values().forEach(i -> finalPlayer.getWorld().dropItem(finalPlayer.getLocation(), i));
+                }
                 plugin.getPItemManager().addPItemForce(pItem);
                 break;
             case SWORD:
@@ -104,7 +109,11 @@ public class GiveCommand implements CommandExecutor {
                 for (PEnchant pEnchant : eItem.getEnchants()) {
                     pEnchant.apply(eItem);
                 }
-                player.getInventory().addItem(stack);
+                Map<Integer, ItemStack> fail1 = player.getInventory().addItem(stack);
+                if(fail1 != null && !fail1.isEmpty()) {
+                    final Player finalPlayer = player;
+                    fail1.values().forEach(i -> finalPlayer.getWorld().dropItem(finalPlayer.getLocation(), i));
+                }
                 plugin.getPItemManager().addPItemForce(eItem);
                 break;
         }
