@@ -45,13 +45,16 @@ public class Ice extends PSkill {
 //        int curCount = 0;
 //        int cap = ThreadLocalRandom.current().nextInt(radius * 2) + 1;
         for (Block block : blocks) {
-            if (!this.wg.canBuild(event.getPlayer(), block)) {
+            if (!this.wg.canBuild(event.getPlayer(), block) ||
+                block.getType() == Material.BEDROCK ||
+                block.getType() == Material.AIR ||
+                block.getType() == Material.ITEM_FRAME) {
                 continue;
             }
 //            if (curCount >= cap) {
 //                break;
 //            }
-            if(ThreadLocalRandom.current().nextInt(10) > 4) {
+            if (ThreadLocalRandom.current().nextInt(10) > 4) {
                 Collection<ItemStack> items = block.getDrops(player.getItemInHand());
                 ItemStack[] array = new ItemStack[items.size()];
                 int i = 0;
@@ -61,15 +64,15 @@ public class Ice extends PSkill {
                         || OreConversion.isItem(stack.getType())) {
                         Material converted = OreConversion.convertToItem(stack.getType());
                         stack.setType(converted);
-                        if(pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
+                        if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
                             int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
                             Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
-                            if(scale != null) {
+                            if (scale != null) {
                                 extra *= scale;
                             }
-                            if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+                            if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
                                 extra = (int) Math.round(extra / 10D);
-                                if(--extra < 0) {
+                                if (--extra < 0) {
                                     extra = 0;
                                 }
                             }
@@ -83,7 +86,7 @@ public class Ice extends PSkill {
                 pItem.addBlockBroken();
                 pItem.update(player);
                 Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
-                if(!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+                if (!EnhancedPicks.getInstance().getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
                     leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
                 }
                 player.updateInventory();
@@ -98,7 +101,10 @@ public class Ice extends PSkill {
             public void run() {
                 player.playSound(event.getPlayer().getLocation(), Sound.GLASS, 3.0F, 2.0F);
                 for (Block block : broken) {
-                    if (!wg.canBuild(event.getPlayer(), block)) {
+                    if (!wg.canBuild(event.getPlayer(), block) ||
+                        block.getType() == Material.BEDROCK ||
+                        block.getType() == Material.AIR ||
+                        block.getType() == Material.ITEM_FRAME) {
                         continue;
                     }
                     block.setType(Material.AIR);
@@ -114,20 +120,20 @@ public class Ice extends PSkill {
         if (d == 0) {
             d = 1;
         }
-        for(int y = 0; y >= -d; y--) {
+        for (int y = 0; y >= -d; y--) {
             for (double z = -radius; z <= radius; z++) {
                 for (double x = -radius; x <= radius; x++) {
 //                    if (ThreadLocalRandom.current().nextInt(10) > 4) {
-                        if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
-                            Location l = loc1.clone().add(x, y, z);
-                            if (!l.getChunk().isLoaded()) {
-                                continue;
-                            }
-                            Block b = l.getBlock();
-                            if (b.getType() != Material.AIR && b.getType().isBlock()) {
-                                blocks.add(b);
-                            }
+                    if (Math.pow(x, 2) + Math.pow(z, 2) <= Math.pow(radius, 2)) {
+                        Location l = loc1.clone().add(x, y, z);
+                        if (!l.getChunk().isLoaded()) {
+                            continue;
                         }
+                        Block b = l.getBlock();
+                        if (b.getType() != Material.AIR && b.getType().isBlock()) {
+                            blocks.add(b);
+                        }
+                    }
 //                    }
                 }
             }

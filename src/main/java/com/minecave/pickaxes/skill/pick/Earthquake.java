@@ -59,7 +59,8 @@ public class Earthquake extends PSkill {
 //            }
             if(ThreadLocalRandom.current().nextInt(10) >= 4) {
                 if (block.getType() == Material.AIR ||
-                    block.getType() == Material.BEDROCK) {
+                    block.getType() == Material.BEDROCK ||
+                    block.getType() == Material.ITEM_FRAME) {
                     continue;
                 }
                 Collection<ItemStack> items = block.getDrops(player.getItemInHand());

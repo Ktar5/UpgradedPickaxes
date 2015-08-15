@@ -41,6 +41,7 @@ public class MenuCreator {
     private static Item AIR   = BasicItem.createFiller(new ItemStack(Material.AIR));
 
     public static void createMainPick(Player player) {
+        player.closeInventory();
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("mainPickMenu", String.class, "Main Pick Menu"));
         Menu mainPick = Menu.createMenu(name, 9);
@@ -107,7 +108,7 @@ public class MenuCreator {
                     mainPick.setItem(i, item);
                     break;
                 case 8:
-                    PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                    PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
                     ItemStack unusedPoints = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
                                                         .name(ChatColor.GOLD + "Unspent Points")
                                                         .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints())
@@ -125,6 +126,7 @@ public class MenuCreator {
     }
 
     public static void createMainSword(Player player) {
+        player.closeInventory();
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("mainSwordMenu", String.class, "Main Sword Menu"));
         Menu mainSword = Menu.createMenu(name, 9);
@@ -132,12 +134,12 @@ public class MenuCreator {
         for (int i = 0; i < mainSword.size(); i++) {
             switch (i) {
                 case 1:
-                    ItemStack chest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
-                                                 .name(ChatColor.YELLOW + "Sword Chest")
-                                                 .lore(" ",
-                                                       ChatColor.GRAY + "Click to view all your current swords.")
-                                                 .build();
-                    Item item = BasicItem.create(chest, (p, c) -> {
+                    ItemStack swordChest = ItemBuilder.wrap(new ItemStack(Material.CHEST))
+                                                      .name(ChatColor.YELLOW + "Sword Chest")
+                                                      .lore(" ",
+                                                            ChatColor.GRAY + "Click to view all your current swords.")
+                                                      .build();
+                    Item item = BasicItem.create(swordChest, (p, c) -> {
                         ScrollingMenu menu = createSwordMenu(p);
                         if (menu != null) {
                             mainSword.setCloseNotChildOpen(false);
@@ -192,7 +194,7 @@ public class MenuCreator {
                     break;
                 case 8:
                     pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
-                    PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                    PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
                     ItemStack unusedPoints = ItemBuilder.wrap(new ItemStack(Material.EMERALD))
                                                         .name(ChatColor.GOLD + "Unspent Points")
                                                         .lore(" ", ChatColor.GRAY + "Unspent points: " + ChatColor.WHITE + info.getUnspentPoints(),
@@ -240,7 +242,7 @@ public class MenuCreator {
     public static ScrollingMenu createPickMenu(Player player) {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("pickaxeMenu", String.class, "Pickaxe Menu"));
-        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
         if (info == null) {
             return null;
         }
@@ -254,7 +256,7 @@ public class MenuCreator {
             pick.updateMeta();
             ItemStack stack;
             pick.getEnchants().forEach(p -> {
-                if(p instanceof NormalEnchant) {
+                if (p instanceof NormalEnchant) {
                     p.apply(pick);
                 }
             });
@@ -314,7 +316,7 @@ public class MenuCreator {
     public static ScrollingMenu createSwordMenu(Player player) {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("swordMenu", String.class, "Sword Menu"));
-        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
         if (info == null) {
             return null;
         }
@@ -328,7 +330,7 @@ public class MenuCreator {
             sword.updateMeta();
             ItemStack stack;
             sword.getEnchants().forEach(p -> {
-                if(p instanceof NormalEnchant) {
+                if (p instanceof NormalEnchant) {
                     p.apply(sword);
                 }
             });
@@ -391,9 +393,9 @@ public class MenuCreator {
             switch (i) {
                 case 2:
                     ItemStack targetPick = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_PICKAXE))
-                            .name(ChatColor.YELLOW + target.getName() + " Picks")
-                            .lore(ChatColor.GRAY + "Click to manage the target's picks")
-                            .build();
+                                                      .name(ChatColor.YELLOW + target.getName() + " Picks")
+                                                      .lore(ChatColor.GRAY + "Click to manage the target's picks")
+                                                      .build();
                     BasicItem item = BasicItem.create(targetPick, (p, c) -> {
                         ScrollingMenu menu = createAdminPickMenu(admin, target);
                         if (menu != null) {
@@ -406,9 +408,9 @@ public class MenuCreator {
                     break;
                 case 6:
                     ItemStack targetSword = ItemBuilder.wrap(new ItemStack(Material.DIAMOND_SWORD))
-                                                      .name(ChatColor.YELLOW + target.getName() + " Swords")
-                                                      .lore(ChatColor.GRAY + "Click to manage the target's swords")
-                                                      .build();
+                                                       .name(ChatColor.YELLOW + target.getName() + " Swords")
+                                                       .lore(ChatColor.GRAY + "Click to manage the target's swords")
+                                                       .build();
                     item = BasicItem.create(targetSword, (p, c) -> {
                         ScrollingMenu menu = createAdminSwordMenu(admin, target);
                         if (menu != null) {
@@ -431,7 +433,7 @@ public class MenuCreator {
     public static ScrollingMenu createAdminPickMenu(Player admin, Player player) {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("pickaxeMenu", String.class, "Pickaxe Menu"));
-        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
         if (info == null) {
             return null;
         }
@@ -500,7 +502,7 @@ public class MenuCreator {
     public static ScrollingMenu createAdminSwordMenu(Player admin, Player player) {
         CustomConfig config = EnhancedPicks.getInstance().getConfig("menus");
         String name = Strings.color(config.get("swordMenu", String.class, "Sword Menu"));
-        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
         if (info == null) {
             return null;
         }

@@ -30,6 +30,7 @@ public class PlayerManager {
             return playerInfoMap.get(player);
         }
         PlayerInfo info = new PlayerInfo(player);
+        info.load();
         playerInfoMap.put(player, info);
         return info;
     }

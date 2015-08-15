@@ -34,7 +34,7 @@ public class PointsCommand implements CommandExecutor {
                     commandSender.sendMessage("The points must be an integer.");
                     return true;
                 }
-                PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
                 int points = Integer.parseInt(strings[1]);
                 info.addPoints(points);
                 info.getPlayer().sendMessage(ChatColor.GREEN + "You received " + points + " points to spend on your picks/swords.");

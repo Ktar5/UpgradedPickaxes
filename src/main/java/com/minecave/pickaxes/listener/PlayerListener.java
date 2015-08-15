@@ -55,7 +55,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         plugin.getPSkillManager().getPSkill(Acid.class).removePlayer(player);
         plugin.getPSkillManager().getPSkill(Rage.class).removePlayer(player);
-        PlayerInfo info = plugin.getPlayerManager().get(player);
+        PlayerInfo info = plugin.getPlayerManager().add(player);
         info.save();
         plugin.getPlayerManager().remove(player);
         plugin.getDebugger().remove(player);

@@ -56,7 +56,9 @@ public class Lightning extends PSkill {
                             if (!this.wg.canBuild(event.getPlayer(), loc.getBlock())) {
                                 continue;
                             }
-                            if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK) {
+                            if (loc.getBlock().getType() == Material.AIR ||
+                                loc.getBlock().getType() == Material.BEDROCK ||
+                                block.getType() == Material.ITEM_FRAME) {
                                 continue;
                             }
                             int xp = BlockValue.getXp(loc.getBlock());

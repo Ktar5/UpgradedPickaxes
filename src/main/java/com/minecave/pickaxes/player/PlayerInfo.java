@@ -8,6 +8,7 @@
  */
 package com.minecave.pickaxes.player;
 
+import com.minecave.combatlog.CombatLog;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.item.PItem;
 import com.minecave.pickaxes.item.PItemSerializer;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -166,9 +168,11 @@ public class PlayerInfo {
                 PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(item);
                 if (pItem != null) {
                     try {
-                        String encoded = PItemSerializer.base64PItem(pItem);
-                        inventory.append(String.valueOf(i)).append("%").append(encoded).append("&");
-                        player.getInventory().setItem(i, null);
+                        if(!JavaPlugin.getPlugin(CombatLog.class).getTagHandler().isTagged(player)) {
+                            String encoded = PItemSerializer.base64PItem(pItem);
+                            inventory.append(String.valueOf(i)).append("%").append(encoded).append("&");
+                            player.getInventory().setItem(i, null);
+                        }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }

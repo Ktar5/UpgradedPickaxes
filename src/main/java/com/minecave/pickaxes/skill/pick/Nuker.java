@@ -89,7 +89,9 @@ public class Nuker extends PSkill {
                 continue;
             }
 //            loc.getBlock().setType(Material.GOLD_BLOCK);
-            if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.BEDROCK) {
+            if (loc.getBlock().getType() == Material.AIR ||
+                loc.getBlock().getType() == Material.BEDROCK ||
+                loc.getBlock().getType() == Material.ITEM_FRAME) {
                 continue;
             }
             int xp = BlockValue.getXp(loc.getBlock());
@@ -108,12 +110,12 @@ public class Nuker extends PSkill {
                     if (pItem.hasEnchant("LOOT_BONUS_BLOCKS")) {
                         int extra = itemsDropped(pItem.getEnchant("LOOT_BONUS_BLOCKS").getLevel());
                         Integer scale = EnhancedPicks.getInstance().getScaleFactors().get(stack.getType());
-                        if(scale != null) {
+                        if (scale != null) {
                             extra *= scale;
                         }
-                        if(!EnhancedPicks.getInstance().getGems().contains(stack.getType())){
+                        if (!EnhancedPicks.getInstance().getGems().contains(stack.getType())) {
                             extra = (int) Math.round(extra / 10D);
-                            if(--extra < 0) {
+                            if (--extra < 0) {
                                 extra = 0;
                             }
                         }
@@ -123,7 +125,7 @@ public class Nuker extends PSkill {
                 array[i++] = stack;
             }
             Map<Integer, ItemStack> leftOvers = player.getInventory().addItem(array);
-            if(!plugin.getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
+            if (!plugin.getConfig("scale_factor").get("delete_item_if_inv_full", Boolean.class, true)) {
                 leftOvers.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
             }
             loc.getBlock().setType(Material.AIR);

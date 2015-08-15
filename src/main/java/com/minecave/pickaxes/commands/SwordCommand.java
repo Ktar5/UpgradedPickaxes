@@ -60,7 +60,7 @@ public class SwordCommand implements CommandExecutor {
                     } else {
                         Player player = (Player) commandSender;
                         PItem<?> pItem = EnhancedPicks.getInstance().getPItemManager().getPItem(player.getItemInHand());
-                        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().get(player);
+                        PlayerInfo info = EnhancedPicks.getInstance().getPlayerManager().add(player);
                         int points = Integer.parseInt(strings[1]);
                         if (pItem == null) {
                             player.sendMessage(ChatColor.RED + "You must have an enhanced pick/sword in your hand.");

@@ -137,7 +137,8 @@ public class Bomber extends PSkill implements Listener {
                         Block block = sourceBlock.getRelative(0, -j, 0);
                         if (!wg.canBuild(player, block) ||
                             block.getType() == Material.BEDROCK ||
-                            block.getType() == Material.AIR) {
+                            block.getType() == Material.AIR ||
+                                block.getType() == Material.ITEM_FRAME) {
                             continue;
                         }
                         Collection<ItemStack> items = block.getDrops();
