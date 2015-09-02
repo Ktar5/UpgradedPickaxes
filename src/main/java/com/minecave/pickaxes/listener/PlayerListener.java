@@ -1,7 +1,6 @@
 package com.minecave.pickaxes.listener;
 
 import com.minecave.dropparty.custom.IDable;
-import com.minecave.minesell.nms.ShopVillager_v1_8_R3;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.MobValue;
 import com.minecave.pickaxes.enchant.PEnchant;
@@ -20,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -69,12 +69,12 @@ public class PlayerListener implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onDrop(PlayerDropItemEvent event) {
-//        if(plugin.getPItemManager().getPItem(event.getItemDrop().getItemStack()) != null) {
-//            event.setCancelled(true);
-//        }
-//    }
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event) {
+        if(plugin.getPItemManager().getPItem(event.getItemDrop().getItemStack()) != null) {
+            event.setCancelled(true);
+        }
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onProjectileHit(EntityDamageByEntityEvent event) {
@@ -89,8 +89,7 @@ public class PlayerListener implements Listener {
             }
             if (plugin.getPSkillManager().getPSkill(Rage.class).getRagePlayers().contains(player) &&
                 pitem.getCurrentSkill() instanceof Rage) {
-                if (event.getEntity() instanceof LivingEntity &&
-                    !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager_v1_8_R3)) {
+                if (event.getEntity() instanceof LivingEntity){
                     LivingEntity le = (LivingEntity) event.getEntity();
                     le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
                     le.setMetadata("pitemplayer", new FixedMetadataValue(plugin, player.getUniqueId().toString()));
@@ -126,8 +125,7 @@ public class PlayerListener implements Listener {
             if (event.getDamager() instanceof Snowball) {
                 Snowball entity = (Snowball) event.getDamager();
                 if (entity.getCustomName() != null &&
-                    entity.getCustomName().equals("shotgun") &&
-                    !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager_v1_8_R3)) {
+                    entity.getCustomName().equals("shotgun")) {
                     LivingEntity le = (LivingEntity) event.getEntity();
                     le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
                     le.setMetadata("pitemplayer", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
@@ -143,8 +141,7 @@ public class PlayerListener implements Listener {
             } else if (event.getDamager() instanceof EnderPearl) {
                 EnderPearl entity = (EnderPearl) event.getDamager();
                 if (entity.getCustomName() != null &&
-                    entity.getCustomName().equals("acid") &&
-                    !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager_v1_8_R3)) {
+                    entity.getCustomName().equals("acid")) {
                     LivingEntity le = (LivingEntity) event.getEntity();
                     le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
                     le.setMetadata("pitemplayer", new FixedMetadataValue(plugin, ((Player) entity.getShooter()).getUniqueId().toString()));
@@ -162,8 +159,7 @@ public class PlayerListener implements Listener {
                 if (entity.getCustomName() != null &&
                     entity.getCustomName().equals("fireball")) {
                     entity.getNearbyEntities(3, 3, 3).stream()
-                          .filter(e -> !(e instanceof Player) &&
-                                       !(((CraftEntity) nonDamager).getHandle() instanceof ShopVillager_v1_8_R3) && e instanceof LivingEntity)
+                          .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
                           .forEach(e -> {
                               LivingEntity le = (LivingEntity) e;
                               le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
@@ -190,7 +186,6 @@ public class PlayerListener implements Listener {
                     entity.getCustomName().equals("rain") || entity.hasMetadata("rain")) {
                     Entity e = event.getEntity();
                     if (!(e instanceof Player) &&
-                        !(((CraftEntity) e).getHandle() instanceof ShopVillager_v1_8_R3) &&
                         e instanceof LivingEntity) {
                         LivingEntity le = (LivingEntity) e;
                         le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
@@ -298,8 +293,7 @@ public class PlayerListener implements Listener {
                 entity.getCustomName().equals("acid") || entity.hasMetadata("acid")) {
                 int radius = plugin.getPSkillManager().getPSkill(Acid.class).getRadius();
                 entity.getNearbyEntities(radius, radius, radius).stream()
-                      .filter(e -> !(e instanceof Player) &&
-                                   !(((CraftEntity) e).getHandle() instanceof ShopVillager_v1_8_R3) && e instanceof LivingEntity)
+                      .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
                       .forEach(e -> {
                           LivingEntity le = (LivingEntity) e;
                           le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
@@ -317,8 +311,7 @@ public class PlayerListener implements Listener {
             if (entity.getCustomName() != null &&
                 entity.getCustomName().equals("fireball")) {
                 entity.getNearbyEntities(3, 3, 3).stream()
-                      .filter(e -> !(e instanceof Player) &&
-                                   !(((CraftEntity) e).getHandle() instanceof ShopVillager_v1_8_R3) && e instanceof LivingEntity)
+                      .filter(e -> !(e instanceof Player) && e instanceof LivingEntity)
                       .forEach(e -> {
                           LivingEntity le = (LivingEntity) e;
                           le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());
@@ -339,8 +332,7 @@ public class PlayerListener implements Listener {
             if (entity.getCustomName() != null &&
                 entity.getCustomName().equals("rain") || entity.hasMetadata("rain")) {
                 entity.getNearbyEntities(1, 1, 1).stream()
-                      .filter(e -> !(e instanceof Player) &&
-                                   !(((CraftEntity) e).getHandle() instanceof ShopVillager_v1_8_R3) &&
+                      .filter(e -> !(e instanceof Player)  &&
                                    e instanceof LivingEntity).forEach(e -> {
                     LivingEntity le = (LivingEntity) e;
                     le.removeMetadata("pitemplayer", EnhancedPicks.getInstance());

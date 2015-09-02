@@ -80,11 +80,6 @@
             <version>3.6.4-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.minecave</groupId>
-            <artifactId>minesell</artifactId>
-            <version>1.6-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>net.ess3</groupId>
             <artifactId>Essentials</artifactId>
             <version>2.14-SNAPSHOT</version>

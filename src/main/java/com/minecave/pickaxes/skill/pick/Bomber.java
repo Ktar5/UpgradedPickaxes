@@ -1,6 +1,5 @@
 package com.minecave.pickaxes.skill.pick;
 
-import com.minecave.minesell.MineSell;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.item.PItem;
@@ -17,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -36,7 +34,6 @@ public class Bomber extends PSkill implements Listener {
         super(name, cooldown, level, cost, perm);
         this.boomblocks = boomblocks;
         this.ticks = seconds ? ticks * 20 : ticks;
-        MineSell.getInstance().getServer().getPluginManager().registerEvents(this, MineSell.getInstance());
     }
 
     @Override
@@ -52,7 +49,6 @@ public class Bomber extends PSkill implements Listener {
         TNTPrimed tnt = location.getWorld().spawn(location.clone().add(0, 0.2, 0), TNTPrimed.class);
         tnt.setFuseTicks(ticks + 1);
         tnt.setVelocity(to);
-        tnt.setMetadata("bomber", new FixedMetadataValue(MineSell.getInstance(), player.getUniqueId().toString()));
         this.add(player);
 //        int amount = random.nextInt(boomblocks / 2) + (boomblocks / 2);
 //        new BukkitRunnable() {

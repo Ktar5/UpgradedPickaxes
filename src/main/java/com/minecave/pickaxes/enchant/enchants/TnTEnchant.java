@@ -1,6 +1,5 @@
 package com.minecave.pickaxes.enchant.enchants;
 
-import com.minecave.minesell.nms.ShopVillager_v1_8_R3;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.drops.BlockValue;
 import com.minecave.pickaxes.enchant.PEnchant;
@@ -10,7 +9,6 @@ import com.minecave.pickaxes.util.item.OreConversion;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -133,9 +131,6 @@ public class TnTEnchant extends PEnchant {
         int radius = this.getLevel() * 2;
         for (Entity ent : player.getNearbyEntities(radius, radius, radius)) {
             if (ent.equals(event.getEntity())) {
-                continue;
-            }
-            if (((CraftEntity) ent).getHandle() instanceof ShopVillager_v1_8_R3) {
                 continue;
             }
             if (ent instanceof LivingEntity && !(ent instanceof Player)) {

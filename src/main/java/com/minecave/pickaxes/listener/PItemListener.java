@@ -1,7 +1,6 @@
 package com.minecave.pickaxes.listener;
 
 import com.earth2me.essentials.User;
-import com.minecave.minesell.nms.ShopVillager_v1_8_R3;
 import com.minecave.pickaxes.EnhancedPicks;
 import com.minecave.pickaxes.enchant.PEnchant;
 import com.minecave.pickaxes.item.PItem;
@@ -20,7 +19,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -379,9 +377,6 @@ public class PItemListener implements Listener {
             }
         }
         if (entity instanceof Player) {
-            return;
-        }
-        if (((CraftEntity) entity).getHandle() instanceof ShopVillager_v1_8_R3) {
             return;
         }
         if (entity.hasMetadata("skipTNT")) {
